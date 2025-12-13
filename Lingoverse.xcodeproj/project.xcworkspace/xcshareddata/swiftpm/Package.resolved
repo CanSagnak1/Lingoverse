@@ -1,0 +1,15 @@
+{
+  "originHash" : "d53e9124c7742456633ef80b012c0943a3036c5f5cf2db6e0e04a2b46728fad8",
+  "pins" : [
+    {
+      "identity" : "wordkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/CanSagnak1/WordKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b30cbbd20d750808b3008b1c5720258b66b41eb0"
+      }
+    }
+  ],
+  "version" : 3
+}

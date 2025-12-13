@@ -1,0 +1,66 @@
+[
+  {
+    "word": "hello",
+    "phonetic": "həˈləʊ",
+    "phonetics": [
+      {
+        "text": "həˈləʊ",
+        "audio": "https://api.dictionaryapi.dev/media/pronunciations/en/hello-uk.mp3",
+        "sourceUrl": "https://commons.wikimedia.org/w/index.php?curid=9021983"
+      },
+      {
+        "text": "həˈloʊ",
+        "audio": "https://api.dictionaryapi.dev/media/pronunciations/en/hello-us.mp3",
+        "sourceUrl": "https://commons.wikimedia.org/w/index.php?curid=757973"
+      }
+    ],
+    "meanings": [
+      {
+        "partOfSpeech": "exclamation",
+        "definitions": [
+          {
+            "definition": "Used as a greeting or to begin a phone conversation.",
+            "synonyms": [],
+            "antonyms": [],
+            "example": "hello there, Katie!"
+          }
+        ],
+        "synonyms": ["hi", "greetings"],
+        "antonyms": ["goodbye"]
+      },
+      {
+        "partOfSpeech": "noun",
+        "definitions": [
+          {
+            "definition": "An utterance of ‘hello’; a greeting.",
+            "synonyms": [],
+            "antonyms": [],
+            "example": "she was getting polite nods and hellos from people"
+          }
+        ],
+        "synonyms": [],
+        "antonyms": []
+      },
+      {
+        "partOfSpeech": "verb",
+        "definitions": [
+          {
+            "definition": "Say or shout ‘hello’.",
+            "synonyms": [],
+            "antonyms": [],
+            "example": "I pressed the buzzer and helloed"
+          }
+        ],
+        "synonyms": [],
+        "antonyms": []
+      }
+    ],
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    "sourceUrls": [
+      "https://en.wiktionary.org/wiki/hello"
+    ]
+  }
+]
