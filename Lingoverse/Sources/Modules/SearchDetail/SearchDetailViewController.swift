@@ -5,26 +5,26 @@
 //  Created by Celal Can Sağnak on 2.11.2025.
 //
 
-import UIKit
 import AVFoundation
+import UIKit
 
 protocol SearchDetailViewInput: AnyObject {
     func render(_ state: SearchDetailState)
 }
 
 final class SearchDetailViewController: UIViewController, SearchDetailViewInput {
-    
+
     var presenter: SearchDetailViewOutput!
     private var allMeanings: [SearchDetailMeaningVM] = []
     private var player: AVPlayer?
     private var audioURL: URL?
-    
+
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
     }()
-    
+
     private lazy var mainStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -32,7 +32,7 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
-    
+
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = DSTypo.largeTitle
@@ -40,7 +40,7 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
         label.numberOfLines = 0
         return label
     }()
-    
+
     private lazy var phoneticLabel: UILabel = {
         let label = UILabel()
         label.font = DSTypo.title2
@@ -48,7 +48,7 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
         label.numberOfLines = 0
         return label
     }()
-    
+
     private lazy var audioButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "waveform.circle.fill"), for: .normal)
@@ -57,123 +57,180 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
         button.contentHorizontalAlignment = .fill
         button.isHidden = true
         button.addTarget(self, action: #selector(didTapAudio), for: .touchUpInside)
-        
+
         NSLayoutConstraint.activate([
             button.widthAnchor.constraint(equalToConstant: 35),
-            button.heightAnchor.constraint(equalToConstant: 35)
+            button.heightAnchor.constraint(equalToConstant: 35),
         ])
         return button
     }()
-    
+
     private lazy var segmentedControl: UISegmentedControl = {
         let sc = UISegmentedControl()
         sc.addTarget(self, action: #selector(segmentChanged), for: .valueChanged)
         sc.isHidden = true
         return sc
     }()
-    
+
     private lazy var meaningsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = DSSpacing.x4
         return stackView
     }()
-    
+
     private lazy var loadingView: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.hidesWhenStopped = true
         return indicator
     }()
-    
+
     private lazy var errorView: DSErrorView = {
         let errorView = DSErrorView()
         errorView.translatesAutoresizingMaskIntoConstraints = false
         errorView.isHidden = true
         return errorView
     }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupNavigationBar()
         presenter.viewDidLoad()
     }
-        
+
+    private func setupNavigationBar() {
+        let shareButton = UIBarButtonItem(
+            image: UIImage(systemName: "square.and.arrow.up"),
+            style: .plain,
+            target: self,
+            action: #selector(didTapShare)
+        )
+        shareButton.tintColor = DSColor.accent
+        navigationItem.rightBarButtonItem = shareButton
+    }
+
+    @objc private func didTapShare() {
+        HapticManager.shared.shareAction()
+
+        guard let title = titleLabel.text else { return }
+
+        var shareText = "📚 \(title)"
+
+        if let phonetic = phoneticLabel.text, !phonetic.isEmpty {
+            shareText += " \(phonetic)"
+        }
+
+        shareText += "\n\n"
+
+        // Add first definition
+        if let firstMeaning = allMeanings.first,
+            let firstDefinition = firstMeaning.definitions.first
+        {
+            shareText += "Definition: \(firstDefinition.definition)"
+
+            if let example = firstDefinition.example, !example.isEmpty {
+                shareText += "\n\nExample: \"\(example)\""
+            }
+        }
+
+        shareText += "\n\n— Shared via Lingoverse 📖"
+
+        let activityVC = UIActivityViewController(
+            activityItems: [shareText],
+            applicationActivities: nil
+        )
+
+        // For iPad
+        if let popover = activityVC.popoverPresentationController {
+            popover.barButtonItem = navigationItem.rightBarButtonItem
+        }
+
+        present(activityVC, animated: true)
+    }
+
     private func setupUI() {
         view.backgroundColor = .systemBackground
         navigationItem.largeTitleDisplayMode = .never
-        
+
         view.addSubview(scrollView)
         scrollView.addSubview(mainStackView)
-        
+
         let headerStack = UIStackView(arrangedSubviews: [titleLabel, phoneticLabel])
         headerStack.axis = .vertical
         headerStack.spacing = DSSpacing.x1
-        
+
         let titleRowStack = UIStackView(arrangedSubviews: [headerStack, audioButton])
         titleRowStack.axis = .horizontal
         titleRowStack.alignment = .center
         titleRowStack.distribution = .fill
-        
+
         mainStackView.addArrangedSubview(titleRowStack)
         mainStackView.addArrangedSubview(segmentedControl)
         mainStackView.addArrangedSubview(meaningsStackView)
-        
+
         setupStatusViews()
-        
+
         let contentLayout = scrollView.contentLayoutGuide
         let frameLayout = scrollView.frameLayoutGuide
-        
+
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
-            mainStackView.topAnchor.constraint(equalTo: contentLayout.topAnchor, constant: DSSpacing.x4),
-            mainStackView.bottomAnchor.constraint(equalTo: contentLayout.bottomAnchor, constant: -DSSpacing.x8),
-            mainStackView.leadingAnchor.constraint(equalTo: frameLayout.leadingAnchor, constant: DSSpacing.x4),
-            mainStackView.trailingAnchor.constraint(equalTo: frameLayout.trailingAnchor, constant: -DSSpacing.x4)
+
+            mainStackView.topAnchor.constraint(
+                equalTo: contentLayout.topAnchor, constant: DSSpacing.x4),
+            mainStackView.bottomAnchor.constraint(
+                equalTo: contentLayout.bottomAnchor, constant: -DSSpacing.x8),
+            mainStackView.leadingAnchor.constraint(
+                equalTo: frameLayout.leadingAnchor, constant: DSSpacing.x4),
+            mainStackView.trailingAnchor.constraint(
+                equalTo: frameLayout.trailingAnchor, constant: -DSSpacing.x4),
         ])
     }
-    
+
     private func setupStatusViews() {
         view.addSubview(loadingView)
         view.addSubview(errorView)
         errorView.onRetry = { [weak self] in
             self?.presenter.viewDidLoad()
         }
-        
+
         NSLayoutConstraint.activate([
             loadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            
+
             errorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             errorView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            errorView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: DSSpacing.x4),
-            errorView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -DSSpacing.x4)
+            errorView.leadingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: DSSpacing.x4),
+            errorView.trailingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -DSSpacing.x4),
         ])
     }
-    
+
     func render(_ state: SearchDetailState) {
         loadingView.stopAnimating()
         errorView.isHidden = true
         mainStackView.isHidden = true
-        
+
         switch state {
         case .loading:
             loadingView.startAnimating()
-            
+
         case .content(let header, let segments, let meanings):
             mainStackView.isHidden = false
             allMeanings = meanings
-            
+
             titleLabel.text = header.title
             phoneticLabel.text = header.phonetic
             phoneticLabel.isHidden = (header.phonetic == nil)
             audioButton.isHidden = (header.audioURL == nil)
             self.audioURL = header.audioURL
-            
+
             segmentedControl.removeAllSegments()
             for (index, title) in segments.titles.enumerated() {
                 segmentedControl.insertSegment(withTitle: title, at: index, animated: false)
@@ -184,19 +241,19 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
             }
 
             drawMeanings(for: 0)
-            
+
         case .error(let message):
             errorView.isHidden = false
             errorView.configure(message: message)
         }
     }
-    
-    
+
     @objc private func segmentChanged(_ sender: UISegmentedControl) {
         drawMeanings(for: sender.selectedSegmentIndex)
     }
-    
+
     @objc private func didTapAudio() {
+        HapticManager.shared.audioPlaybackStarted()
         guard let audioURL = self.audioURL else { return }
         player = AVPlayer(url: audioURL)
         player?.play()
@@ -204,26 +261,27 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
 
     private func drawMeanings(for index: Int) {
         meaningsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
+
         guard index < allMeanings.count else { return }
         let selectedMeaning = allMeanings[index]
-        
+
         for (defIndex, definitionVM) in selectedMeaning.definitions.enumerated() {
             let definitionView = DefinitionView()
             definitionView.configure(with: definitionVM, index: defIndex + 1)
             meaningsStackView.addArrangedSubview(definitionView)
-            
+
             if defIndex < selectedMeaning.definitions.count - 1 {
                 meaningsStackView.addArrangedSubview(createDivider())
             }
         }
-        
+
         if let synonyms = selectedMeaning.synonyms, !synonyms.isEmpty {
-            meaningsStackView.setCustomSpacing(DSSpacing.x6, after: meaningsStackView.arrangedSubviews.last!)
+            meaningsStackView.setCustomSpacing(
+                DSSpacing.x6, after: meaningsStackView.arrangedSubviews.last!)
             meaningsStackView.addArrangedSubview(createSynonymsSection(for: synonyms))
         }
     }
-    
+
     private func createDivider() -> UIView {
         let divider = UIView()
         divider.backgroundColor = DSColor.surface
@@ -231,37 +289,37 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
         divider.alpha = 0.5
         return divider
     }
-    
+
     private func createDefinitionView(for vm: SearchDetailDefinitionVM, index: Int) -> UIView {
         let definitionView = DefinitionView()
         definitionView.configure(with: vm, index: index)
         return definitionView
     }
-    
+
     private func createSynonymsSection(for synonyms: [String]) -> UIView {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = DSSpacing.x2
         stack.alignment = .leading
-        
+
         let titleLabel = UILabel()
         titleLabel.text = Strings.synonymsText
         titleLabel.font = DSTypo.title2
         titleLabel.textColor = DSColor.textSecondary
-        
+
         stack.addArrangedSubview(titleLabel)
-        
+
         let pillContainer = SynonymPillContainerView()
         pillContainer.synonyms = synonyms
         stack.addArrangedSubview(pillContainer)
         pillContainer.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
-        
+
         return stack
     }
 }
 
 private final class DefinitionView: UIView {
-    
+
     private lazy var definitionLabel: UILabel = {
         let label = UILabel()
         label.font = DSTypo.body
@@ -269,7 +327,7 @@ private final class DefinitionView: UIView {
         label.numberOfLines = 0
         return label
     }()
-    
+
     private lazy var exampleLabel: UILabel = {
         let label = UILabel()
         label.font = DSTypo.footnote
@@ -278,33 +336,34 @@ private final class DefinitionView: UIView {
         label.isHidden = true
         return label
     }()
-    
+
     private lazy var exampleContainer: UIView = {
         let view = UIView()
         view.isHidden = true
-        
+
         let quoteLine = UIView()
         quoteLine.backgroundColor = DSColor.accent
         quoteLine.translatesAutoresizingMaskIntoConstraints = false
-        
+
         view.addSubview(quoteLine)
         view.addSubview(exampleLabel)
         exampleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
+
         NSLayoutConstraint.activate([
             quoteLine.topAnchor.constraint(equalTo: view.topAnchor),
             quoteLine.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             quoteLine.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             quoteLine.widthAnchor.constraint(equalToConstant: 2),
-            
+
             exampleLabel.topAnchor.constraint(equalTo: view.topAnchor),
             exampleLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            exampleLabel.leadingAnchor.constraint(equalTo: quoteLine.trailingAnchor, constant: DSSpacing.x2),
-            exampleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            exampleLabel.leadingAnchor.constraint(
+                equalTo: quoteLine.trailingAnchor, constant: DSSpacing.x2),
+            exampleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
         return view
     }()
-    
+
     private lazy var mainStackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [definitionLabel, exampleContainer])
         stack.axis = .vertical
@@ -312,7 +371,7 @@ private final class DefinitionView: UIView {
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(mainStackView)
@@ -320,17 +379,17 @@ private final class DefinitionView: UIView {
             mainStackView.topAnchor.constraint(equalTo: topAnchor, constant: DSSpacing.x2),
             mainStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -DSSpacing.x2),
             mainStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor)
+            mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError(Cammon.fatalError)
     }
-    
+
     func configure(with vm: SearchDetailDefinitionVM, index: Int) {
         definitionLabel.text = "\(vm.definition)"
-        
+
         if let example = vm.example, !example.isEmpty {
             exampleLabel.text = "\"\(example)\""
             exampleLabel.isHidden = false
@@ -340,21 +399,24 @@ private final class DefinitionView: UIView {
 }
 
 private final class SynonymPillButton: UIButton {
-    
+
     init(title: String) {
         super.init(frame: .zero)
-        let padding = UIEdgeInsets(top: DSSpacing.x1, left: DSSpacing.x2, bottom: DSSpacing.x1, right: DSSpacing.x2)
+        let padding = UIEdgeInsets(
+            top: DSSpacing.x1, left: DSSpacing.x2, bottom: DSSpacing.x1, right: DSSpacing.x2)
         if #available(iOS 15.0, *) {
             var cfg = UIButton.Configuration.filled()
             cfg.baseBackgroundColor = DSColor.surface
             cfg.baseForegroundColor = DSColor.accent
             cfg.cornerStyle = .medium
-            cfg.contentInsets = NSDirectionalEdgeInsets(top: padding.top, leading: padding.left, bottom: padding.bottom, trailing: padding.right)
+            cfg.contentInsets = NSDirectionalEdgeInsets(
+                top: padding.top, leading: padding.left, bottom: padding.bottom,
+                trailing: padding.right)
             var attributes = AttributeContainer()
             attributes.font = DSTypo.body
             attributes.foregroundColor = DSColor.accent
             let attributedTitle = AttributedString(title, attributes: attributes)
-            
+
             cfg.attributedTitle = attributedTitle
             self.configuration = cfg
         } else {
@@ -366,22 +428,22 @@ private final class SynonymPillButton: UIButton {
             contentEdgeInsets = padding
         }
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError(Cammon.fatalError)
     }
 }
 
 private final class SynonymPillContainerView: UIView {
-    
+
     private let pillSpacing: CGFloat = DSSpacing.x2
-    
+
     var synonyms: [String] = [] {
         didSet {
             setupPills()
         }
     }
-    
+
     private var pillButtons: [SynonymPillButton] = []
     private var totalHeight: CGFloat = 0
 
@@ -390,11 +452,11 @@ private final class SynonymPillContainerView: UIView {
         isOpaque = false
         backgroundColor = .clear
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError(Cammon.fatalError)
     }
-    
+
     private func setupPills() {
         pillButtons.forEach { $0.removeFromSuperview() }
         pillButtons = []
@@ -404,41 +466,42 @@ private final class SynonymPillContainerView: UIView {
             addSubview(pillButton)
             pillButtons.append(pillButton)
         }
-        
+
         invalidateIntrinsicContentSize()
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         guard !pillButtons.isEmpty else {
             totalHeight = 0
             return
         }
-        
+
         var currentX: CGFloat = 0
         var currentY: CGFloat = 0
         let containerWidth = self.bounds.width
-        
+
         var currentLineHeight: CGFloat = 0
 
         for pill in pillButtons {
             let pillSize = pill.intrinsicContentSize
-            
+
             if (currentX + pillSize.width) > containerWidth && currentX != 0 {
                 currentX = 0
                 currentY += currentLineHeight + pillSpacing
                 currentLineHeight = 0
             }
-            
-            pill.frame = CGRect(x: currentX, y: currentY, width: pillSize.width, height: pillSize.height)
-            
+
+            pill.frame = CGRect(
+                x: currentX, y: currentY, width: pillSize.width, height: pillSize.height)
+
             currentX += pillSize.width + pillSpacing
             currentLineHeight = max(currentLineHeight, pillSize.height)
         }
-        
+
         totalHeight = currentY + currentLineHeight
-        
+
         invalidateIntrinsicContentSize()
     }
 
