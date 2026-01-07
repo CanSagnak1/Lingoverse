@@ -56,12 +56,10 @@ public final class WordKitClientLive: WordKitClient {
     {
         let normalizedQuery = query.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Check cache first
         if let cachedWords = await cache.getCachedWords(term: normalizedQuery) {
             return cachedWords
         }
 
-        // Check network availability
         guard Reachability.isConnectedToNetwork() else {
             throw WordKitClientError.networkUnavailable
         }
@@ -70,26 +68,22 @@ public final class WordKitClientLive: WordKitClient {
             throw WordKitClientError.unsupportedLanguage(sourceLang)
         }
 
-        // Retry logic
         var lastError: Error?
         for attempt in 1...maxRetries {
             do {
                 let results = try await api.fetch(word: query, language: language)
                 let mappedResults = results.map(mapToWKWord)
 
-                // Cache the results
                 await cache.cacheWords(mappedResults, for: normalizedQuery)
 
                 return mappedResults
             } catch {
                 lastError = error
 
-                // Check if it's a not found error - don't retry
                 if isNotFoundError(error) {
                     throw WordKitClientError.notFound
                 }
 
-                // Wait before retry (exponential backoff)
                 if attempt < maxRetries {
                     try? await Task.sleep(
                         nanoseconds: UInt64(retryDelay * Double(attempt) * 1_000_000_000))
@@ -97,7 +91,6 @@ public final class WordKitClientLive: WordKitClient {
             }
         }
 
-        // All retries failed
         if let error = lastError {
             throw WordKitClientError.underlying(error)
         }

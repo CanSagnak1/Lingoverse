@@ -64,7 +64,6 @@ final class SearchPresenter: SearchViewOutput, SearchInteractorOutput {
         }
 
         currentQuery = trimmed
-        // Otomatik arama yok - sadece butona basınca arama yapılır
     }
 
     func didChangeQueryClear(text: String) {
@@ -112,7 +111,6 @@ final class SearchPresenter: SearchViewOutput, SearchInteractorOutput {
             return
         }
 
-        // Record successful search for App Review
         AppReviewManager.shared.recordSuccessfulSearch()
         HapticManager.shared.searchResultFound()
 

@@ -26,7 +26,6 @@ let package = Package(
             name: "WordAPITests",
             dependencies: ["WordAPI"],
             resources: [
-                // This includes everything under Tests/WordAPITests/Mocks/Stubs into the test bundle.
                 .process("Mocks/Stubs")
             ]
         ),

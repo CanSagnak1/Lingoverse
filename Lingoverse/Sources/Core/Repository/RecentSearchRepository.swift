@@ -33,18 +33,15 @@ final class RecentSearchRepository: RecentSearchRepositoryProtocol {
     }
 
     private func migrateIfNeeded() {
-        // If we have data in the new key, we are good.
         if userDefaults.data(forKey: key) != nil { return }
 
-        // If we have old data, migrate it as terms with empty results
         if let oldTerms = userDefaults.stringArray(forKey: oldKey) {
             let cachedItems = oldTerms.map {
                 CachedSearch(term: $0, results: [], timestamp: Date())
             }
             save(items: cachedItems)
-            userDefaults.removeObject(forKey: oldKey)  // Cleanup
+userDefaults.removeObject(forKey: oldKey)
         } else {
-            // Fresh install or no data: Seed default history
             let defaultTerms = ["can", "you", "rate", "this", "application"]
             let items = defaultTerms.map { CachedSearch(term: $0, results: [], timestamp: Date()) }
             save(items: items)
@@ -57,14 +54,11 @@ final class RecentSearchRepository: RecentSearchRepositoryProtocol {
 
         var currentItems = fetchCachedItems()
 
-        // Remove existing entry for this term if any
         currentItems.removeAll { $0.term == normalizedTerm }
 
-        // Insert new item at top
         let newItem = CachedSearch(term: normalizedTerm, results: results, timestamp: Date())
         currentItems.insert(newItem, at: 0)
 
-        // Limit
         let limitedItems = Array(currentItems.prefix(maxCount))
         save(items: limitedItems)
     }
@@ -86,7 +80,6 @@ final class RecentSearchRepository: RecentSearchRepositoryProtocol {
         save(items: currentItems)
     }
 
-    // MARK: - Private Helpers
 
     private func fetchCachedItems() -> [CachedSearch] {
         guard let data = userDefaults.data(forKey: key) else { return [] }

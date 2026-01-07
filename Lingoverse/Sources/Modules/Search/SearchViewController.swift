@@ -455,20 +455,17 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
     private static var hasShownTutorial = false
 
     private func runSwipeTutorialIfNeeded() {
-        // Run only once per app session (not persisted across re-launches)
         guard !SearchViewController.hasShownTutorial,
             !recentItems.isEmpty
         else {
             return
         }
 
-        // Wait for table to fully render
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
             guard let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) else {
                 return
             }
 
-            // Mark as seen for this session
             SearchViewController.hasShownTutorial = true
 
             self.performProfessionalSwipeTutorial(on: cell)
@@ -476,14 +473,12 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     private func performProfessionalSwipeTutorial(on cell: UITableViewCell) {
-        // Configuration
         let moveDistance: CGFloat = 85.0
         let cellHeight = cell.bounds.height
         let cellWidth = cell.bounds.width
         let iconSize: CGFloat = 28
         let labelHeight: CGFloat = 14
 
-        // Timing Configuration - Smoother, more professional
         let swipeDuration: TimeInterval = 0.55
         let holdDuration: TimeInterval = 0.8
         let returnDuration: TimeInterval = 0.45
@@ -491,16 +486,12 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         let springDamping: CGFloat = 0.72
         let springVelocity: CGFloat = 0.3
 
-        // ═══════════════════════════════════════════════════════════════
-        // MARK: - Create Favorite Action View (Left - Green)
-        // ═══════════════════════════════════════════════════════════════
 
         let favView = UIView()
         favView.backgroundColor = DSColor.favoriteGreen
         favView.frame = CGRect(x: 0, y: 0, width: moveDistance, height: cellHeight)
         favView.clipsToBounds = true
 
-        // Gradient overlay for depth
         let favGradient = CAGradientLayer()
         favGradient.colors = [
             UIColor.white.withAlphaComponent(0.2).cgColor,
@@ -510,7 +501,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         favGradient.frame = favView.bounds
         favView.layer.insertSublayer(favGradient, at: 0)
 
-        // Icon container for animations
         let favIconContainer = UIView()
         favIconContainer.frame = CGRect(
             x: (moveDistance - iconSize) / 2,
@@ -530,7 +520,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         favIcon.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
         favIconContainer.addSubview(favIcon)
 
-        // Hint label
         let favLabel = UILabel()
         favLabel.text = "Favorite"
         favLabel.font = .systemFont(ofSize: 11, weight: .semibold)
@@ -545,9 +534,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         favLabel.alpha = 0
         favView.addSubview(favLabel)
 
-        // ═══════════════════════════════════════════════════════════════
-        // MARK: - Create Delete Action View (Right - Red)
-        // ═══════════════════════════════════════════════════════════════
 
         let delView = UIView()
         delView.backgroundColor = DSColor.accent
@@ -555,7 +541,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             x: cellWidth - moveDistance, y: 0, width: moveDistance, height: cellHeight)
         delView.clipsToBounds = true
 
-        // Gradient overlay for depth
         let delGradient = CAGradientLayer()
         delGradient.colors = [
             UIColor.white.withAlphaComponent(0.2).cgColor,
@@ -565,7 +550,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         delGradient.frame = delView.bounds
         delView.layer.insertSublayer(delGradient, at: 0)
 
-        // Icon container for animations
         let delIconContainer = UIView()
         delIconContainer.frame = CGRect(
             x: (moveDistance - iconSize) / 2,
@@ -585,7 +569,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         delIcon.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
         delIconContainer.addSubview(delIcon)
 
-        // Hint label
         let delLabel = UILabel()
         delLabel.text = "Delete"
         delLabel.font = .systemFont(ofSize: 11, weight: .semibold)
@@ -600,29 +583,18 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         delLabel.alpha = 0
         delView.addSubview(delLabel)
 
-        // ═══════════════════════════════════════════════════════════════
-        // MARK: - Add to Cell
-        // ═══════════════════════════════════════════════════════════════
 
         cell.insertSubview(favView, belowSubview: cell.contentView)
         cell.insertSubview(delView, belowSubview: cell.contentView)
 
-        // Add subtle shadow to content view during swipe
         cell.contentView.layer.shadowColor = UIColor.black.cgColor
         cell.contentView.layer.shadowOffset = .zero
         cell.contentView.layer.shadowRadius = 0
         cell.contentView.layer.shadowOpacity = 0
 
-        // ═══════════════════════════════════════════════════════════════
-        // MARK: - Animation Sequence
-        // ═══════════════════════════════════════════════════════════════
 
-        // Initial subtle haptic
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
 
-        // ─────────────────────────────────────────────────────────────────
-        // STEP 1: Swipe Right (Reveal Favorite)
-        // ─────────────────────────────────────────────────────────────────
         UIView.animate(
             withDuration: swipeDuration,
             delay: 0.0,
@@ -635,7 +607,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             cell.contentView.layer.shadowOpacity = 0.15
         }
 
-        // Animate icon appearing with bounce
         UIView.animate(
             withDuration: 0.4,
             delay: swipeDuration * 0.3,
@@ -650,14 +621,10 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             favLabel.alpha = 1
         }
 
-        // Haptic at peak
         DispatchQueue.main.asyncAfter(deadline: .now() + swipeDuration) {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         }
 
-        // ─────────────────────────────────────────────────────────────────
-        // STEP 2: Return to Center
-        // ─────────────────────────────────────────────────────────────────
         let step2Delay = swipeDuration + holdDuration
 
         UIView.animate(
@@ -672,16 +639,12 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             cell.contentView.layer.shadowOpacity = 0
         }
 
-        // Fade out icon
         UIView.animate(withDuration: 0.2, delay: step2Delay) {
             favIcon.alpha = 0
             favIcon.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
             favLabel.alpha = 0
         }
 
-        // ─────────────────────────────────────────────────────────────────
-        // STEP 3: Swipe Left (Reveal Delete)
-        // ─────────────────────────────────────────────────────────────────
         let step3Delay = step2Delay + returnDuration + betweenSwipeDelay
 
         UIView.animate(
@@ -696,7 +659,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             cell.contentView.layer.shadowOpacity = 0.15
         }
 
-        // Animate icon appearing with bounce
         UIView.animate(
             withDuration: 0.4,
             delay: step3Delay + swipeDuration * 0.3,
@@ -711,14 +673,10 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             delLabel.alpha = 1
         }
 
-        // Haptic at peak
         DispatchQueue.main.asyncAfter(deadline: .now() + step3Delay + swipeDuration) {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         }
 
-        // ─────────────────────────────────────────────────────────────────
-        // STEP 4: Return to Center & Cleanup
-        // ─────────────────────────────────────────────────────────────────
         let step4Delay = step3Delay + swipeDuration + holdDuration
 
         UIView.animate(
@@ -733,14 +691,12 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             cell.contentView.layer.shadowOpacity = 0
         }
 
-        // Fade out icon
         UIView.animate(withDuration: 0.2, delay: step4Delay) {
             delIcon.alpha = 0
             delIcon.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
             delLabel.alpha = 0
         }
 
-        // Cleanup after animation completes
         let totalDuration = step4Delay + returnDuration + 0.2
         DispatchQueue.main.asyncAfter(deadline: .now() + totalDuration) {
             UIView.animate(withDuration: 0.2) {
@@ -751,7 +707,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
                 delView.removeFromSuperview()
                 cell.contentView.layer.shadowOpacity = 0
 
-                // Final light haptic to signal completion
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             }
         }
@@ -800,10 +755,6 @@ private final class RecentSearchCell: UITableViewCell {
         cfg.imageProperties.tintColor = DSColor.accent
         cfg.imageToTextPadding = DSSpacing.x2
 
-        // Adjust text to not overlap with chevron
-        // Since we are using contentConfiguration, accurate padding is tricky without custom layout.
-        // However, standard content config usually respects the layout margins.
-        // We can just rely on the fact that the text is short enough or use layout margins.
 
         contentConfiguration = cfg
         backgroundConfiguration = nil

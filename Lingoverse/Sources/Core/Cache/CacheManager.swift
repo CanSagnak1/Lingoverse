@@ -21,7 +21,7 @@ public final class CacheManager: CacheManagerProtocol {
     private let cache = NSCache<NSString, CachedResult>()
     private let userDefaults: UserDefaults
     private let cacheKey = "cached_words_keys"
-    private let maxCacheAge: TimeInterval = 60 * 60 * 24 * 7  // 7 days
+private let maxCacheAge: TimeInterval = 60 * 60 * 24 * 7
 
     private var cachedKeys: Set<String> {
         get {
@@ -35,7 +35,7 @@ public final class CacheManager: CacheManagerProtocol {
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
         cache.countLimit = 500
-        cache.totalCostLimit = 50 * 1024 * 1024  // 50 MB
+cache.totalCostLimit = 50 * 1024 * 1024
         loadPersistedCache()
     }
 
@@ -89,7 +89,6 @@ public final class CacheManager: CacheManagerProtocol {
         return cachedKeys.count
     }
 
-    // MARK: - Persistence
 
     private func persistResult(_ cached: CachedResult, forKey key: String) {
         let encoder = JSONEncoder()
@@ -124,7 +123,6 @@ public final class CacheManager: CacheManagerProtocol {
     }
 }
 
-// MARK: - CachedResult Model
 
 private final class CachedResult: NSObject, Codable {
     let words: [WKWord]

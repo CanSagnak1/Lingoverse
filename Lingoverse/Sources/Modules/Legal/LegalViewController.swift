@@ -69,7 +69,6 @@ final class LegalViewController: UIViewController {
             ]
         )
 
-        // Style headings
         let headingPatterns = [
             "PRIVACY POLICY",
             "TERMS OF USE",
@@ -81,7 +80,6 @@ final class LegalViewController: UIViewController {
             let range = (content as NSString).range(of: pattern)
             if range.location != NSNotFound {
                 if pattern.count <= 4 {
-                    // Numbered headings - find the full line
                     let lineEnd = (content as NSString).range(
                         of: "\n", options: [],
                         range: NSRange(
@@ -93,7 +91,6 @@ final class LegalViewController: UIViewController {
                     attributedString.addAttribute(
                         .font, value: UIFont.boldSystemFont(ofSize: 16), range: fullRange)
                 } else {
-                    // Main title
                     attributedString.addAttribute(
                         .font, value: UIFont.boldSystemFont(ofSize: 22), range: range)
                     attributedString.addAttribute(
@@ -102,7 +99,6 @@ final class LegalViewController: UIViewController {
             }
         }
 
-        // Style section headers in acknowledgements
         let sectionHeaders = [
             "FREE DICTIONARY API",
             "SF SYMBOLS",

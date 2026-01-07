@@ -124,7 +124,6 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
 
         shareText += "\n\n"
 
-        // Add first definition
         if let firstMeaning = allMeanings.first,
             let firstDefinition = firstMeaning.definitions.first
         {
@@ -142,7 +141,6 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
             applicationActivities: nil
         )
 
-        // For iPad
         if let popover = activityVC.popoverPresentationController {
             popover.barButtonItem = navigationItem.rightBarButtonItem
         }

@@ -18,7 +18,6 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
 
     private var favoriteItems: [String] = []
 
-    // MARK: - UI Components
 
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -57,7 +56,6 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
         return spinner
     }()
 
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,7 +68,6 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
         presenter.viewWillAppear()
     }
 
-    // MARK: - Setup
 
     private func setupUI() {
         title = Strings.favoritesTitle
@@ -101,7 +98,6 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
         ])
     }
 
-    // MARK: - FavoritesViewInput
 
     func render(_ state: FavoritesState) {
         spinner.stopAnimating()
@@ -130,7 +126,6 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
     }
 }
 
-// MARK: - UITableViewDataSource & UITableViewDelegate
 
 extension FavoritesViewController: UITableViewDataSource, UITableViewDelegate {
 
@@ -205,7 +200,6 @@ extension FavoritesViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-// MARK: - Favorite Cell
 
 private final class FavoriteCell: UITableViewCell {
 
@@ -276,31 +270,26 @@ private final class FavoriteCell: UITableViewCell {
         contentView.addSubview(chevronIcon)
 
         NSLayoutConstraint.activate([
-            // Star container
             starContainer.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor, constant: 16),
             starContainer.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             starContainer.widthAnchor.constraint(equalToConstant: 36),
             starContainer.heightAnchor.constraint(equalToConstant: 36),
 
-            // Star icon
             starIcon.centerXAnchor.constraint(equalTo: starContainer.centerXAnchor),
             starIcon.centerYAnchor.constraint(equalTo: starContainer.centerYAnchor),
 
-            // Word label
             wordLabel.leadingAnchor.constraint(equalTo: starContainer.trailingAnchor, constant: 12),
             wordLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
             wordLabel.trailingAnchor.constraint(
                 lessThanOrEqualTo: chevronIcon.leadingAnchor, constant: -12),
 
-            // Subtitle label
             subtitleLabel.leadingAnchor.constraint(equalTo: wordLabel.leadingAnchor),
             subtitleLabel.topAnchor.constraint(equalTo: wordLabel.bottomAnchor, constant: 2),
             subtitleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12),
             subtitleLabel.trailingAnchor.constraint(
                 lessThanOrEqualTo: chevronIcon.leadingAnchor, constant: -12),
 
-            // Chevron
             chevronIcon.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor, constant: -16),
             chevronIcon.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),

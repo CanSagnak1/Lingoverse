@@ -19,7 +19,6 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
     private var pages: [OnboardingPage] = []
     private var currentPageIndex = 0
 
-    // MARK: - UI Components
 
     private lazy var scrollView: UIScrollView = {
         let sv = UIScrollView()
@@ -84,7 +83,6 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
         return button
     }()
 
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,7 +90,6 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
         presenter.viewDidLoad()
     }
 
-    // MARK: - Setup
 
     private func setupUI() {
         view.backgroundColor = .systemBackground
@@ -129,7 +126,6 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
         ])
     }
 
-    // MARK: - OnboardingViewInput
 
     func configure(with pages: [OnboardingPage]) {
         self.pages = pages
@@ -155,7 +151,6 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
         scrollView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: true)
     }
 
-    // MARK: - Actions
 
     @objc private func nextButtonTapped() {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -212,7 +207,6 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
     }
 }
 
-// MARK: - UIScrollViewDelegate
 
 extension OnboardingViewController: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -223,7 +217,6 @@ extension OnboardingViewController: UIScrollViewDelegate {
     }
 }
 
-// MARK: - OnboardingPageView
 
 private final class OnboardingPageView: UIView {
 

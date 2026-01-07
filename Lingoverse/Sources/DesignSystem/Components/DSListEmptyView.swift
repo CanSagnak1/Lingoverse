@@ -71,14 +71,12 @@ public final class DSListEmptyView: UIView {
         ])
     }
 
-    /// Configure with just description text (backward compatible)
     public func configure(_ text: String) {
         descriptionLabel.text = text
         descriptionLabel.accessibilityLabel = text
         titleLabel.isHidden = true
     }
 
-    /// Configure with title and description
     public func configure(title: String, description: String) {
         titleLabel.text = title
         titleLabel.isHidden = false
@@ -86,7 +84,6 @@ public final class DSListEmptyView: UIView {
         descriptionLabel.accessibilityLabel = description
     }
 
-    /// Configure with title, description and custom icon
     public func configure(title: String, description: String, icon: String) {
         titleLabel.text = title
         titleLabel.isHidden = false

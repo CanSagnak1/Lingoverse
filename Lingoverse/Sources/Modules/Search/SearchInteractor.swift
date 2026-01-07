@@ -44,7 +44,6 @@ final class SearchInteractor: SearchInteractorInput {
                 query: query, sourceLang: source, targetLang: target, page: nil)
             output?.didLoad(results: res)
         } catch {
-            // Check cache for offline fallback
             if let cached = recentRepo.getCachedResults(for: query), !cached.isEmpty {
                 output?.didLoad(results: cached)
                 return

@@ -11,7 +11,6 @@ final class StatsViewController: UIViewController {
 
     private let progressManager = LearnProgressManager.shared
 
-    // MARK: - UI Components
 
     private lazy var scrollView: UIScrollView = {
         let sv = UIScrollView()
@@ -35,7 +34,6 @@ final class StatsViewController: UIViewController {
         return label
     }()
 
-    // Stats Cards
     private lazy var statsGrid: UIStackView = {
         let row1 = UIStackView(arrangedSubviews: [
             createStatCard(
@@ -123,14 +121,12 @@ final class StatsViewController: UIViewController {
         return button
     }()
 
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
     }
 
-    // MARK: - Setup
 
     private func setupUI() {
         title = "Statistics"
@@ -231,7 +227,6 @@ final class StatsViewController: UIViewController {
         }
     }
 
-    // MARK: - Actions
 
     @objc private func didTapReset() {
         HapticManager.shared.warning()

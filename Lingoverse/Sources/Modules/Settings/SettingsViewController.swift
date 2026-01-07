@@ -68,7 +68,6 @@ final class SettingsViewController: UIViewController, SettingsViewInput {
     }
 }
 
-// MARK: - UITableViewDataSource & Delegate
 
 extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
 

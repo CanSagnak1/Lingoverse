@@ -25,8 +25,6 @@ final class FavoritesRepositoryTests: XCTestCase {
         super.tearDown()
     }
 
-    // TEST 3
-    // Bir terimin favorilere eklenip eklenmediğini ve kontrol metodunun doğru çalıştığını test eder.
     func testSaveAndCheckFavorite_ShouldReturnIsFavoriteTrue() {
         let term = "Lingoverse"
         sut.saveFavorite(term)
@@ -36,8 +34,6 @@ final class FavoritesRepositoryTests: XCTestCase {
         XCTAssertFalse(isNotFavorite, "Kaydedilmeyen terim favori olmamalı.")
     }
 
-    // TEST 4
-    // Bir terimin favorilerden silinip silinmediğini test eder.
     func testDeleteFavorite_ShouldReturnIsFavoriteFalse() {
         let term = "Test"
         sut.saveFavorite(term)

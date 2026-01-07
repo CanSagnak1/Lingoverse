@@ -34,7 +34,6 @@ enum LegalContent {
         }
     }
 
-    // MARK: - Privacy Policy
 
     static let privacyPolicy = """
         PRIVACY POLICY
@@ -67,7 +66,7 @@ enum LegalContent {
 
         4. THIRD-PARTY SERVICES
 
-        Our app uses the Free Dictionary API (https://dictionaryapi.dev) to fetch word definitions. When you search for a word, your search query is sent to this third-party service. Please refer to their privacy policy for information about how they handle data.
+        Our app uses the Free Dictionary API (https://dictionaryapi.dev/) to provide word definitions. When you search for a word, your query is sent to this third-party service. Please review their privacy policy for more information.
 
         5. DATA RETENTION
 
@@ -99,7 +98,6 @@ enum LegalContent {
         By using Lingoverse, you agree to the terms of this Privacy Policy.
         """
 
-    // MARK: - Terms of Use
 
     static let termsOfUse = """
         TERMS OF USE
@@ -173,7 +171,6 @@ enum LegalContent {
         By using Lingoverse, you acknowledge that you have read, understood, and agree to be bound by these Terms of Use.
         """
 
-    // MARK: - Acknowledgements
 
     static let acknowledgements = """
         ACKNOWLEDGEMENTS
@@ -184,7 +181,7 @@ enum LegalContent {
 
         Word definitions, phonetics, and pronunciations are provided by the Free Dictionary API.
 
-        Website: https://dictionaryapi.dev
+        Website: https://dictionaryapi.dev/
         License: Open Source
 
         We are grateful to the maintainers of this free service that makes educational apps like ours possible.

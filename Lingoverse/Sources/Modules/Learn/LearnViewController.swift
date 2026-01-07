@@ -20,7 +20,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
 
     var presenter: LearnViewOutput!
 
-    // MARK: - UI Components
 
     private lazy var headerView: UIView = {
         let view = UIView()
@@ -115,7 +114,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
         return view
     }()
 
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -127,7 +125,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
         presenter.viewWillAppear()
     }
 
-    // MARK: - Setup
 
     private func setupUI() {
         title = "Learn"
@@ -135,7 +132,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
         navigationItem.largeTitleDisplayMode = .always
 
         view.addSubview(headerView)
-        // Title is handled by navigation bar
         headerView.addSubview(subtitleLabel)
 
         view.addSubview(buttonsStack)
@@ -144,29 +140,24 @@ final class LearnViewController: UIViewController, LearnViewInput {
         let guide = view.safeAreaLayoutGuide
 
         NSLayoutConstraint.activate([
-            // Header
             headerView.topAnchor.constraint(equalTo: guide.topAnchor, constant: 8),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
-            // Subtitle acts as the description under the large title
             subtitleLabel.topAnchor.constraint(equalTo: headerView.topAnchor),
             subtitleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor),
             subtitleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor),
             subtitleLabel.bottomAnchor.constraint(equalTo: headerView.bottomAnchor),
 
-            // Buttons Stack
             buttonsStack.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 24),
             buttonsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             buttonsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
-            // Empty State
             emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
     }
 
-    // MARK: - LearnViewInput
 
     func render(_ state: LearnState) {
         switch state {
@@ -182,7 +173,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
         }
     }
 
-    // MARK: - Actions
 
     @objc private func didTapFlashcard() {
         HapticManager.shared.buttonPressed()
@@ -200,7 +190,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
     }
 }
 
-// MARK: - LearnModeButton
 
 final class LearnModeButton: UIControl {
 

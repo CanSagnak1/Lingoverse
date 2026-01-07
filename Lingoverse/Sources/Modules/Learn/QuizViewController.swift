@@ -17,7 +17,6 @@ final class QuizViewController: UIViewController {
 
     private let client = WordKitClientLive()
 
-    // MARK: - UI Components
 
     private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
@@ -111,7 +110,6 @@ final class QuizViewController: UIViewController {
         return view
     }()
 
-    // MARK: - Init
 
     init(words: [String]) {
         self.words = Array(words.shuffled().prefix(10))
@@ -122,7 +120,6 @@ final class QuizViewController: UIViewController {
         fatalError(Cammon.fatalError)
     }
 
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -130,7 +127,6 @@ final class QuizViewController: UIViewController {
         generateQuestions()
     }
 
-    // MARK: - Setup
 
     private func setupUI() {
         view.backgroundColor = .systemBackground
@@ -145,7 +141,6 @@ final class QuizViewController: UIViewController {
         view.addSubview(answersStack)
         view.addSubview(resultView)
 
-        // Create 4 answer buttons
         for i in 0..<4 {
             let button = QuizAnswerButton()
             button.tag = i
@@ -205,7 +200,6 @@ final class QuizViewController: UIViewController {
         updateUI()
     }
 
-    // MARK: - Question Generation
 
     private func generateQuestions() {
         loadingIndicator.startAnimating()
@@ -213,7 +207,6 @@ final class QuizViewController: UIViewController {
         answersStack.isHidden = true
 
         Task {
-            // Load definitions for all words
             for word in words {
                 do {
                     let results = try await client.search(
@@ -303,7 +296,6 @@ final class QuizViewController: UIViewController {
         present(alert, animated: true)
     }
 
-    // MARK: - Actions
 
     @objc private func didTapClose() {
         HapticManager.shared.buttonPressed()
@@ -316,7 +308,6 @@ final class QuizViewController: UIViewController {
         let question = questions[currentIndex]
         let isCorrect = sender.tag == question.correctIndex
 
-        // Record answer
         LearnProgressManager.shared.recordQuizAnswer(isCorrect: isCorrect)
 
         if isCorrect {
@@ -329,10 +320,8 @@ final class QuizViewController: UIViewController {
             answerButtons[question.correctIndex].showCorrect()
         }
 
-        // Disable all buttons
         answerButtons.forEach { $0.isUserInteractionEnabled = false }
 
-        // Move to next question after delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             self.currentIndex += 1
             self.answerButtons.forEach { $0.isUserInteractionEnabled = true }
@@ -361,7 +350,6 @@ final class QuizViewController: UIViewController {
     }
 }
 
-// MARK: - QuizQuestion
 
 struct QuizQuestion {
     let word: String
@@ -369,7 +357,6 @@ struct QuizQuestion {
     let correctIndex: Int
 }
 
-// MARK: - QuizAnswerButton
 
 final class QuizAnswerButton: UIControl {
 
@@ -467,7 +454,6 @@ final class QuizAnswerButton: UIControl {
             self.indexLabel.backgroundColor = .systemRed
         }
 
-        // Shake animation
         let shake = CAKeyframeAnimation(keyPath: "transform.translation.x")
         shake.timingFunction = CAMediaTimingFunction(name: .linear)
         shake.values = [-10, 10, -8, 8, -5, 5, 0]
@@ -484,7 +470,6 @@ final class QuizAnswerButton: UIControl {
     }
 }
 
-// MARK: - QuizResultView
 
 final class QuizResultView: UIView {
 

@@ -24,7 +24,6 @@ final class LingoverseUITests: XCTestCase {
     }
 
 
-    // TEST 1: Ana Ekranın Boş Durumunu Kontrol Etme
     func testSearchIdleEmptyState() throws {
         let searchNavigationBar = app.navigationBars["Search"]
         XCTAssertTrue(searchNavigationBar.waitForExistence(timeout: 10), "Ana 'Search' ekranı 10 saniye içinde yüklenmedi.")
@@ -32,7 +31,6 @@ final class LingoverseUITests: XCTestCase {
         XCTAssertTrue(emptyStateText.exists, "You have no recent searches. boş durum metni bulunamadı.")
     }
 
-    // TEST 2: Favoriler Ekranına Gidişi Test Etme
     func testNavigationToFavorites() throws {
         let searchNavigationBar = app.navigationBars["Search"]
         XCTAssertTrue(searchNavigationBar.waitForExistence(timeout: 10), "Ana 'Search' ekranı yüklenmedi.")
@@ -43,7 +41,6 @@ final class LingoverseUITests: XCTestCase {
         XCTAssertTrue(favoritesNavigationBar.exists, "Favoriler ekranına (NavigationBar başlığı: 'Favorites') başarıyla yönlendirilmedi.")
     }
 
-    // TEST 3: Favoriler Ekranından Ana Ekrana Geri Dönüşü Test Etme
     func testNavigationToFavoritesAndBack() throws {
         XCTAssertTrue(app.navigationBars["Search"].waitForExistence(timeout: 10), "Ana 'Search' ekranı yüklenmedi.")
         app.buttons["Favorites"].tap()
@@ -53,7 +50,6 @@ final class LingoverseUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Search"].exists, "Favoriler ekranından 'Search' ekranına geri dönülemedi.")
     }
 
-    // TEST 4: Favoriler Ekranının Boş Durumunu Test Etme
     func testFavoritesEmptyState() throws {
         XCTAssertTrue(app.navigationBars["Search"].waitForExistence(timeout: 10), "Ana 'Search' ekranı yüklenmedi.")
         app.buttons["Favorites"].tap()
@@ -62,7 +58,6 @@ final class LingoverseUITests: XCTestCase {
         XCTAssertTrue(emptyStateText.exists, "Favoriler ekranındaki 'You have no favorited...' boş durum metni bulunamadı.")
     }
 
-    // TEST 5: Arama Çubuğunun (Search Bar) Etkileşimini Test Etme
     func testSearchBarIsTypable() throws {
         XCTAssertTrue(app.navigationBars["Search"].waitForExistence(timeout: 10), "Ana 'Search' ekranı yüklenmedi.")
         let searchField = app.searchFields["Search for a word…"]

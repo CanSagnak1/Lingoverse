@@ -27,8 +27,6 @@ final class RecentSearchRepositoryTests: XCTestCase {
         super.tearDown()
     }
 
-    // TEST 1
-    // Bir arama teriminin kaydedilip kaydedilmediğini ve küçük harfe çevrildiğini test eder.
     func testSaveSearch_ShouldBeLowercasedAndSaved() {
         let searchTerm = "Hello"
         sut.saveSearch(searchTerm)
@@ -37,8 +35,6 @@ final class RecentSearchRepositoryTests: XCTestCase {
         XCTAssertEqual(searches.first, "hello", "Kaydedilen terim küçük harfe çevrilmeli.")
     }
 
-    // TEST 2
-    // Aramaların doğru sırada (en yeni en üstte) ve kopyalar olmadan kaydedildiğini test eder.
     func testFetchRecentSearches_ShouldHandleDuplicatesAndOrder() {
         sut.saveSearch("One")
         sut.saveSearch("Two")

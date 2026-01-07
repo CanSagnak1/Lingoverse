@@ -60,7 +60,6 @@ final class OnboardingPresenter: OnboardingViewOutput {
     }
 
     func didTapNext() {
-        // Handled in ViewController
     }
 
     func didTapSkip() {
@@ -77,7 +76,6 @@ final class OnboardingPresenter: OnboardingViewOutput {
     }
 }
 
-// MARK: - OnboardingPage Entity
 
 struct OnboardingPage {
     let iconName: String
@@ -85,7 +83,6 @@ struct OnboardingPage {
     let description: String
 }
 
-// MARK: - OnboardingManager
 
 final class OnboardingManager {
 

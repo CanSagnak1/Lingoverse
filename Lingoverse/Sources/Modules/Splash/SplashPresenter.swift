@@ -35,7 +35,6 @@ final class SplashPresenter: SplashViewOutput, SplashInteractorOutput {
 
     func videoDidFinish() {
         if isInternetAvailable {
-            // Check if user has seen onboarding
             if OnboardingManager.shared.hasSeenOnboarding {
                 router.navigate(to: .home)
             } else {

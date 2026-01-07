@@ -16,7 +16,6 @@ final class FlashcardViewController: UIViewController {
 
     private let client = WordKitClientLive()
 
-    // MARK: - UI Components
 
     private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
@@ -100,7 +99,6 @@ final class FlashcardViewController: UIViewController {
         return indicator
     }()
 
-    // MARK: - Init
 
     init(words: [String]) {
         self.words = words.shuffled()
@@ -111,7 +109,6 @@ final class FlashcardViewController: UIViewController {
         fatalError(Cammon.fatalError)
     }
 
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -121,7 +118,6 @@ final class FlashcardViewController: UIViewController {
         LearnProgressManager.shared.recordFlashcardSession()
     }
 
-    // MARK: - Setup
 
     private func setupUI() {
         view.backgroundColor = .systemBackground
@@ -181,7 +177,6 @@ final class FlashcardViewController: UIViewController {
         view.addGestureRecognizer(swipeRight)
     }
 
-    // MARK: - Card Loading
 
     private func loadCurrentCard() {
         guard currentIndex < words.count else { return }
@@ -241,7 +236,6 @@ final class FlashcardViewController: UIViewController {
         nextButton.alpha = currentIndex < words.count - 1 ? 1.0 : 0.4
     }
 
-    // MARK: - Actions
 
     @objc private func didTapClose() {
         HapticManager.shared.buttonPressed()
@@ -319,7 +313,6 @@ final class FlashcardViewController: UIViewController {
     }
 }
 
-// MARK: - FlashcardView
 
 final class FlashcardView: UIView {
 

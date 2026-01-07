@@ -36,8 +36,6 @@ final class SearchPresenterTests: XCTestCase {
         super.tearDown()
     }
 
-    // TEST 5
-    // Interactor'dan son aramalar listesi geldiğinde, Presenter'ın View'a doğru ".recent" state'ini gönderip göndermediğini test eder.
     func testSearchPresenter_WhenRecentSearchesLoaded_ShouldRenderRecentState() {
         let recentTerms = ["swift", "viper"]
         sut.didLoadRecentSearches(recentTerms)

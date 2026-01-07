@@ -36,12 +36,10 @@ final class SettingsRouter: SettingsRouterProtocol {
                 ThemeManager.shared.currentTheme = theme
             }
 
-            // Add checkmark to current theme
             if theme == ThemeManager.shared.currentTheme {
                 action.setValue(true, forKey: "checked")
             }
 
-            // Add icon
             if let image = UIImage(systemName: theme.iconName) {
                 action.setValue(image, forKey: "image")
             }
@@ -51,7 +49,6 @@ final class SettingsRouter: SettingsRouterProtocol {
 
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
 
-        // For iPad
         if let popover = alert.popoverPresentationController {
             popover.sourceView = vc.view
             popover.sourceRect = CGRect(

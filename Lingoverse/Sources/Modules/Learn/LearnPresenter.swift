@@ -74,7 +74,6 @@ final class LearnPresenter: LearnViewOutput {
     }
 }
 
-// MARK: - LearnProgressManager
 
 final class LearnProgressManager {
 

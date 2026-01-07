@@ -29,7 +29,6 @@ enum AppTheme: String, CaseIterable {
     }
 }
 
-/// Manages app-wide theme settings
 final class ThemeManager {
 
     static let shared = ThemeManager()
@@ -37,14 +36,12 @@ final class ThemeManager {
     private let userDefaults: UserDefaults
     private let themeKey = "app_theme"
 
-    /// Notification posted when theme changes
     static let themeDidChangeNotification = Notification.Name("ThemeDidChangeNotification")
 
     private init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
     }
 
-    /// Current theme setting
     var currentTheme: AppTheme {
         get {
             guard let rawValue = userDefaults.string(forKey: themeKey),
@@ -61,7 +58,6 @@ final class ThemeManager {
         }
     }
 
-    /// Apply theme to all windows
     func applyTheme(_ theme: AppTheme) {
         DispatchQueue.main.async {
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
@@ -75,12 +71,10 @@ final class ThemeManager {
         }
     }
 
-    /// Apply saved theme on app launch
     func applyCurrentTheme() {
         applyTheme(currentTheme)
     }
 
-    /// Cycle to next theme
     func cycleTheme() {
         let allThemes = AppTheme.allCases
         guard let currentIndex = allThemes.firstIndex(of: currentTheme) else { return }

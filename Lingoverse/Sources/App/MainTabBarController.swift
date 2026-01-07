@@ -9,7 +9,6 @@ import UIKit
 
 final class MainTabBarController: UITabBarController {
 
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,7 +16,6 @@ final class MainTabBarController: UITabBarController {
         configureTabBarAppearance()
     }
 
-    // MARK: - Setup
 
     private func setupTabs() {
         let searchTab = makeSearchTab()
@@ -80,17 +78,14 @@ final class MainTabBarController: UITabBarController {
         let appearance = UITabBarAppearance()
         appearance.configureWithDefaultBackground()
 
-        // Configure item appearance
         let itemAppearance = UITabBarItemAppearance()
 
-        // Normal state
         itemAppearance.normal.iconColor = DSColor.textSecondary
         itemAppearance.normal.titleTextAttributes = [
             .foregroundColor: DSColor.textSecondary,
             .font: UIFont.systemFont(ofSize: 10, weight: .medium)
         ]
 
-        // Selected state
         itemAppearance.selected.iconColor = DSColor.accent
         itemAppearance.selected.titleTextAttributes = [
             .foregroundColor: DSColor.accent,
