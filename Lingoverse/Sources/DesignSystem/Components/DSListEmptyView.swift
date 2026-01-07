@@ -9,7 +9,8 @@ import UIKit
 
 public final class DSListEmptyView: UIView {
     private let iconView = UIImageView()
-    private let label = UILabel()
+    private let titleLabel = UILabel()
+    private let descriptionLabel = UILabel()
     private let contentStack = UIStackView()
 
     public override init(frame: CGRect) {
@@ -24,39 +25,74 @@ public final class DSListEmptyView: UIView {
         iconView.image = UIImage(systemName: "doc.text.magnifyingglass")
         iconView.isAccessibilityElement = false
 
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        label.textColor = DSColor.textSecondary
-        label.font = DSTypo.body
-        label.numberOfLines = 0
-        label.adjustsFontForContentSizeCategory = true
-        label.accessibilityTraits = .staticText
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.textAlignment = .center
+        titleLabel.textColor = DSColor.textPrimary
+        titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
+        titleLabel.numberOfLines = 0
+        titleLabel.adjustsFontForContentSizeCategory = true
+        titleLabel.accessibilityTraits = .header
+        titleLabel.isHidden = true
+
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        descriptionLabel.textAlignment = .center
+        descriptionLabel.textColor = DSColor.textSecondary
+        descriptionLabel.font = DSTypo.body
+        descriptionLabel.numberOfLines = 0
+        descriptionLabel.adjustsFontForContentSizeCategory = true
+        descriptionLabel.accessibilityTraits = .staticText
 
         contentStack.axis = .vertical
         contentStack.alignment = .center
         contentStack.distribution = .fill
-        contentStack.spacing = DSSpacing.x3
+        contentStack.spacing = DSSpacing.x2
         contentStack.translatesAutoresizingMaskIntoConstraints = false
 
         contentStack.addArrangedSubview(iconView)
-        contentStack.addArrangedSubview(label)
+        contentStack.addArrangedSubview(titleLabel)
+        contentStack.addArrangedSubview(descriptionLabel)
+
+        contentStack.setCustomSpacing(DSSpacing.x3, after: iconView)
 
         addSubview(contentStack)
-        directionalLayoutMargins = .init(top: DSSpacing.x2, leading: DSSpacing.x4, bottom: DSSpacing.x2, trailing: DSSpacing.x4)
+        directionalLayoutMargins = .init(
+            top: DSSpacing.x2, leading: DSSpacing.x4, bottom: DSSpacing.x2, trailing: DSSpacing.x4)
 
         NSLayoutConstraint.activate([
             contentStack.topAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.topAnchor),
-            contentStack.leadingAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.leadingAnchor),
-            contentStack.trailingAnchor.constraint(lessThanOrEqualTo: layoutMarginsGuide.trailingAnchor),
-            contentStack.bottomAnchor.constraint(lessThanOrEqualTo: layoutMarginsGuide.bottomAnchor),
+            contentStack.leadingAnchor.constraint(
+                greaterThanOrEqualTo: layoutMarginsGuide.leadingAnchor),
+            contentStack.trailingAnchor.constraint(
+                lessThanOrEqualTo: layoutMarginsGuide.trailingAnchor),
+            contentStack.bottomAnchor.constraint(
+                lessThanOrEqualTo: layoutMarginsGuide.bottomAnchor),
             iconView.widthAnchor.constraint(lessThanOrEqualToConstant: 72),
-            iconView.heightAnchor.constraint(lessThanOrEqualToConstant: 72)
+            iconView.heightAnchor.constraint(lessThanOrEqualToConstant: 72),
         ])
     }
 
+    /// Configure with just description text (backward compatible)
     public func configure(_ text: String) {
-        label.text = text
-        label.accessibilityLabel = text
+        descriptionLabel.text = text
+        descriptionLabel.accessibilityLabel = text
+        titleLabel.isHidden = true
+    }
+
+    /// Configure with title and description
+    public func configure(title: String, description: String) {
+        titleLabel.text = title
+        titleLabel.isHidden = false
+        descriptionLabel.text = description
+        descriptionLabel.accessibilityLabel = description
+    }
+
+    /// Configure with title, description and custom icon
+    public func configure(title: String, description: String, icon: String) {
+        titleLabel.text = title
+        titleLabel.isHidden = false
+        descriptionLabel.text = description
+        descriptionLabel.accessibilityLabel = description
+        iconView.image = UIImage(systemName: icon)
     }
 
     required init?(coder: NSCoder) { fatalError(Cammon.fatalError) }

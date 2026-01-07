@@ -7,12 +7,12 @@
 
 import Foundation
 
-public struct WKWord: Equatable, Hashable {
+public struct WKWord: Equatable, Hashable, Codable {
     public let term: String
     public let phonetic: String?
     public let audioURL: URL?
     public let meanings: [WKMeaning]
-    
+
     public init(term: String, phonetic: String?, audioURL: URL?, meanings: [WKMeaning]) {
         self.term = term
         self.phonetic = phonetic
@@ -21,11 +21,11 @@ public struct WKWord: Equatable, Hashable {
     }
 }
 
-public struct WKMeaning: Equatable, Hashable {
+public struct WKMeaning: Equatable, Hashable, Codable {
     public let partOfSpeech: String
     public let definitions: [WKDefinition]
     public let synonyms: [String]
-    
+
     public init(partOfSpeech: String, definitions: [WKDefinition], synonyms: [String]) {
         self.partOfSpeech = partOfSpeech
         self.definitions = definitions
@@ -33,10 +33,10 @@ public struct WKMeaning: Equatable, Hashable {
     }
 }
 
-public struct WKDefinition: Equatable, Hashable {
+public struct WKDefinition: Equatable, Hashable, Codable {
     public let definition: String
     public let example: String?
-    
+
     public init(definition: String, example: String?) {
         self.definition = definition
         self.example = example

@@ -9,9 +9,6 @@ import UIKit
 
 protocol SearchRouterProtocol: AnyObject {
     func routeToDetail(from vc: UIViewController, word: WKWord)
-    func routeToFavorites(from vc: UIViewController)
-    func routeToSettings(from vc: UIViewController)
-    func routeToLearn(from vc: UIViewController)
 }
 
 final class SearchRouter: SearchRouterProtocol {
@@ -38,18 +35,4 @@ final class SearchRouter: SearchRouterProtocol {
         vc.navigationController?.pushViewController(detailVC, animated: true)
     }
 
-    func routeToFavorites(from vc: UIViewController) {
-        let favoritesVC = FavoritesRouter.createModule()
-        vc.navigationController?.pushViewController(favoritesVC, animated: true)
-    }
-
-    func routeToSettings(from vc: UIViewController) {
-        let settingsVC = SettingsRouter.createModule()
-        vc.navigationController?.pushViewController(settingsVC, animated: true)
-    }
-
-    func routeToLearn(from vc: UIViewController) {
-        let learnVC = LearnRouter.createModule()
-        vc.navigationController?.pushViewController(learnVC, animated: true)
-    }
 }

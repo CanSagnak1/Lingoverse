@@ -79,39 +79,6 @@ final class SearchViewController: UIViewController, SearchViewInput {
         return sc
     }()
 
-    private lazy var favoritesButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            image: UIImage(systemName: "star.fill"),
-            style: .plain,
-            target: self,
-            action: #selector(didTapFavorites))
-        button.tintColor = DSColor.accent
-        button.accessibilityLabel = Strings.favoritesTitle
-        return button
-    }()
-
-    private lazy var settingsButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            image: UIImage(systemName: "gearshape.fill"),
-            style: .plain,
-            target: self,
-            action: #selector(didTapSettings))
-        button.tintColor = DSColor.textSecondary
-        button.accessibilityLabel = "Settings"
-        return button
-    }()
-
-    private lazy var learnButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            image: UIImage(systemName: "brain.head.profile"),
-            style: .plain,
-            target: self,
-            action: #selector(didTapLearn))
-        button.tintColor = DSColor.accent
-        button.accessibilityLabel = "Learn"
-        return button
-    }()
-
     private lazy var emptyView: DSListEmptyView = {
         let view = DSListEmptyView()
         view.backgroundColor = .clear
@@ -146,6 +113,11 @@ final class SearchViewController: UIViewController, SearchViewInput {
         setupKeyboardObserversIfNeeded()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        runSwipeTutorialIfNeeded()
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
@@ -165,7 +137,6 @@ final class SearchViewController: UIViewController, SearchViewInput {
         view.backgroundColor = .systemBackground
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-        navigationItem.rightBarButtonItems = [favoritesButton, learnButton, settingsButton]
 
         view.addSubview(tableView)
         view.addSubview(spinner)
@@ -223,18 +194,6 @@ final class SearchViewController: UIViewController, SearchViewInput {
     @objc private func didTapLegacySearchButton() {
         let query = searchController.searchBar.text ?? ""
         presenter.didTapSearchButton(query: query)
-    }
-
-    @objc private func didTapFavorites() {
-        presenter.didTapFavoritesButton()
-    }
-
-    @objc private func didTapSettings() {
-        presenter.didTapSettingsButton()
-    }
-
-    @objc private func didTapLearn() {
-        presenter.didTapLearnButton()
     }
 
     private func showOverlay(for state: SearchState) {
@@ -492,15 +451,340 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
 
         return UISwipeActionsConfiguration(actions: [deleteAction])
     }
+
+    private static var hasShownTutorial = false
+
+    private func runSwipeTutorialIfNeeded() {
+        // Run only once per app session (not persisted across re-launches)
+        guard !SearchViewController.hasShownTutorial,
+            !recentItems.isEmpty
+        else {
+            return
+        }
+
+        // Wait for table to fully render
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            guard let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) else {
+                return
+            }
+
+            // Mark as seen for this session
+            SearchViewController.hasShownTutorial = true
+
+            self.performProfessionalSwipeTutorial(on: cell)
+        }
+    }
+
+    private func performProfessionalSwipeTutorial(on cell: UITableViewCell) {
+        // Configuration
+        let moveDistance: CGFloat = 85.0
+        let cellHeight = cell.bounds.height
+        let cellWidth = cell.bounds.width
+        let iconSize: CGFloat = 28
+        let labelHeight: CGFloat = 14
+
+        // Timing Configuration - Smoother, more professional
+        let swipeDuration: TimeInterval = 0.55
+        let holdDuration: TimeInterval = 0.8
+        let returnDuration: TimeInterval = 0.45
+        let betweenSwipeDelay: TimeInterval = 0.3
+        let springDamping: CGFloat = 0.72
+        let springVelocity: CGFloat = 0.3
+
+        // ═══════════════════════════════════════════════════════════════
+        // MARK: - Create Favorite Action View (Left - Green)
+        // ═══════════════════════════════════════════════════════════════
+
+        let favView = UIView()
+        favView.backgroundColor = DSColor.favoriteGreen
+        favView.frame = CGRect(x: 0, y: 0, width: moveDistance, height: cellHeight)
+        favView.clipsToBounds = true
+
+        // Gradient overlay for depth
+        let favGradient = CAGradientLayer()
+        favGradient.colors = [
+            UIColor.white.withAlphaComponent(0.2).cgColor,
+            UIColor.clear.cgColor,
+        ]
+        favGradient.locations = [0.0, 0.5]
+        favGradient.frame = favView.bounds
+        favView.layer.insertSublayer(favGradient, at: 0)
+
+        // Icon container for animations
+        let favIconContainer = UIView()
+        favIconContainer.frame = CGRect(
+            x: (moveDistance - iconSize) / 2,
+            y: (cellHeight - iconSize - labelHeight - 4) / 2,
+            width: iconSize,
+            height: iconSize
+        )
+        favView.addSubview(favIconContainer)
+
+        let favIcon = UIImageView(
+            image: UIImage(systemName: "star.fill")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 22, weight: .medium)))
+        favIcon.tintColor = .white
+        favIcon.contentMode = .scaleAspectFit
+        favIcon.frame = favIconContainer.bounds
+        favIcon.alpha = 0
+        favIcon.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
+        favIconContainer.addSubview(favIcon)
+
+        // Hint label
+        let favLabel = UILabel()
+        favLabel.text = "Favorite"
+        favLabel.font = .systemFont(ofSize: 11, weight: .semibold)
+        favLabel.textColor = UIColor.white.withAlphaComponent(0.9)
+        favLabel.textAlignment = .center
+        favLabel.frame = CGRect(
+            x: 0,
+            y: favIconContainer.frame.maxY + 4,
+            width: moveDistance,
+            height: labelHeight
+        )
+        favLabel.alpha = 0
+        favView.addSubview(favLabel)
+
+        // ═══════════════════════════════════════════════════════════════
+        // MARK: - Create Delete Action View (Right - Red)
+        // ═══════════════════════════════════════════════════════════════
+
+        let delView = UIView()
+        delView.backgroundColor = DSColor.accent
+        delView.frame = CGRect(
+            x: cellWidth - moveDistance, y: 0, width: moveDistance, height: cellHeight)
+        delView.clipsToBounds = true
+
+        // Gradient overlay for depth
+        let delGradient = CAGradientLayer()
+        delGradient.colors = [
+            UIColor.white.withAlphaComponent(0.2).cgColor,
+            UIColor.clear.cgColor,
+        ]
+        delGradient.locations = [0.0, 0.5]
+        delGradient.frame = delView.bounds
+        delView.layer.insertSublayer(delGradient, at: 0)
+
+        // Icon container for animations
+        let delIconContainer = UIView()
+        delIconContainer.frame = CGRect(
+            x: (moveDistance - iconSize) / 2,
+            y: (cellHeight - iconSize - labelHeight - 4) / 2,
+            width: iconSize,
+            height: iconSize
+        )
+        delView.addSubview(delIconContainer)
+
+        let delIcon = UIImageView(
+            image: UIImage(systemName: "trash.fill")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)))
+        delIcon.tintColor = .white
+        delIcon.contentMode = .scaleAspectFit
+        delIcon.frame = delIconContainer.bounds
+        delIcon.alpha = 0
+        delIcon.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
+        delIconContainer.addSubview(delIcon)
+
+        // Hint label
+        let delLabel = UILabel()
+        delLabel.text = "Delete"
+        delLabel.font = .systemFont(ofSize: 11, weight: .semibold)
+        delLabel.textColor = UIColor.white.withAlphaComponent(0.9)
+        delLabel.textAlignment = .center
+        delLabel.frame = CGRect(
+            x: 0,
+            y: delIconContainer.frame.maxY + 4,
+            width: moveDistance,
+            height: labelHeight
+        )
+        delLabel.alpha = 0
+        delView.addSubview(delLabel)
+
+        // ═══════════════════════════════════════════════════════════════
+        // MARK: - Add to Cell
+        // ═══════════════════════════════════════════════════════════════
+
+        cell.insertSubview(favView, belowSubview: cell.contentView)
+        cell.insertSubview(delView, belowSubview: cell.contentView)
+
+        // Add subtle shadow to content view during swipe
+        cell.contentView.layer.shadowColor = UIColor.black.cgColor
+        cell.contentView.layer.shadowOffset = .zero
+        cell.contentView.layer.shadowRadius = 0
+        cell.contentView.layer.shadowOpacity = 0
+
+        // ═══════════════════════════════════════════════════════════════
+        // MARK: - Animation Sequence
+        // ═══════════════════════════════════════════════════════════════
+
+        // Initial subtle haptic
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+
+        // ─────────────────────────────────────────────────────────────────
+        // STEP 1: Swipe Right (Reveal Favorite)
+        // ─────────────────────────────────────────────────────────────────
+        UIView.animate(
+            withDuration: swipeDuration,
+            delay: 0.0,
+            usingSpringWithDamping: springDamping,
+            initialSpringVelocity: springVelocity,
+            options: [.curveEaseOut, .allowUserInteraction]
+        ) {
+            cell.contentView.transform = CGAffineTransform(translationX: moveDistance, y: 0)
+            cell.contentView.layer.shadowRadius = 8
+            cell.contentView.layer.shadowOpacity = 0.15
+        }
+
+        // Animate icon appearing with bounce
+        UIView.animate(
+            withDuration: 0.4,
+            delay: swipeDuration * 0.3,
+            usingSpringWithDamping: 0.6,
+            initialSpringVelocity: 0.8
+        ) {
+            favIcon.alpha = 1
+            favIcon.transform = .identity
+        }
+
+        UIView.animate(withDuration: 0.3, delay: swipeDuration * 0.5) {
+            favLabel.alpha = 1
+        }
+
+        // Haptic at peak
+        DispatchQueue.main.asyncAfter(deadline: .now() + swipeDuration) {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        }
+
+        // ─────────────────────────────────────────────────────────────────
+        // STEP 2: Return to Center
+        // ─────────────────────────────────────────────────────────────────
+        let step2Delay = swipeDuration + holdDuration
+
+        UIView.animate(
+            withDuration: returnDuration,
+            delay: step2Delay,
+            usingSpringWithDamping: 0.85,
+            initialSpringVelocity: 0.2,
+            options: [.curveEaseInOut]
+        ) {
+            cell.contentView.transform = .identity
+            cell.contentView.layer.shadowRadius = 0
+            cell.contentView.layer.shadowOpacity = 0
+        }
+
+        // Fade out icon
+        UIView.animate(withDuration: 0.2, delay: step2Delay) {
+            favIcon.alpha = 0
+            favIcon.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+            favLabel.alpha = 0
+        }
+
+        // ─────────────────────────────────────────────────────────────────
+        // STEP 3: Swipe Left (Reveal Delete)
+        // ─────────────────────────────────────────────────────────────────
+        let step3Delay = step2Delay + returnDuration + betweenSwipeDelay
+
+        UIView.animate(
+            withDuration: swipeDuration,
+            delay: step3Delay,
+            usingSpringWithDamping: springDamping,
+            initialSpringVelocity: springVelocity,
+            options: [.curveEaseOut, .allowUserInteraction]
+        ) {
+            cell.contentView.transform = CGAffineTransform(translationX: -moveDistance, y: 0)
+            cell.contentView.layer.shadowRadius = 8
+            cell.contentView.layer.shadowOpacity = 0.15
+        }
+
+        // Animate icon appearing with bounce
+        UIView.animate(
+            withDuration: 0.4,
+            delay: step3Delay + swipeDuration * 0.3,
+            usingSpringWithDamping: 0.6,
+            initialSpringVelocity: 0.8
+        ) {
+            delIcon.alpha = 1
+            delIcon.transform = .identity
+        }
+
+        UIView.animate(withDuration: 0.3, delay: step3Delay + swipeDuration * 0.5) {
+            delLabel.alpha = 1
+        }
+
+        // Haptic at peak
+        DispatchQueue.main.asyncAfter(deadline: .now() + step3Delay + swipeDuration) {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        }
+
+        // ─────────────────────────────────────────────────────────────────
+        // STEP 4: Return to Center & Cleanup
+        // ─────────────────────────────────────────────────────────────────
+        let step4Delay = step3Delay + swipeDuration + holdDuration
+
+        UIView.animate(
+            withDuration: returnDuration,
+            delay: step4Delay,
+            usingSpringWithDamping: 0.85,
+            initialSpringVelocity: 0.2,
+            options: [.curveEaseInOut]
+        ) {
+            cell.contentView.transform = .identity
+            cell.contentView.layer.shadowRadius = 0
+            cell.contentView.layer.shadowOpacity = 0
+        }
+
+        // Fade out icon
+        UIView.animate(withDuration: 0.2, delay: step4Delay) {
+            delIcon.alpha = 0
+            delIcon.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+            delLabel.alpha = 0
+        }
+
+        // Cleanup after animation completes
+        let totalDuration = step4Delay + returnDuration + 0.2
+        DispatchQueue.main.asyncAfter(deadline: .now() + totalDuration) {
+            UIView.animate(withDuration: 0.2) {
+                favView.alpha = 0
+                delView.alpha = 0
+            } completion: { _ in
+                favView.removeFromSuperview()
+                delView.removeFromSuperview()
+                cell.contentView.layer.shadowOpacity = 0
+
+                // Final light haptic to signal completion
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            }
+        }
+    }
 }
 
 private final class RecentSearchCell: UITableViewCell {
+    private let chevronImageView: UIImageView = {
+        let iv = UIImageView(image: UIImage(systemName: "chevron.right"))
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.contentMode = .scaleAspectFit
+        iv.tintColor = DSColor.textSecondary.withAlphaComponent(0.5)
+        var cfg = UIImage.SymbolConfiguration(weight: .semibold)
+        iv.preferredSymbolConfiguration = cfg
+        return iv
+    }()
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .default, reuseIdentifier: reuseIdentifier)
         selectionStyle = .default
-        accessoryType = .disclosureIndicator
+        accessoryType = .none
         backgroundColor = nil
         backgroundConfiguration = nil
+
+        contentView.addSubview(chevronImageView)
+
+        NSLayoutConstraint.activate([
+            chevronImageView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -DSSpacing.x4),
+            chevronImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            chevronImageView.widthAnchor.constraint(equalToConstant: 12),
+            chevronImageView.heightAnchor.constraint(equalToConstant: 16),
+        ])
     }
 
     required init?(coder: NSCoder) {
@@ -515,7 +799,14 @@ private final class RecentSearchCell: UITableViewCell {
         cfg.image = UIImage(systemName: "clock.arrow.circlepath")
         cfg.imageProperties.tintColor = DSColor.accent
         cfg.imageToTextPadding = DSSpacing.x2
+
+        // Adjust text to not overlap with chevron
+        // Since we are using contentConfiguration, accurate padding is tricky without custom layout.
+        // However, standard content config usually respects the layout margins.
+        // We can just rely on the fact that the text is short enough or use layout margins.
+
         contentConfiguration = cfg
         backgroundConfiguration = nil
+        contentView.backgroundColor = .secondarySystemGroupedBackground
     }
 }

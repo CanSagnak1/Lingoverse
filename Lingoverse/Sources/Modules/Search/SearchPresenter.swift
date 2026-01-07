@@ -26,9 +26,6 @@ protocol SearchViewOutput: AnyObject {
     func searchDidDismiss()
     func didDeleteRecentSearch(term: String)
     func didTapFavoriteRecentSearch(term: String)
-    func didTapFavoritesButton()
-    func didTapSettingsButton()
-    func didTapLearnButton()
 }
 
 @MainActor
@@ -105,7 +102,7 @@ final class SearchPresenter: SearchViewOutput, SearchInteractorOutput {
     func didLoad(results: [WKWord]) {
 
         if !currentQuery.isEmpty {
-            Task { await self.interactor.saveSearch(currentQuery) }
+            Task { await self.interactor.saveSearch(currentQuery, results: results) }
         }
 
         guard let firstWord = results.first else {
@@ -156,24 +153,6 @@ final class SearchPresenter: SearchViewOutput, SearchInteractorOutput {
         Task {
             await interactor.saveFavorite(term)
         }
-    }
-
-    func didTapFavoritesButton() {
-        HapticManager.shared.buttonPressed()
-        guard let vc = view as? UIViewController else { return }
-        router.routeToFavorites(from: vc)
-    }
-
-    func didTapSettingsButton() {
-        HapticManager.shared.buttonPressed()
-        guard let vc = view as? UIViewController else { return }
-        router.routeToSettings(from: vc)
-    }
-
-    func didTapLearnButton() {
-        HapticManager.shared.buttonPressed()
-        guard let vc = view as? UIViewController else { return }
-        router.routeToLearn(from: vc)
     }
 
     func didFail(_ message: String) {

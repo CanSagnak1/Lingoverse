@@ -57,8 +57,8 @@ public final class WordKitClientLive: WordKitClient {
         let normalizedQuery = query.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
 
         // Check cache first
-        if let cachedWord = await cache.getCachedWord(term: normalizedQuery) {
-            return [cachedWord]
+        if let cachedWords = await cache.getCachedWords(term: normalizedQuery) {
+            return cachedWords
         }
 
         // Check network availability
@@ -78,9 +78,7 @@ public final class WordKitClientLive: WordKitClient {
                 let mappedResults = results.map(mapToWKWord)
 
                 // Cache the results
-                for word in mappedResults {
-                    await cache.cacheWord(word)
-                }
+                await cache.cacheWords(mappedResults, for: normalizedQuery)
 
                 return mappedResults
             } catch {

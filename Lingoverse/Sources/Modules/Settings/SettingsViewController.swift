@@ -34,7 +34,7 @@ final class SettingsViewController: UIViewController, SettingsViewInput {
     private func setupUI() {
         title = "Settings"
         view.backgroundColor = .systemBackground
-        navigationItem.largeTitleDisplayMode = .never
+        navigationItem.largeTitleDisplayMode = .always
 
         view.addSubview(tableView)
 

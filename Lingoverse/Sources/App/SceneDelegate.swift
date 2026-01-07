@@ -9,10 +9,7 @@ import UIKit
 
 enum ApplicationRoot {
     static func makeRoot() -> UIViewController {
-        let vc = SearchRouter.createModule()
-        let nav = UINavigationController(rootViewController: vc)
-        nav.navigationBar.prefersLargeTitles = true
-        return nav
+        return MainTabBarController()
     }
 }
 

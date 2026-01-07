@@ -28,15 +28,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
         return view
     }()
 
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Learn"
-        label.font = .systemFont(ofSize: 34, weight: .bold)
-        label.textColor = DSColor.textPrimary
-        return label
-    }()
-
     private lazy var subtitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -139,35 +130,37 @@ final class LearnViewController: UIViewController, LearnViewInput {
     // MARK: - Setup
 
     private func setupUI() {
+        title = "Learn"
         view.backgroundColor = .systemBackground
-        navigationItem.largeTitleDisplayMode = .never
+        navigationItem.largeTitleDisplayMode = .always
 
         view.addSubview(headerView)
-        headerView.addSubview(titleLabel)
+        // Title is handled by navigation bar
         headerView.addSubview(subtitleLabel)
+
         view.addSubview(buttonsStack)
         view.addSubview(emptyStateView)
 
-        let safeArea = view.safeAreaLayoutGuide
+        let guide = view.safeAreaLayoutGuide
 
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 20),
+            // Header
+            headerView.topAnchor.constraint(equalTo: guide.topAnchor, constant: 8),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
-            titleLabel.topAnchor.constraint(equalTo: headerView.topAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor),
-
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            // Subtitle acts as the description under the large title
+            subtitleLabel.topAnchor.constraint(equalTo: headerView.topAnchor),
             subtitleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor),
             subtitleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor),
             subtitleLabel.bottomAnchor.constraint(equalTo: headerView.bottomAnchor),
 
-            buttonsStack.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 32),
+            // Buttons Stack
+            buttonsStack.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 24),
             buttonsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             buttonsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
+            // Empty State
             emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])

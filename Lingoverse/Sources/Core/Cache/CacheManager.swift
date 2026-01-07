@@ -8,8 +8,8 @@
 import Foundation
 
 public protocol CacheManagerProtocol {
-    func cacheWord(_ word: WKWord) async
-    func getCachedWord(term: String) async -> WKWord?
+    func cacheWords(_ words: [WKWord], for term: String) async
+    func getCachedWords(term: String) async -> [WKWord]?
     func clearCache() async
     func getCacheSize() -> Int
 }
@@ -18,7 +18,7 @@ public final class CacheManager: CacheManagerProtocol {
 
     public static let shared = CacheManager()
 
-    private let cache = NSCache<NSString, CachedWord>()
+    private let cache = NSCache<NSString, CachedResult>()
     private let userDefaults: UserDefaults
     private let cacheKey = "cached_words_keys"
     private let maxCacheAge: TimeInterval = 60 * 60 * 24 * 7  // 7 days
@@ -39,37 +39,37 @@ public final class CacheManager: CacheManagerProtocol {
         loadPersistedCache()
     }
 
-    public func cacheWord(_ word: WKWord) async {
-        let key = word.term.lowercased() as NSString
-        let cached = CachedWord(word: word, timestamp: Date())
+    public func cacheWords(_ words: [WKWord], for term: String) async {
+        let key = term.lowercased() as NSString
+        let cached = CachedResult(words: words, timestamp: Date())
         cache.setObject(cached, forKey: key)
 
         var keys = cachedKeys
-        keys.insert(word.term.lowercased())
+        keys.insert(term.lowercased())
         cachedKeys = keys
 
-        persistWord(cached, forKey: word.term.lowercased())
+        persistResult(cached, forKey: term.lowercased())
     }
 
-    public func getCachedWord(term: String) async -> WKWord? {
+    public func getCachedWords(term: String) async -> [WKWord]? {
         let key = term.lowercased() as NSString
 
         if let cached = cache.object(forKey: key) {
             if Date().timeIntervalSince(cached.timestamp) < maxCacheAge {
-                return cached.word
+                return cached.words
             } else {
                 cache.removeObject(forKey: key)
-                removePersistedWord(forKey: term.lowercased())
+                removePersistedResult(forKey: term.lowercased())
                 return nil
             }
         }
 
-        if let persisted = loadPersistedWord(forKey: term.lowercased()) {
+        if let persisted = loadPersistedResult(forKey: term.lowercased()) {
             if Date().timeIntervalSince(persisted.timestamp) < maxCacheAge {
                 cache.setObject(persisted, forKey: key)
-                return persisted.word
+                return persisted.words
             } else {
-                removePersistedWord(forKey: term.lowercased())
+                removePersistedResult(forKey: term.lowercased())
                 return nil
             }
         }
@@ -80,7 +80,7 @@ public final class CacheManager: CacheManagerProtocol {
     public func clearCache() async {
         cache.removeAllObjects()
         for key in cachedKeys {
-            removePersistedWord(forKey: key)
+            removePersistedResult(forKey: key)
         }
         cachedKeys = []
     }
@@ -91,20 +91,20 @@ public final class CacheManager: CacheManagerProtocol {
 
     // MARK: - Persistence
 
-    private func persistWord(_ cached: CachedWord, forKey key: String) {
+    private func persistResult(_ cached: CachedResult, forKey key: String) {
         let encoder = JSONEncoder()
         if let data = try? encoder.encode(cached) {
             userDefaults.set(data, forKey: "cache_\(key)")
         }
     }
 
-    private func loadPersistedWord(forKey key: String) -> CachedWord? {
+    private func loadPersistedResult(forKey key: String) -> CachedResult? {
         guard let data = userDefaults.data(forKey: "cache_\(key)") else { return nil }
         let decoder = JSONDecoder()
-        return try? decoder.decode(CachedWord.self, from: data)
+        return try? decoder.decode(CachedResult.self, from: data)
     }
 
-    private func removePersistedWord(forKey key: String) {
+    private func removePersistedResult(forKey key: String) {
         userDefaults.removeObject(forKey: "cache_\(key)")
         var keys = cachedKeys
         keys.remove(key)
@@ -113,103 +113,41 @@ public final class CacheManager: CacheManagerProtocol {
 
     private func loadPersistedCache() {
         for key in cachedKeys {
-            if let cached = loadPersistedWord(forKey: key) {
+            if let cached = loadPersistedResult(forKey: key) {
                 if Date().timeIntervalSince(cached.timestamp) < maxCacheAge {
                     cache.setObject(cached, forKey: key as NSString)
                 } else {
-                    removePersistedWord(forKey: key)
+                    removePersistedResult(forKey: key)
                 }
             }
         }
     }
 }
 
-// MARK: - CachedWord Model
+// MARK: - CachedResult Model
 
-private final class CachedWord: NSObject, Codable {
-    let word: WKWord
+private final class CachedResult: NSObject, Codable {
+    let words: [WKWord]
     let timestamp: Date
 
-    init(word: WKWord, timestamp: Date) {
-        self.word = word
+    init(words: [WKWord], timestamp: Date) {
+        self.words = words
         self.timestamp = timestamp
     }
 
     enum CodingKeys: String, CodingKey {
-        case word, timestamp
+        case words, timestamp
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        word = try container.decode(WKWord.self, forKey: .word)
+        words = try container.decode([WKWord].self, forKey: .words)
         timestamp = try container.decode(Date.self, forKey: .timestamp)
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(word, forKey: .word)
+        try container.encode(words, forKey: .words)
         try container.encode(timestamp, forKey: .timestamp)
-    }
-}
-
-// MARK: - WKWord Codable Extension
-
-extension WKWord: Codable {
-    enum CodingKeys: String, CodingKey {
-        case term, phonetic, audioURL, meanings
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        term = try container.decode(String.self, forKey: .term)
-        phonetic = try container.decodeIfPresent(String.self, forKey: .phonetic)
-        audioURL = try container.decodeIfPresent(URL.self, forKey: .audioURL)
-        meanings = try container.decode([WKMeaning].self, forKey: .meanings)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(term, forKey: .term)
-        try container.encodeIfPresent(phonetic, forKey: .phonetic)
-        try container.encodeIfPresent(audioURL, forKey: .audioURL)
-        try container.encode(meanings, forKey: .meanings)
-    }
-}
-
-extension WKMeaning: Codable {
-    enum CodingKeys: String, CodingKey {
-        case partOfSpeech, definitions, synonyms
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        partOfSpeech = try container.decode(String.self, forKey: .partOfSpeech)
-        definitions = try container.decode([WKDefinition].self, forKey: .definitions)
-        synonyms = try container.decode([String].self, forKey: .synonyms)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(partOfSpeech, forKey: .partOfSpeech)
-        try container.encode(definitions, forKey: .definitions)
-        try container.encode(synonyms, forKey: .synonyms)
-    }
-}
-
-extension WKDefinition: Codable {
-    enum CodingKeys: String, CodingKey {
-        case definition, example
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        definition = try container.decode(String.self, forKey: .definition)
-        example = try container.decodeIfPresent(String.self, forKey: .example)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(definition, forKey: .definition)
-        try container.encodeIfPresent(example, forKey: .example)
     }
 }
