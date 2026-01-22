@@ -9,7 +9,6 @@ import UIKit
 
 public enum DSColor {
 
-
     public static var background: UIColor {
         return .systemBackground
     }
@@ -32,11 +31,10 @@ public enum DSColor {
         return .clear
     }
 
-
     public static var accent: UIColor {
         return UIColor { traitCollection in
             if traitCollection.userInterfaceStyle == .dark {
-return UIColor(red: 0.90, green: 0.35, blue: 0.35, alpha: 1.0)
+                return UIColor(red: 0.90, green: 0.35, blue: 0.35, alpha: 1.0)
             } else {
                 return UIColor(red: 0.745, green: 0.196, blue: 0.196, alpha: 1.0)
             }
@@ -46,22 +44,24 @@ return UIColor(red: 0.90, green: 0.35, blue: 0.35, alpha: 1.0)
     public static var favoriteGreen: UIColor {
         return UIColor { traitCollection in
             if traitCollection.userInterfaceStyle == .dark {
-return UIColor(red: 0.45, green: 0.65, blue: 0.30, alpha: 1.0)
+                return UIColor(red: 0.45, green: 0.65, blue: 0.30, alpha: 1.0)
             } else {
                 return UIColor(red: 0.333, green: 0.420, blue: 0.184, alpha: 1.0)
             }
         }
     }
 
-
     public static var textPrimary: UIColor {
         return .label
+    }
+
+    public static var border: UIColor {
+        return .separator
     }
 
     public static var textSecondary: UIColor {
         return .secondaryLabel
     }
-
 
     public static var dimOverlay: UIColor {
         return UIColor.black.withAlphaComponent(0.22)

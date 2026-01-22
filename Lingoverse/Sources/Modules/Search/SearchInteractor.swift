@@ -25,17 +25,20 @@ final class SearchInteractor: SearchInteractorInput {
     private let client: WordKitClient
     private let recentRepo: RecentSearchRepositoryProtocol
     private let favoritesRepo: FavoritesRepositoryProtocol
+    private let gamificationService: GamificationServiceProtocol
 
     weak var output: SearchInteractorOutput?
 
     init(
         client: WordKitClient,
         recentRepo: RecentSearchRepositoryProtocol = RecentSearchRepository(),
-        favoritesRepo: FavoritesRepositoryProtocol = FavoritesRepository()
+        favoritesRepo: FavoritesRepositoryProtocol = FavoritesRepository(),
+        gamificationService: GamificationServiceProtocol = GamificationService()
     ) {
         self.client = client
         self.recentRepo = recentRepo
         self.favoritesRepo = favoritesRepo
+        self.gamificationService = gamificationService
     }
 
     func performSearch(query: String, source: String, target: String) async {
@@ -43,6 +46,15 @@ final class SearchInteractor: SearchInteractorInput {
             let res = try await client.search(
                 query: query, sourceLang: source, targetLang: target, page: nil)
             output?.didLoad(results: res)
+
+            // Gamification Logic
+            if !res.isEmpty {
+                // Add XP for successful search
+                await MainActor.run {
+                    gamificationService.addXP(amount: 5)
+                    gamificationService.updateStreak()
+                }
+            }
         } catch {
             if let cached = recentRepo.getCachedResults(for: query), !cached.isEmpty {
                 output?.didLoad(results: cached)

@@ -15,13 +15,28 @@ final class MainTabBarController: UITabBarController {
         configureTabBarAppearance()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateTabTitles()
+    }
+
+    private func updateTabTitles() {
+        guard let items = tabBar.items, items.count == 5 else { return }
+        items[0].title = Strings.tabSearch
+        items[1].title = Strings.tabLearn
+        items[2].title = Strings.tabFavorites
+        items[3].title = Strings.profileTitle
+        items[4].title = Strings.tabSettings
+    }
+
     private func setupTabs() {
         let searchTab = makeSearchTab()
         let learnTab = makeLearnTab()
         let favoritesTab = makeFavoritesTab()
+        let profileTab = makeProfileTab()
         let settingsTab = makeSettingsTab()
 
-        viewControllers = [searchTab, learnTab, favoritesTab, settingsTab]
+        viewControllers = [searchTab, learnTab, favoritesTab, profileTab, settingsTab]
     }
 
     private func makeSearchTab() -> UINavigationController {
@@ -54,6 +69,18 @@ final class MainTabBarController: UITabBarController {
             title: Strings.tabFavorites,
             image: UIImage(systemName: "star"),
             selectedImage: UIImage(systemName: "star.fill")
+        )
+        let nav = UINavigationController(rootViewController: vc)
+        nav.navigationBar.prefersLargeTitles = true
+        return nav
+    }
+
+    private func makeProfileTab() -> UINavigationController {
+        let vc = ProfileViewController()
+        vc.tabBarItem = UITabBarItem(
+            title: Strings.profileTitle,
+            image: UIImage(systemName: "person.crop.circle"),
+            selectedImage: UIImage(systemName: "person.crop.circle.fill")
         )
         let nav = UINavigationController(rootViewController: vc)
         nav.navigationBar.prefersLargeTitles = true

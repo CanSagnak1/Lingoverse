@@ -107,8 +107,12 @@ final class FlashcardViewController: UIViewController {
         return indicator
     }()
 
-    init(words: [String]) {
+    private let gamificationService: GamificationServiceProtocol
+
+    init(words: [String], gamificationService: GamificationServiceProtocol = GamificationService())
+    {
         self.words = words.shuffled()
+        self.gamificationService = gamificationService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -122,6 +126,7 @@ final class FlashcardViewController: UIViewController {
         setupGestures()
         loadCurrentCard()
         LearnProgressManager.shared.recordFlashcardSession()
+        gamificationService.updateStreak()
     }
 
     private func setupUI() {

@@ -51,6 +51,11 @@ final class OnboardingPresenter: OnboardingViewOutput {
                 title: Strings.onboardingOfflineTitle,
                 description: Strings.onboardingOfflineDesc
             ),
+            OnboardingPage(
+                iconName: "person.crop.circle.fill",
+                title: Strings.onboardingProfileTitle,
+                description: Strings.onboardingProfileDesc
+            ),
         ]
     }
 

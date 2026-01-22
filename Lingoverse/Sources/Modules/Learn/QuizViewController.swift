@@ -109,8 +109,12 @@ final class QuizViewController: UIViewController {
         return view
     }()
 
-    init(words: [String]) {
+    private let gamificationService: GamificationServiceProtocol
+
+    init(words: [String], gamificationService: GamificationServiceProtocol = GamificationService())
+    {
         self.words = Array(words.shuffled().prefix(10))
+        self.gamificationService = gamificationService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -238,7 +242,7 @@ final class QuizViewController: UIViewController {
 
         for word in validWords.prefix(10) {
             let correctAnswer = cachedDefinitions[word] ?? ""
-            var wrongAnswers = wordsWithDefs.filter { $0.key != word }.values.shuffled().prefix(3)
+            let wrongAnswers = wordsWithDefs.filter { $0.key != word }.values.shuffled().prefix(3)
 
             var allAnswers = [correctAnswer] + Array(wrongAnswers)
             allAnswers.shuffle()
@@ -326,6 +330,13 @@ final class QuizViewController: UIViewController {
 
     private func showResults() {
         LearnProgressManager.shared.recordQuizSession()
+
+        // Gamification: Award XP based on score (e.g., 10 XP per correct answer)
+        let xpEarned = score * 10
+        if xpEarned > 0 {
+            gamificationService.addXP(amount: xpEarned)
+            gamificationService.updateStreak()
+        }
 
         HapticManager.shared.success()
         resultView.configure(score: score, total: questions.count)

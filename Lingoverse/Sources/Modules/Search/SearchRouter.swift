@@ -20,7 +20,9 @@ final class SearchRouter: SearchRouterProtocol {
         let interactor = SearchInteractor(
             client: client,
             recentRepo: RecentSearchRepository(),
-            favoritesRepo: FavoritesRepository())
+            favoritesRepo: FavoritesRepository(),
+            gamificationService: GamificationService()
+        )
 
         let presenter = SearchPresenter(view: view, interactor: interactor, router: router)
 

@@ -114,6 +114,9 @@ public enum Strings {
         "onboarding.offline.title": "Fast & Offline",
         "onboarding.offline.description":
             "Lightning-fast searches with offline caching. Previously searched words work without internet.",
+        "onboarding.profile.title": "Profile & Badges",
+        "onboarding.profile.description":
+            "Track your progress, keep your streak alive, and earn badges as you learn.",
 
         // Learn
         "learn.title": "Learn",
@@ -166,6 +169,30 @@ public enum Strings {
             "📖 Great job reviewing flashcards! Try the quiz to test your knowledge.",
         "stats.motivation.default":
             "💡 Start with flashcards to learn new words, then test yourself with quizzes!",
+        // Profile
+        "profile.title": "Profile",
+        "profile.streak": "streak",
+        "profile.badges": "Badges",
+        "profile.level": "Level %d",  // "Level 5"
+        "profile.streakDays": "%d Day",  // "5 Day"
+        "profile.streakSubtitle": "Daily Streak",
+
+        // Badges
+        // Badges
+        "badge.first_step.title": "First Step",
+        "badge.first_step.desc": "Welcome to Lingoverse!",
+        "badge.streak_7.title": "Week Warrior",
+        "badge.streak_7.desc": "You studied for 7 days straight.",
+        "badge.streak_30.title": "Monthly Legend",
+        "badge.streak_30.desc": "You learned for 30 days without stopping!",
+        "badge.xp_100.title": "Apprentice",
+        "badge.xp_100.desc": "You reached 100 XP.",
+        "badge.xp_1000.title": "Master",
+        "badge.xp_1000.desc": "You crossed the 1000 XP mark.",
+        "badge.xp_5000.title": "Sage",
+        "badge.xp_5000.desc": "You are at the top with 5000 XP.",
+        "badge.quiz_master.title": "Quiz Master",
+        "badge.quiz_master.desc": "You completed a quiz perfectly.",
     ]
 
     private static var turkishStrings: [String: String] = [
@@ -274,6 +301,9 @@ public enum Strings {
         "onboarding.offline.title": "Hızlı ve Çevrimdışı",
         "onboarding.offline.description":
             "Çevrimdışı önbellek ile yıldırım hızında aramalar. Daha önce aranan kelimeler internet olmadan da çalışır.",
+        "onboarding.profile.title": "Profil ve Rozetler",
+        "onboarding.profile.description":
+            "İlerlemeni takip et, serini canlı tut ve öğrenirken rozetler kazan.",
 
         // Learn
         "learn.title": "Öğren",
@@ -326,6 +356,29 @@ public enum Strings {
             "📖 Kartları inceleme konusunda harika iş çıkardınız! Bilginizi test etmek için teste katılın.",
         "stats.motivation.default":
             "💡 Yeni kelimeler öğrenmek için kartlarla başlayın, sonra testlerle kendinizi sınayın!",
+        // Profile
+        "profile.title": "Profil",
+        "profile.streak": "seri",
+        "profile.badges": "Rozetler",
+        "profile.level": "Seviye %d",
+        "profile.streakDays": "%d Gün",
+        "profile.streakSubtitle": "Günlük Seri",
+
+        // Badges
+        "badge.first_step.title": "İlk Adım",
+        "badge.first_step.desc": "Lingoverse'e hoş geldin!",
+        "badge.streak_7.title": "Haftalık Savaşçı",
+        "badge.streak_7.desc": "7 gün boyunca aralıksız çalıştın.",
+        "badge.streak_30.title": "Aylık Efsane",
+        "badge.streak_30.desc": "30 gün boyunca durmadan öğrendin!",
+        "badge.xp_100.title": "Çırak",
+        "badge.xp_100.desc": "100 XP'ye ulaştın.",
+        "badge.xp_1000.title": "Usta",
+        "badge.xp_1000.desc": "1000 XP barajını aştın.",
+        "badge.xp_5000.title": "Bilge",
+        "badge.xp_5000.desc": "5000 XP ile zirvedesin.",
+        "badge.quiz_master.title": "Quiz Ustası",
+        "badge.quiz_master.desc": "Bir quiz'i hatasız tamamladın.",
     ]
 
     private static func localizedString(_ key: String) -> String {
@@ -439,6 +492,8 @@ public enum Strings {
     }
     static var onboardingOfflineTitle: String { localizedString("onboarding.offline.title") }
     static var onboardingOfflineDesc: String { localizedString("onboarding.offline.description") }
+    static var onboardingProfileTitle: String { localizedString("onboarding.profile.title") }
+    static var onboardingProfileDesc: String { localizedString("onboarding.profile.description") }
     static var onboardingLearnTitle: String { localizedString("onboarding.learn.title") }
     static var onboardingLearnDesc: String { localizedString("onboarding.learn.description") }
 
@@ -497,6 +552,21 @@ public enum Strings {
     }
     static var statsMotivationFlashcards: String { localizedString("stats.motivation.flashcards") }
     static var statsMotivationDefault: String { localizedString("stats.motivation.default") }
+
+    // MARK: - Profile
+    static var profileTitle: String { localizedString("profile.title") }
+    static var profileBadges: String { localizedString("profile.badges") }
+    static var profileStreakSubtitle: String { localizedString("profile.streakSubtitle") }
+    static func profileLevel(_ level: Int) -> String {
+        String(format: localizedString("profile.level"), level)
+    }
+    static func profileStreakDays(_ days: Int) -> String {
+        String(format: localizedString("profile.streakDays"), days)
+    }
+
+    // MARK: - Badges
+    static func badgeTitle(_ key: String) -> String { localizedString("badge.\(key).title") }
+    static func badgeDesc(_ key: String) -> String { localizedString("badge.\(key).desc") }
 }
 
 public enum Cammon {
