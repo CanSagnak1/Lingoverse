@@ -5,6 +5,7 @@
 //  Created by Celal Can Sağnak on 2.11.2025.
 //
 
+import Combine
 import UIKit
 
 protocol SearchViewInput: AnyObject {
@@ -15,6 +16,9 @@ protocol SearchViewInput: AnyObject {
 
 final class SearchViewController: UIViewController, SearchViewInput {
     var presenter: SearchViewOutput!
+
+    private var cancellables = Set<AnyCancellable>()
+    private var isRecording = false
 
     private var recentItems: [String] = []
     private var legacyButtonBottomConstraint: NSLayoutConstraint!
@@ -76,6 +80,11 @@ final class SearchViewController: UIViewController, SearchViewInput {
         sc.searchBar.delegate = self
         sc.delegate = self
         sc.hidesNavigationBarDuringPresentation = false
+
+        // Setup Mic Button
+        sc.searchBar.setImage(UIImage(systemName: "mic.fill"), for: .bookmark, state: .normal)
+        sc.searchBar.showsBookmarkButton = true
+
         return sc
     }()
 
@@ -343,6 +352,53 @@ extension SearchViewController: UISearchBarDelegate, UISearchControllerDelegate 
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         presenter.didChangeQueryClear(text: "")
+        if isRecording {
+            stopRecording()
+        }
+    }
+
+    func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
+        if isRecording {
+            stopRecording()
+        } else {
+            startRecording()
+        }
+    }
+
+    private func startRecording() {
+        SpeechManager.shared.requestPermissions { [weak self] allowed in
+            guard let self = self, allowed else {
+                // Handle permission denied (show alert)
+                return
+            }
+
+            do {
+                try SpeechManager.shared.startRecording()
+                self.isRecording = true
+                self.searchController.searchBar.setImage(
+                    UIImage(systemName: "stop.circle.fill"), for: .bookmark, state: .normal)
+                self.searchController.searchBar.placeholder = "Listening..."
+
+                SpeechManager.shared.recognizedTextPublisher
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] text in
+                        self?.searchController.searchBar.text = text
+                        self?.presenter.didChangeQuery(text: text)
+                    }
+                    .store(in: &self.cancellables)
+            } catch {
+                print("Failed to start recording: \(error)")
+            }
+        }
+    }
+
+    private func stopRecording() {
+        SpeechManager.shared.stopRecording()
+        isRecording = false
+        searchController.searchBar.setImage(
+            UIImage(systemName: "mic.fill"), for: .bookmark, state: .normal)
+        searchController.searchBar.placeholder = Strings.searchPlaceholder
+        cancellables.removeAll()
     }
 }
 

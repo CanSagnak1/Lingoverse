@@ -59,7 +59,7 @@ final class FlashcardViewController: UIViewController {
     }()
 
     private lazy var navigationStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [prevButton, nextButton])
+        let stack = UIStackView(arrangedSubviews: [prevButton, audioButton, nextButton])
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
         stack.spacing = 20
@@ -87,6 +87,15 @@ final class FlashcardViewController: UIViewController {
         button.tintColor = DSColor.accent
         button.semanticContentAttribute = .forceRightToLeft
         button.addTarget(self, action: #selector(didTapNext), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var audioButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "speaker.wave.2.circle.fill"), for: .normal)
+        button.tintColor = DSColor.accent
+        button.addTarget(self, action: #selector(didTapAudio), for: .touchUpInside)
         return button
     }()
 
@@ -265,6 +274,13 @@ final class FlashcardViewController: UIViewController {
 
     @objc private func didSwipeRight() {
         didTapPrev()
+    }
+
+    @objc private func didTapAudio() {
+        guard currentIndex < words.count else { return }
+        let word = words[currentIndex]
+        HapticManager.shared.lightTap()
+        SpeechManager.shared.speak(text: word)
     }
 
     private func flipCard() {

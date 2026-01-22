@@ -21,5 +21,9 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Lingoverse sesli arama için mikrofon erişimine ihtiyaç duyar.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Lingoverse sesli komutlarınızı anlamak için konuşma tanıma iznine ihtiyaç duyar.</string>
 </dict>
 </plist>
