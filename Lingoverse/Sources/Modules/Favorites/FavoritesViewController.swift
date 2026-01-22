@@ -18,7 +18,6 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
 
     private var favoriteItems: [String] = []
 
-
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -56,7 +55,6 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
         return spinner
     }()
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -67,7 +65,6 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
     }
-
 
     private func setupUI() {
         title = Strings.favoritesTitle
@@ -98,7 +95,6 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
         ])
     }
 
-
     func render(_ state: FavoritesState) {
         spinner.stopAnimating()
         emptyView.isHidden = true
@@ -125,7 +121,6 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
         presenter.searchDidDismiss()
     }
 }
-
 
 extension FavoritesViewController: UITableViewDataSource, UITableViewDelegate {
 
@@ -182,8 +177,7 @@ extension FavoritesViewController: UITableViewDataSource, UITableViewDelegate {
         countLabel.font = .systemFont(ofSize: 13, weight: .medium)
         countLabel.textColor = DSColor.textSecondary
 
-        let wordText = favoriteItems.count == 1 ? "word" : "words"
-        countLabel.text = "\(favoriteItems.count) saved \(wordText)"
+        countLabel.text = Strings.savedWordsCount(favoriteItems.count)
 
         header.addSubview(countLabel)
 
@@ -199,7 +193,6 @@ extension FavoritesViewController: UITableViewDataSource, UITableViewDelegate {
         favoriteItems.isEmpty ? 0 : 36
     }
 }
-
 
 private final class FavoriteCell: UITableViewCell {
 
@@ -235,7 +228,7 @@ private final class FavoriteCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = DSColor.textSecondary
-        label.text = "Tap to view definition"
+        label.text = Strings.favoriteTapHint
         return label
     }()
 

@@ -19,36 +19,40 @@ final class OnboardingPresenter: OnboardingViewOutput {
     private weak var view: OnboardingViewInput?
     private let router: OnboardingRouterProtocol
 
-    private let pages: [OnboardingPage] = [
-        OnboardingPage(
-            iconName: "magnifyingglass.circle.fill",
-            title: "Search Words",
-            description:
-                "Instantly search for any English word and get comprehensive definitions, phonetics, and examples."
-        ),
-        OnboardingPage(
-            iconName: "speaker.wave.3.fill",
-            title: "Listen to Pronunciation",
-            description: "Hear the correct pronunciation of words with built-in audio playback."
-        ),
-        OnboardingPage(
-            iconName: "star.fill",
-            title: "Save Favorites",
-            description:
-                "Build your personal vocabulary by saving words to your favorites list for quick access."
-        ),
-        OnboardingPage(
-            iconName: "clock.arrow.circlepath",
-            title: "Recent Searches",
-            description: "Never lose track of your searches. Access your recent lookups anytime."
-        ),
-        OnboardingPage(
-            iconName: "bolt.fill",
-            title: "Fast & Offline",
-            description:
-                "Lightning-fast searches with offline caching. Previously searched words work without internet."
-        ),
-    ]
+    private var pages: [OnboardingPage] {
+        [
+            OnboardingPage(
+                iconName: "magnifyingglass.circle.fill",
+                title: Strings.onboardingSearchTitle,
+                description: Strings.onboardingSearchDesc
+            ),
+            OnboardingPage(
+                iconName: "graduationcap.fill",
+                title: Strings.onboardingLearnTitle,
+                description: Strings.onboardingLearnDesc
+            ),
+            OnboardingPage(
+                iconName: "speaker.wave.3.fill",
+                title: Strings.onboardingPronunciationTitle,
+                description: Strings.onboardingPronunciationDesc
+            ),
+            OnboardingPage(
+                iconName: "star.fill",
+                title: Strings.onboardingFavoritesTitle,
+                description: Strings.onboardingFavoritesDesc
+            ),
+            OnboardingPage(
+                iconName: "clock.arrow.circlepath",
+                title: Strings.onboardingRecentTitle,
+                description: Strings.onboardingRecentDesc
+            ),
+            OnboardingPage(
+                iconName: "bolt.fill",
+                title: Strings.onboardingOfflineTitle,
+                description: Strings.onboardingOfflineDesc
+            ),
+        ]
+    }
 
     init(view: OnboardingViewInput, router: OnboardingRouterProtocol) {
         self.view = view
@@ -76,13 +80,11 @@ final class OnboardingPresenter: OnboardingViewOutput {
     }
 }
 
-
 struct OnboardingPage {
     let iconName: String
     let title: String
     let description: String
 }
-
 
 final class OnboardingManager {
 

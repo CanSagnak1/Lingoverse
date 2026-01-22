@@ -1,0 +1,137 @@
+/* 
+  Localizable.strings (English)
+  Lingoverse
+
+  Created by Celal Can Sağnak on 22.01.2026.
+*/
+
+// MARK: - Tab Bar
+"tab.search" = "Search";
+"tab.favorites" = "Favorites";
+"tab.learn" = "Learn";
+"tab.settings" = "Settings";
+
+// MARK: - Search Screen
+"search.title" = "Search";
+"search.placeholder" = "Search for a word…";
+"search.headerRecent" = "Recent Searches";
+"search.hintStart" = "Start searching or browse your recent searches.";
+"search.hintNoRecent" = "You have no recent searches.";
+"search.button" = "Search";
+
+// MARK: - Favorites Screen
+"favorites.title" = "Favorites";
+"favorites.hintNoFavorites" = "You have no favorited words yet.\nAdd words from the recent search list.";
+"favorites.tapToView" = "Tap to view definition";
+"favorites.savedWords" = "%d saved words";
+"favorites.savedWord" = "1 saved word";
+
+// MARK: - Search Detail
+"detail.synonyms" = "Synonyms";
+"detail.definition" = "Definition";
+"detail.example" = "Example";
+"detail.sharedVia" = "— Shared via Lingoverse 📖";
+
+// MARK: - Actions
+"action.favorite" = "Favorite";
+"action.delete" = "Delete";
+"action.retry" = "Try again";
+"action.cancel" = "Cancel";
+"action.ok" = "OK";
+"action.done" = "Done";
+
+// MARK: - Errors
+"error.generic" = "Something went wrong.\nCheck your connection and try again.";
+"error.internetConnection" = "Internet connection not found. Please check your connection.";
+"error.notFound" = "Word not found.";
+"error.title" = "Error";
+"error.notEnoughWords" = "Not enough words with definitions";
+"error.definitionNotFound" = "Definition not found";
+"error.failedToLoad" = "Failed to load definition";
+"error.definitionNotAvailable" = "Definition not available";
+
+// MARK: - Settings
+"settings.title" = "Settings";
+"settings.section.appearance" = "Appearance";
+"settings.section.language" = "Language";
+"settings.section.general" = "General";
+"settings.section.data" = "Data";
+"settings.section.legal" = "Legal";
+"settings.section.about" = "About";
+"settings.theme" = "Theme";
+"settings.language" = "Language";
+"settings.showOnboarding" = "Show Onboarding";
+"settings.clearCache" = "Clear Cache";
+"settings.version" = "Version";
+"settings.selectLanguage" = "Select Language";
+"settings.restartRequired" = "App Restart Required";
+"settings.restartMessage" = "The app needs to restart to apply the language change.";
+"settings.restartNow" = "Restart Now";
+
+// MARK: - Legal
+"legal.privacyPolicy" = "Privacy Policy";
+"legal.termsOfUse" = "Terms of Use";
+"legal.acknowledgements" = "Acknowledgements";
+
+// MARK: - Onboarding
+"onboarding.next" = "Next";
+"onboarding.skip" = "Skip";
+"onboarding.getStarted" = "Get Started";
+"onboarding.searchWords.title" = "Search Words";
+"onboarding.searchWords.description" = "Instantly search for any English word and get comprehensive definitions, phonetics, and examples.";
+"onboarding.pronunciation.title" = "Listen to Pronunciation";
+"onboarding.pronunciation.description" = "Hear the correct pronunciation of words with built-in audio playback.";
+"onboarding.favorites.title" = "Save Favorites";
+"onboarding.favorites.description" = "Build your personal vocabulary by saving words to your favorites list for quick access.";
+"onboarding.recentSearches.title" = "Recent Searches";
+"onboarding.recentSearches.description" = "Never lose track of your searches. Access your recent lookups anytime.";
+"onboarding.offline.title" = "Fast & Offline";
+"onboarding.offline.description" = "Lightning-fast searches with offline caching. Previously searched words work without internet.";
+
+// MARK: - Learn
+"learn.title" = "Learn";
+"learn.flashcards" = "Flashcards";
+"learn.flashcardsSubtitle" = "Flip cards to learn definitions";
+"learn.quiz" = "Quiz";
+"learn.quizSubtitle" = "Test your knowledge";
+"learn.statistics" = "Statistics";
+"learn.statisticsSubtitle" = "Track your progress";
+"learn.emptyState" = "Add words to favorites to start learning!";
+"learn.wordsToPractice" = "You have %d words to practice";
+
+// MARK: - Flashcard
+"flashcard.word" = "WORD";
+"flashcard.definition" = "DEFINITION";
+"flashcard.tapToFlip" = "Tap card to flip";
+"flashcard.previous" = "Previous";
+"flashcard.next" = "Next";
+
+// MARK: - Quiz
+"quiz.score" = "Score: %d";
+"quiz.questionPrompt" = "What does this word mean?";
+"quiz.playAgain" = "Play Again";
+"quiz.excellent" = "Excellent!";
+"quiz.excellentMessage" = "You're a vocabulary master!";
+"quiz.goodJob" = "Good Job!";
+"quiz.goodJobMessage" = "Keep practicing to improve!";
+"quiz.keepLearning" = "Keep Learning!";
+"quiz.keepLearningMessage" = "Review your flashcards and try again.";
+
+// MARK: - Stats
+"stats.title" = "Statistics";
+"stats.yourProgress" = "Your Progress";
+"stats.quizAccuracy" = "Quiz Accuracy";
+"stats.streakDays" = "Streak Days";
+"stats.flashcardSessions" = "Flashcard Sessions";
+"stats.quizSessions" = "Quiz Sessions";
+"stats.correctAnswers" = "Correct Answers";
+"stats.totalQuestions" = "Total Questions";
+"stats.resetProgress" = "Reset Progress";
+"stats.resetConfirmTitle" = "Reset Progress";
+"stats.resetConfirmMessage" = "This will reset all your learning statistics. This action cannot be undone.";
+"stats.reset" = "Reset";
+"stats.motivation.streak" = "🔥 Amazing! You've been practicing for %d days straight. Keep up the great work!";
+"stats.motivation.accuracy" = "⭐ Excellent accuracy! You're mastering these words quickly.";
+"stats.motivation.questions" = "📚 You've answered %d questions! Practice makes perfect.";
+"stats.motivation.flashcards" = "📖 Great job reviewing flashcards! Try the quiz to test your knowledge.";
+"stats.motivation.default" = "💡 Start with flashcards to learn new words, then test yourself with quizzes!";

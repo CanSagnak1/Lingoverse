@@ -16,7 +16,6 @@ final class FlashcardViewController: UIViewController {
 
     private let client = WordKitClientLive()
 
-
     private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -52,7 +51,7 @@ final class FlashcardViewController: UIViewController {
     private lazy var hintLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Tap card to flip"
+        label.text = Strings.flashcardTapToFlip
         label.font = .systemFont(ofSize: 13)
         label.textColor = DSColor.textSecondary.withAlphaComponent(0.6)
         label.textAlignment = .center
@@ -72,7 +71,7 @@ final class FlashcardViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(systemName: "arrow.left.circle.fill"), for: .normal)
-        button.setTitle(" Previous", for: .normal)
+        button.setTitle(" \(Strings.flashcardPrevious)", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         button.tintColor = DSColor.accent
         button.addTarget(self, action: #selector(didTapPrev), for: .touchUpInside)
@@ -83,7 +82,7 @@ final class FlashcardViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(systemName: "arrow.right.circle.fill"), for: .normal)
-        button.setTitle("Next ", for: .normal)
+        button.setTitle("\(Strings.flashcardNext) ", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         button.tintColor = DSColor.accent
         button.semanticContentAttribute = .forceRightToLeft
@@ -99,7 +98,6 @@ final class FlashcardViewController: UIViewController {
         return indicator
     }()
 
-
     init(words: [String]) {
         self.words = words.shuffled()
         super.init(nibName: nil, bundle: nil)
@@ -109,7 +107,6 @@ final class FlashcardViewController: UIViewController {
         fatalError(Cammon.fatalError)
     }
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -117,7 +114,6 @@ final class FlashcardViewController: UIViewController {
         loadCurrentCard()
         LearnProgressManager.shared.recordFlashcardSession()
     }
-
 
     private func setupUI() {
         view.backgroundColor = .systemBackground
@@ -177,7 +173,6 @@ final class FlashcardViewController: UIViewController {
         view.addGestureRecognizer(swipeRight)
     }
 
-
     private func loadCurrentCard() {
         guard currentIndex < words.count else { return }
 
@@ -212,13 +207,13 @@ final class FlashcardViewController: UIViewController {
                         cachedDefinitions[word] = definition
                         cardView.setDefinition(definition)
                     } else {
-                        cardView.setDefinition("Definition not found")
+                        cardView.setDefinition(Strings.errorDefinitionNotFound)
                     }
                 }
             } catch {
                 await MainActor.run {
                     loadingIndicator.stopAnimating()
-                    cardView.setDefinition("Failed to load definition")
+                    cardView.setDefinition(Strings.errorFailedToLoad)
                 }
             }
         }
@@ -235,7 +230,6 @@ final class FlashcardViewController: UIViewController {
         nextButton.isEnabled = currentIndex < words.count - 1
         nextButton.alpha = currentIndex < words.count - 1 ? 1.0 : 0.4
     }
-
 
     @objc private func didTapClose() {
         HapticManager.shared.buttonPressed()
@@ -313,7 +307,6 @@ final class FlashcardViewController: UIViewController {
     }
 }
 
-
 final class FlashcardView: UIView {
 
     private var currentDefinition: String = ""
@@ -367,7 +360,7 @@ final class FlashcardView: UIView {
     }
 
     func showFront(word: String) {
-        typeLabel.text = "WORD"
+        typeLabel.text = Strings.flashcardWord
         contentLabel.text = word.capitalized
         contentLabel.font = .systemFont(ofSize: 42, weight: .bold)
         contentLabel.textColor = DSColor.textPrimary
@@ -375,7 +368,7 @@ final class FlashcardView: UIView {
     }
 
     func showBack() {
-        typeLabel.text = "DEFINITION"
+        typeLabel.text = Strings.flashcardDefinition
         contentLabel.text = currentDefinition
         contentLabel.font = .systemFont(ofSize: 20, weight: .regular)
         contentLabel.textColor = DSColor.textPrimary

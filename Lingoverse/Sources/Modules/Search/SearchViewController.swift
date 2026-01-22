@@ -486,7 +486,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         let springDamping: CGFloat = 0.72
         let springVelocity: CGFloat = 0.3
 
-
         let favView = UIView()
         favView.backgroundColor = DSColor.favoriteGreen
         favView.frame = CGRect(x: 0, y: 0, width: moveDistance, height: cellHeight)
@@ -521,7 +520,7 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         favIconContainer.addSubview(favIcon)
 
         let favLabel = UILabel()
-        favLabel.text = "Favorite"
+        favLabel.text = Strings.favoriteActionTitle
         favLabel.font = .systemFont(ofSize: 11, weight: .semibold)
         favLabel.textColor = UIColor.white.withAlphaComponent(0.9)
         favLabel.textAlignment = .center
@@ -533,7 +532,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         )
         favLabel.alpha = 0
         favView.addSubview(favLabel)
-
 
         let delView = UIView()
         delView.backgroundColor = DSColor.accent
@@ -570,7 +568,7 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         delIconContainer.addSubview(delIcon)
 
         let delLabel = UILabel()
-        delLabel.text = "Delete"
+        delLabel.text = Strings.deleteActionTitle
         delLabel.font = .systemFont(ofSize: 11, weight: .semibold)
         delLabel.textColor = UIColor.white.withAlphaComponent(0.9)
         delLabel.textAlignment = .center
@@ -583,7 +581,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         delLabel.alpha = 0
         delView.addSubview(delLabel)
 
-
         cell.insertSubview(favView, belowSubview: cell.contentView)
         cell.insertSubview(delView, belowSubview: cell.contentView)
 
@@ -591,7 +588,6 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         cell.contentView.layer.shadowOffset = .zero
         cell.contentView.layer.shadowRadius = 0
         cell.contentView.layer.shadowOpacity = 0
-
 
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
 
@@ -754,7 +750,6 @@ private final class RecentSearchCell: UITableViewCell {
         cfg.image = UIImage(systemName: "clock.arrow.circlepath")
         cfg.imageProperties.tintColor = DSColor.accent
         cfg.imageToTextPadding = DSSpacing.x2
-
 
         contentConfiguration = cfg
         backgroundConfiguration = nil

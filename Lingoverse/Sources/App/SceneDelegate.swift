@@ -34,6 +34,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ThemeManager.shared.applyCurrentTheme()
     }
 
+    /// Restarts the application by transitioning to splash screen
+    func restartApplication() {
+        guard let window = window else { return }
+
+        let splashVC = SplashRouter.createModule(window: window)
+
+        UIView.transition(
+            with: window,
+            duration: 0.5,
+            options: [.transitionCrossDissolve],
+            animations: {
+                window.rootViewController = splashVC
+            },
+            completion: nil
+        )
+    }
+
     func sceneDidDisconnect(_ scene: UIScene) {
     }
 

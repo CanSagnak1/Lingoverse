@@ -9,6 +9,7 @@ import UIKit
 
 protocol SettingsViewOutput: AnyObject {
     func didTapTheme()
+    func didTapLanguage()
     func didTapShowOnboarding()
     func didTapClearCache()
     func didTapLegalDocument(_ type: LegalDocumentType)
@@ -35,6 +36,11 @@ final class SettingsPresenter: SettingsViewOutput {
         router.showThemePicker(from: vc)
     }
 
+    func didTapLanguage() {
+        guard let vc = view as? UIViewController else { return }
+        router.showLanguagePicker(from: vc)
+    }
+
     func didTapShowOnboarding() {
         guard let vc = view as? UIViewController else { return }
         router.showOnboarding(from: vc)
@@ -51,7 +57,7 @@ final class SettingsPresenter: SettingsViewOutput {
                     message: "Cache cleared successfully",
                     preferredStyle: .alert
                 )
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                alert.addAction(UIAlertAction(title: Strings.okButton, style: .default))
                 vc.present(alert, animated: true)
             }
         }

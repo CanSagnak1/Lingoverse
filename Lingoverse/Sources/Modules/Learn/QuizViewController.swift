@@ -17,7 +17,6 @@ final class QuizViewController: UIViewController {
 
     private let client = WordKitClientLive()
 
-
     private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -61,7 +60,7 @@ final class QuizViewController: UIViewController {
     private lazy var questionTypeLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "What does this word mean?"
+        label.text = Strings.quizQuestionPrompt
         label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = DSColor.textSecondary
         label.textAlignment = .center
@@ -110,7 +109,6 @@ final class QuizViewController: UIViewController {
         return view
     }()
 
-
     init(words: [String]) {
         self.words = Array(words.shuffled().prefix(10))
         super.init(nibName: nil, bundle: nil)
@@ -120,13 +118,11 @@ final class QuizViewController: UIViewController {
         fatalError(Cammon.fatalError)
     }
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         generateQuestions()
     }
-
 
     private func setupUI() {
         view.backgroundColor = .systemBackground
@@ -199,7 +195,6 @@ final class QuizViewController: UIViewController {
 
         updateUI()
     }
-
 
     private func generateQuestions() {
         loadingIndicator.startAnimating()
@@ -284,18 +279,18 @@ final class QuizViewController: UIViewController {
     private func updateUI() {
         let progress = Float(currentIndex) / Float(max(questions.count, 1))
         progressView.setProgress(progress, animated: true)
-        scoreLabel.text = "Score: \(score)"
+        scoreLabel.text = Strings.quizScore(score)
     }
 
     private func showError(_ message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: Strings.errorLabel, message: message, preferredStyle: .alert)
         alert.addAction(
-            UIAlertAction(title: "OK", style: .default) { _ in
+            UIAlertAction(title: Strings.okButton, style: .default) { _ in
                 self.dismiss(animated: true)
             })
         present(alert, animated: true)
     }
-
 
     @objc private func didTapClose() {
         HapticManager.shared.buttonPressed()
@@ -350,13 +345,11 @@ final class QuizViewController: UIViewController {
     }
 }
 
-
 struct QuizQuestion {
     let word: String
     let answers: [String]
     let correctIndex: Int
 }
-
 
 final class QuizAnswerButton: UIControl {
 
@@ -470,7 +463,6 @@ final class QuizAnswerButton: UIControl {
     }
 }
 
-
 final class QuizResultView: UIView {
 
     var onDismiss: (() -> Void)?
@@ -522,7 +514,7 @@ final class QuizResultView: UIView {
     private lazy var playAgainButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Play Again", for: .normal)
+        button.setTitle(Strings.quizPlayAgain, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         button.backgroundColor = DSColor.accent
         button.setTitleColor(.white, for: .normal)
@@ -534,7 +526,7 @@ final class QuizResultView: UIView {
     private lazy var doneButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Done", for: .normal)
+        button.setTitle(Strings.doneButton, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 18, weight: .medium)
         button.setTitleColor(DSColor.accent, for: .normal)
         button.addTarget(self, action: #selector(didTapDone), for: .touchUpInside)
@@ -608,18 +600,18 @@ final class QuizResultView: UIView {
 
         if percentage >= 80 {
             iconView.image = UIImage(systemName: "star.fill")
-            titleLabel.text = "Excellent!"
-            messageLabel.text = "You're a vocabulary master!"
+            titleLabel.text = Strings.quizExcellent
+            messageLabel.text = Strings.quizExcellentMessage
             iconView.tintColor = .systemYellow
         } else if percentage >= 60 {
             iconView.image = UIImage(systemName: "hand.thumbsup.fill")
-            titleLabel.text = "Good Job!"
-            messageLabel.text = "Keep practicing to improve!"
+            titleLabel.text = Strings.quizGoodJob
+            messageLabel.text = Strings.quizGoodJobMessage
             iconView.tintColor = DSColor.accent
         } else {
             iconView.image = UIImage(systemName: "book.fill")
-            titleLabel.text = "Keep Learning!"
-            messageLabel.text = "Review your flashcards and try again."
+            titleLabel.text = Strings.quizKeepLearning
+            messageLabel.text = Strings.quizKeepLearningMessage
             iconView.tintColor = .systemOrange
         }
     }

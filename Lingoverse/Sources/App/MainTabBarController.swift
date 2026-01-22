@@ -9,13 +9,11 @@ import UIKit
 
 final class MainTabBarController: UITabBarController {
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabs()
         configureTabBarAppearance()
     }
-
 
     private func setupTabs() {
         let searchTab = makeSearchTab()
@@ -29,7 +27,7 @@ final class MainTabBarController: UITabBarController {
     private func makeSearchTab() -> UINavigationController {
         let vc = SearchRouter.createModule()
         vc.tabBarItem = UITabBarItem(
-            title: Strings.title,
+            title: Strings.tabSearch,
             image: UIImage(systemName: "magnifyingglass"),
             selectedImage: UIImage(systemName: "magnifyingglass")
         )
@@ -41,7 +39,7 @@ final class MainTabBarController: UITabBarController {
     private func makeLearnTab() -> UINavigationController {
         let vc = LearnRouter.createModule()
         vc.tabBarItem = UITabBarItem(
-            title: "Learn",
+            title: Strings.tabLearn,
             image: UIImage(systemName: "brain.head.profile"),
             selectedImage: UIImage(systemName: "brain.head.profile.fill")
         )
@@ -53,7 +51,7 @@ final class MainTabBarController: UITabBarController {
     private func makeFavoritesTab() -> UINavigationController {
         let vc = FavoritesRouter.createModule()
         vc.tabBarItem = UITabBarItem(
-            title: Strings.favoritesTitle,
+            title: Strings.tabFavorites,
             image: UIImage(systemName: "star"),
             selectedImage: UIImage(systemName: "star.fill")
         )
@@ -65,7 +63,7 @@ final class MainTabBarController: UITabBarController {
     private func makeSettingsTab() -> UINavigationController {
         let vc = SettingsRouter.createModule()
         vc.tabBarItem = UITabBarItem(
-            title: "Settings",
+            title: Strings.tabSettings,
             image: UIImage(systemName: "gearshape"),
             selectedImage: UIImage(systemName: "gearshape.fill")
         )
@@ -83,13 +81,13 @@ final class MainTabBarController: UITabBarController {
         itemAppearance.normal.iconColor = DSColor.textSecondary
         itemAppearance.normal.titleTextAttributes = [
             .foregroundColor: DSColor.textSecondary,
-            .font: UIFont.systemFont(ofSize: 10, weight: .medium)
+            .font: UIFont.systemFont(ofSize: 10, weight: .medium),
         ]
 
         itemAppearance.selected.iconColor = DSColor.accent
         itemAppearance.selected.titleTextAttributes = [
             .foregroundColor: DSColor.accent,
-            .font: UIFont.systemFont(ofSize: 10, weight: .semibold)
+            .font: UIFont.systemFont(ofSize: 10, weight: .semibold),
         ]
 
         appearance.stackedLayoutAppearance = itemAppearance

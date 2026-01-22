@@ -1,0 +1,137 @@
+/* 
+  Localizable.strings (Turkish)
+  Lingoverse
+
+  Created by Celal Can Sağnak on 22.01.2026.
+*/
+
+// MARK: - Tab Bar
+"tab.search" = "Ara";
+"tab.favorites" = "Favoriler";
+"tab.learn" = "Öğren";
+"tab.settings" = "Ayarlar";
+
+// MARK: - Search Screen
+"search.title" = "Ara";
+"search.placeholder" = "Bir kelime arayın…";
+"search.headerRecent" = "Son Aramalar";
+"search.hintStart" = "Aramaya başlayın veya son aramalarınıza göz atın.";
+"search.hintNoRecent" = "Son aramanız bulunmuyor.";
+"search.button" = "Ara";
+
+// MARK: - Favorites Screen
+"favorites.title" = "Favoriler";
+"favorites.hintNoFavorites" = "Henüz favori kelimeniz yok.\nSon aramalar listesinden kelime ekleyin.";
+"favorites.tapToView" = "Tanımı görmek için dokunun";
+"favorites.savedWords" = "%d kayıtlı kelime";
+"favorites.savedWord" = "1 kayıtlı kelime";
+
+// MARK: - Search Detail
+"detail.synonyms" = "Eş Anlamlılar";
+"detail.definition" = "Tanım";
+"detail.example" = "Örnek";
+"detail.sharedVia" = "— Lingoverse ile paylaşıldı 📖";
+
+// MARK: - Actions
+"action.favorite" = "Favori";
+"action.delete" = "Sil";
+"action.retry" = "Tekrar dene";
+"action.cancel" = "İptal";
+"action.ok" = "Tamam";
+"action.done" = "Bitti";
+
+// MARK: - Errors
+"error.generic" = "Bir şeyler yanlış gitti.\nBağlantınızı kontrol edip tekrar deneyin.";
+"error.internetConnection" = "İnternet bağlantısı bulunamadı. Lütfen bağlantınızı kontrol edin.";
+"error.notFound" = "Kelime bulunamadı.";
+"error.title" = "Hata";
+"error.notEnoughWords" = "Tanımları olan yeterli kelime yok";
+"error.definitionNotFound" = "Tanım bulunamadı";
+"error.failedToLoad" = "Tanım yüklenemedi";
+"error.definitionNotAvailable" = "Tanım mevcut değil";
+
+// MARK: - Settings
+"settings.title" = "Ayarlar";
+"settings.section.appearance" = "Görünüm";
+"settings.section.language" = "Dil";
+"settings.section.general" = "Genel";
+"settings.section.data" = "Veri";
+"settings.section.legal" = "Yasal";
+"settings.section.about" = "Hakkında";
+"settings.theme" = "Tema";
+"settings.language" = "Dil";
+"settings.showOnboarding" = "Tanıtımı Göster";
+"settings.clearCache" = "Önbelleği Temizle";
+"settings.version" = "Sürüm";
+"settings.selectLanguage" = "Dil Seçin";
+"settings.restartRequired" = "Uygulama Yeniden Başlatılmalı";
+"settings.restartMessage" = "Dil değişikliğini uygulamak için uygulamanın yeniden başlatılması gerekiyor.";
+"settings.restartNow" = "Şimdi Yeniden Başlat";
+
+// MARK: - Legal
+"legal.privacyPolicy" = "Gizlilik Politikası";
+"legal.termsOfUse" = "Kullanım Koşulları";
+"legal.acknowledgements" = "Teşekkürler";
+
+// MARK: - Onboarding
+"onboarding.next" = "İleri";
+"onboarding.skip" = "Atla";
+"onboarding.getStarted" = "Başla";
+"onboarding.searchWords.title" = "Kelime Arayın";
+"onboarding.searchWords.description" = "Herhangi bir İngilizce kelimeyi anında arayın ve kapsamlı tanımlar, fonetikler ve örnekler alın.";
+"onboarding.pronunciation.title" = "Telaffuzu Dinleyin";
+"onboarding.pronunciation.description" = "Yerleşik ses çalma özelliğiyle kelimelerin doğru telaffuzunu duyun.";
+"onboarding.favorites.title" = "Favorilere Kaydedin";
+"onboarding.favorites.description" = "Hızlı erişim için kelimeleri favoriler listenize kaydederek kişisel kelime dağarcığınızı oluşturun.";
+"onboarding.recentSearches.title" = "Son Aramalar";
+"onboarding.recentSearches.description" = "Aramalarınızın izini asla kaybetmeyin. Son aramalarınıza istediğiniz zaman erişin.";
+"onboarding.offline.title" = "Hızlı ve Çevrimdışı";
+"onboarding.offline.description" = "Çevrimdışı önbellek ile yıldırım hızında aramalar. Daha önce aranan kelimeler internet olmadan da çalışır.";
+
+// MARK: - Learn
+"learn.title" = "Öğren";
+"learn.flashcards" = "Kartlar";
+"learn.flashcardsSubtitle" = "Tanımları öğrenmek için kartları çevirin";
+"learn.quiz" = "Test";
+"learn.quizSubtitle" = "Bilginizi test edin";
+"learn.statistics" = "İstatistikler";
+"learn.statisticsSubtitle" = "İlerlemenizi takip edin";
+"learn.emptyState" = "Öğrenmeye başlamak için favorilere kelime ekleyin!";
+"learn.wordsToPractice" = "Pratik yapacak %d kelimeniz var";
+
+// MARK: - Flashcard
+"flashcard.word" = "KELİME";
+"flashcard.definition" = "TANIM";
+"flashcard.tapToFlip" = "Çevirmek için dokunun";
+"flashcard.previous" = "Önceki";
+"flashcard.next" = "Sonraki";
+
+// MARK: - Quiz
+"quiz.score" = "Puan: %d";
+"quiz.questionPrompt" = "Bu kelimenin anlamı nedir?";
+"quiz.playAgain" = "Tekrar Oyna";
+"quiz.excellent" = "Mükemmel!";
+"quiz.excellentMessage" = "Kelime ustasısınız!";
+"quiz.goodJob" = "Aferin!";
+"quiz.goodJobMessage" = "Gelişmek için pratik yapmaya devam edin!";
+"quiz.keepLearning" = "Öğrenmeye Devam!";
+"quiz.keepLearningMessage" = "Kartlarınızı gözden geçirin ve tekrar deneyin.";
+
+// MARK: - Stats
+"stats.title" = "İstatistikler";
+"stats.yourProgress" = "İlerlemeniz";
+"stats.quizAccuracy" = "Test Doğruluğu";
+"stats.streakDays" = "Seri Günü";
+"stats.flashcardSessions" = "Kart Oturumları";
+"stats.quizSessions" = "Test Oturumları";
+"stats.correctAnswers" = "Doğru Cevaplar";
+"stats.totalQuestions" = "Toplam Sorular";
+"stats.resetProgress" = "İlerlemeyi Sıfırla";
+"stats.resetConfirmTitle" = "İlerlemeyi Sıfırla";
+"stats.resetConfirmMessage" = "Bu, tüm öğrenme istatistiklerinizi sıfırlayacak. Bu işlem geri alınamaz.";
+"stats.reset" = "Sıfırla";
+"stats.motivation.streak" = "🔥 Muhteşem! %d gündür aralıksız pratik yapıyorsunuz. Harika gidiyorsunuz!";
+"stats.motivation.accuracy" = "⭐ Mükemmel doğruluk! Bu kelimeleri hızla öğreniyorsunuz.";
+"stats.motivation.questions" = "📚 %d soruyu cevapladınız! Pratik mükemmelleştirir.";
+"stats.motivation.flashcards" = "📖 Kartları inceleme konusunda harika iş çıkardınız! Bilginizi test etmek için teste katılın.";
+"stats.motivation.default" = "💡 Yeni kelimeler öğrenmek için kartlarla başlayın, sonra testlerle kendinizi sınayın!";

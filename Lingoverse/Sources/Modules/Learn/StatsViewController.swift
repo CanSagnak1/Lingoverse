@@ -11,7 +11,6 @@ final class StatsViewController: UIViewController {
 
     private let progressManager = LearnProgressManager.shared
 
-
     private lazy var scrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.translatesAutoresizingMaskIntoConstraints = false
@@ -28,7 +27,7 @@ final class StatsViewController: UIViewController {
 
     private lazy var headerLabel: UILabel = {
         let label = UILabel()
-        label.text = "Your Progress"
+        label.text = Strings.statsYourProgress
         label.font = .systemFont(ofSize: 28, weight: .bold)
         label.textColor = DSColor.textPrimary
         return label
@@ -37,10 +36,12 @@ final class StatsViewController: UIViewController {
     private lazy var statsGrid: UIStackView = {
         let row1 = UIStackView(arrangedSubviews: [
             createStatCard(
-                title: "Quiz Accuracy", value: String(format: "%.0f%%", progressManager.accuracy),
+                title: Strings.statsQuizAccuracy,
+                value: String(format: "%.0f%%", progressManager.accuracy),
                 icon: "target", color: .systemGreen),
             createStatCard(
-                title: "Streak Days", value: "\(progressManager.streakDays)", icon: "flame.fill",
+                title: Strings.statsStreakDays, value: "\(progressManager.streakDays)",
+                icon: "flame.fill",
                 color: .systemOrange),
         ])
         row1.axis = .horizontal
@@ -49,10 +50,11 @@ final class StatsViewController: UIViewController {
 
         let row2 = UIStackView(arrangedSubviews: [
             createStatCard(
-                title: "Flashcard Sessions", value: "\(progressManager.flashcardSessions)",
+                title: Strings.statsFlashcardSessions,
+                value: "\(progressManager.flashcardSessions)",
                 icon: "rectangle.stack.fill", color: .systemBlue),
             createStatCard(
-                title: "Quiz Sessions", value: "\(progressManager.quizSessions)",
+                title: Strings.statsQuizSessions, value: "\(progressManager.quizSessions)",
                 icon: "questionmark.circle.fill", color: .systemPurple),
         ])
         row2.axis = .horizontal
@@ -61,10 +63,10 @@ final class StatsViewController: UIViewController {
 
         let row3 = UIStackView(arrangedSubviews: [
             createStatCard(
-                title: "Correct Answers", value: "\(progressManager.correctAnswers)",
+                title: Strings.statsCorrectAnswers, value: "\(progressManager.correctAnswers)",
                 icon: "checkmark.circle.fill", color: .systemGreen),
             createStatCard(
-                title: "Total Questions", value: "\(progressManager.totalQuestions)",
+                title: Strings.statsTotalQuestions, value: "\(progressManager.totalQuestions)",
                 icon: "list.number", color: .systemGray),
         ])
         row3.axis = .horizontal
@@ -114,22 +116,20 @@ final class StatsViewController: UIViewController {
 
     private lazy var resetButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Reset Progress", for: .normal)
+        button.setTitle(Strings.statsResetProgress, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16)
         button.setTitleColor(.systemRed, for: .normal)
         button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
         return button
     }()
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
     }
 
-
     private func setupUI() {
-        title = "Statistics"
+        title = Strings.statsTitle
         view.backgroundColor = .systemBackground
         navigationItem.largeTitleDisplayMode = .never
 
@@ -213,33 +213,30 @@ final class StatsViewController: UIViewController {
         let streak = progressManager.streakDays
 
         if streak >= 7 {
-            return
-                "🔥 Amazing! You've been practicing for \(streak) days straight. Keep up the great work!"
+            return Strings.statsMotivationStreak(streak)
         } else if accuracy >= 80 {
-            return "⭐ Excellent accuracy! You're mastering these words quickly."
+            return Strings.statsMotivationAccuracy
         } else if progressManager.totalQuestions >= 50 {
-            return
-                "📚 You've answered \(progressManager.totalQuestions) questions! Practice makes perfect."
+            return Strings.statsMotivationQuestions(progressManager.totalQuestions)
         } else if progressManager.flashcardSessions >= 5 {
-            return "📖 Great job reviewing flashcards! Try the quiz to test your knowledge."
+            return Strings.statsMotivationFlashcards
         } else {
-            return "💡 Start with flashcards to learn new words, then test yourself with quizzes!"
+            return Strings.statsMotivationDefault
         }
     }
-
 
     @objc private func didTapReset() {
         HapticManager.shared.warning()
 
         let alert = UIAlertController(
-            title: "Reset Progress",
-            message: "This will reset all your learning statistics. This action cannot be undone.",
+            title: Strings.statsResetConfirmTitle,
+            message: Strings.statsResetConfirmMessage,
             preferredStyle: .alert
         )
 
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: Strings.cancelButton, style: .cancel))
         alert.addAction(
-            UIAlertAction(title: "Reset", style: .destructive) { [weak self] _ in
+            UIAlertAction(title: Strings.statsReset, style: .destructive) { [weak self] _ in
                 self?.progressManager.resetProgress()
                 HapticManager.shared.success()
                 self?.navigationController?.popViewController(animated: true)

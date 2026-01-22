@@ -9,6 +9,7 @@ import UIKit
 
 protocol SettingsRouterProtocol {
     func showThemePicker(from vc: UIViewController)
+    func showLanguagePicker(from vc: UIViewController)
     func showOnboarding(from vc: UIViewController)
     func showLegalDocument(_ type: LegalDocumentType, from vc: UIViewController)
 }
@@ -47,7 +48,7 @@ final class SettingsRouter: SettingsRouterProtocol {
             alert.addAction(action)
         }
 
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: Strings.cancelButton, style: .cancel))
 
         if let popover = alert.popoverPresentationController {
             popover.sourceView = vc.view
@@ -55,6 +56,71 @@ final class SettingsRouter: SettingsRouterProtocol {
                 x: vc.view.bounds.midX, y: vc.view.bounds.midY, width: 0, height: 0)
             popover.permittedArrowDirections = []
         }
+
+        vc.present(alert, animated: true)
+    }
+
+    func showLanguagePicker(from vc: UIViewController) {
+        let alert = UIAlertController(
+            title: Strings.settingsSelectLanguage,
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+
+        for language in AppLanguage.allCases {
+            let action = UIAlertAction(title: language.displayName, style: .default) {
+                [weak vc] _ in
+                HapticManager.shared.selectionChanged()
+
+                guard language != LocalizationManager.shared.currentLanguage else { return }
+
+                LocalizationManager.shared.setLanguage(language)
+
+                self.showRestartAlert(from: vc)
+            }
+
+            if language == LocalizationManager.shared.currentLanguage {
+                action.setValue(true, forKey: "checked")
+            }
+
+            alert.addAction(action)
+        }
+
+        alert.addAction(UIAlertAction(title: Strings.cancelButton, style: .cancel))
+
+        if let popover = alert.popoverPresentationController {
+            popover.sourceView = vc.view
+            popover.sourceRect = CGRect(
+                x: vc.view.bounds.midX, y: vc.view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+
+        vc.present(alert, animated: true)
+    }
+
+    private func showRestartAlert(from vc: UIViewController?) {
+        guard let vc = vc else { return }
+
+        let alert = UIAlertController(
+            title: Strings.settingsRestartRequired,
+            message: Strings.settingsRestartMessage,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(
+            UIAlertAction(title: Strings.settingsRestartNow, style: .default) { _ in
+                // Get SceneDelegate and restart app smoothly
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                    let sceneDelegate = windowScene.delegate as? SceneDelegate
+                {
+                    sceneDelegate.restartApplication()
+                }
+            })
+
+        alert.addAction(
+            UIAlertAction(title: Strings.cancelButton, style: .cancel) { _ in
+                (vc as? SettingsViewInput)?.reloadData()
+            })
 
         vc.present(alert, animated: true)
     }

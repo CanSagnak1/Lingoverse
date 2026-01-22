@@ -20,7 +20,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
 
     var presenter: LearnViewOutput!
 
-
     private lazy var headerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -38,8 +37,8 @@ final class LearnViewController: UIViewController, LearnViewInput {
 
     private lazy var flashcardButton: LearnModeButton = {
         let button = LearnModeButton(
-            title: "Flashcards",
-            subtitle: "Flip cards to learn definitions",
+            title: Strings.learnFlashcards,
+            subtitle: Strings.learnFlashcardsSubtitle,
             iconName: "rectangle.stack.fill",
             color: .systemBlue
         )
@@ -49,8 +48,8 @@ final class LearnViewController: UIViewController, LearnViewInput {
 
     private lazy var quizButton: LearnModeButton = {
         let button = LearnModeButton(
-            title: "Quiz",
-            subtitle: "Test your knowledge",
+            title: Strings.learnQuiz,
+            subtitle: Strings.learnQuizSubtitle,
             iconName: "questionmark.circle.fill",
             color: .systemGreen
         )
@@ -60,8 +59,8 @@ final class LearnViewController: UIViewController, LearnViewInput {
 
     private lazy var statsButton: LearnModeButton = {
         let button = LearnModeButton(
-            title: "Statistics",
-            subtitle: "Track your progress",
+            title: Strings.learnStatistics,
+            subtitle: Strings.learnStatisticsSubtitle,
             iconName: "chart.bar.fill",
             color: .systemOrange
         )
@@ -90,7 +89,7 @@ final class LearnViewController: UIViewController, LearnViewInput {
 
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Add words to favorites to start learning!"
+        label.text = Strings.learnEmptyState
         label.font = .systemFont(ofSize: 17)
         label.textColor = DSColor.textSecondary
         label.textAlignment = .center
@@ -114,7 +113,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
         return view
     }()
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -125,9 +123,8 @@ final class LearnViewController: UIViewController, LearnViewInput {
         presenter.viewWillAppear()
     }
 
-
     private func setupUI() {
-        title = "Learn"
+        title = Strings.learnTitle
         view.backgroundColor = .systemBackground
         navigationItem.largeTitleDisplayMode = .always
 
@@ -158,7 +155,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
         ])
     }
 
-
     func render(_ state: LearnState) {
         switch state {
         case .empty(let message):
@@ -167,12 +163,11 @@ final class LearnViewController: UIViewController, LearnViewInput {
             emptyStateView.isHidden = false
 
         case .ready(let wordCount):
-            subtitleLabel.text = "You have \(wordCount) words to practice"
+            subtitleLabel.text = Strings.learnWordsToPractice(wordCount)
             buttonsStack.isHidden = false
             emptyStateView.isHidden = true
         }
     }
-
 
     @objc private func didTapFlashcard() {
         HapticManager.shared.buttonPressed()
@@ -189,7 +184,6 @@ final class LearnViewController: UIViewController, LearnViewInput {
         presenter.didTapStats()
     }
 }
-
 
 final class LearnModeButton: UIControl {
 

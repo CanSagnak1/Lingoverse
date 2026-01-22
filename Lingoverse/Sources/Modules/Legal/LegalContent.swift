@@ -19,6 +19,14 @@ enum LegalDocumentType: String, CaseIterable {
         case .acknowledgements: return "heart.fill"
         }
     }
+
+    var localizedTitle: String {
+        switch self {
+        case .privacyPolicy: return Strings.legalPrivacyPolicy
+        case .termsOfUse: return Strings.legalTermsOfUse
+        case .acknowledgements: return Strings.legalAcknowledgements
+        }
+    }
 }
 
 enum LegalContent {
@@ -33,7 +41,6 @@ enum LegalContent {
             return acknowledgements
         }
     }
-
 
     static let privacyPolicy = """
         PRIVACY POLICY
@@ -97,7 +104,6 @@ enum LegalContent {
 
         By using Lingoverse, you agree to the terms of this Privacy Policy.
         """
-
 
     static let termsOfUse = """
         TERMS OF USE
@@ -170,7 +176,6 @@ enum LegalContent {
 
         By using Lingoverse, you acknowledge that you have read, understood, and agree to be bound by these Terms of Use.
         """
-
 
     static let acknowledgements = """
         ACKNOWLEDGEMENTS

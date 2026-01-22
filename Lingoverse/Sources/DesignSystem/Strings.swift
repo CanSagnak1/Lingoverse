@@ -8,28 +8,495 @@
 import Foundation
 
 public enum Strings {
-    static let title = "Search"
-    static let favoritesTitle = "Favorites"
 
-    static let searchPlaceholder = "Search for a word…"
-    static let headerRecent = "Recent Searches"
-    static let hintStart = "Start searching or browse your recent searches."
-    static let hintNoRecent = "You have no recent searches."
-    static let searchButton = "Search"
+    // MARK: - Private Localization Dictionary
+    private static var englishStrings: [String: String] = [
+        // Tab Bar
+        "tab.search": "Search",
+        "tab.favorites": "Favorites",
+        "tab.learn": "Learn",
+        "tab.settings": "Settings",
 
-    static let hintNoFavorites =
-        "You have no favorited words yet.\nAdd words from the recent search list."
+        // Search Screen
+        "search.title": "Search",
+        "search.placeholder": "Search for a word…",
+        "search.headerRecent": "Recent Searches",
+        "search.hintStart": "Start searching or browse your recent searches.",
+        "search.hintNoRecent": "You have no recent searches.",
+        "search.button": "Search",
 
-    static let synonymsText = "Synonyms"
+        // Favorites Screen
+        "favorites.title": "Favorites",
+        "favorites.hintNoFavorites":
+            "You have no favorited words yet.\nAdd words from the recent search list.",
+        "favorites.tapToView": "Tap to view definition",
+        "favorites.savedWords": "%d saved words",
+        "favorites.savedWord": "1 saved word",
 
-    static let favoriteActionTitle = "Favorite"
-    static let deleteActionTitle = "Delete"
-    static let retryButtonLabel = "Try again"
+        // Search Detail
+        "detail.synonyms": "Synonyms",
+        "detail.definition": "Definition",
+        "detail.example": "Example",
+        "detail.sharedVia": "— Shared via Lingoverse 📖",
 
-    static let errorGeneric = "Something went wrong.\nCheck your connection and try again."
-    static let errorIntCon = "Internet connection not found. Please check your connection."
-    static let errorNotFound = "Word not found."
-    static let errorLabel = "Error"
+        // Part of Speech
+        "partOfSpeech.noun": "Noun",
+        "partOfSpeech.verb": "Verb",
+        "partOfSpeech.adjective": "Adjective",
+        "partOfSpeech.adverb": "Adverb",
+        "partOfSpeech.pronoun": "Pronoun",
+        "partOfSpeech.preposition": "Preposition",
+        "partOfSpeech.conjunction": "Conjunction",
+        "partOfSpeech.interjection": "Interjection",
+        "partOfSpeech.determiner": "Determiner",
+        "partOfSpeech.exclamation": "Exclamation",
+
+        // Actions
+        "action.favorite": "Favorite",
+        "action.delete": "Delete",
+        "action.retry": "Try again",
+        "action.cancel": "Cancel",
+        "action.ok": "OK",
+        "action.done": "Done",
+
+        // Errors
+        "error.generic": "Something went wrong.\nCheck your connection and try again.",
+        "error.internetConnection": "Internet connection not found. Please check your connection.",
+        "error.notFound": "Word not found.",
+        "error.title": "Error",
+        "error.notEnoughWords": "Not enough words with definitions",
+        "error.definitionNotFound": "Definition not found",
+        "error.failedToLoad": "Failed to load definition",
+        "error.definitionNotAvailable": "Definition not available",
+
+        // Settings
+        "settings.title": "Settings",
+        "settings.section.appearance": "Appearance",
+        "settings.section.language": "Language",
+        "settings.section.general": "General",
+        "settings.section.data": "Data",
+        "settings.section.legal": "Legal",
+        "settings.section.about": "About",
+        "settings.theme": "Theme",
+        "settings.language": "Language",
+        "settings.showOnboarding": "Show Onboarding",
+        "settings.clearCache": "Clear Cache",
+        "settings.version": "Version",
+        "settings.selectLanguage": "Select Language",
+        "settings.restartRequired": "App Restart Required",
+        "settings.restartMessage": "The app needs to restart to apply the language change.",
+        "settings.restartNow": "Restart Now",
+
+        // Legal
+        "legal.privacyPolicy": "Privacy Policy",
+        "legal.termsOfUse": "Terms of Use",
+        "legal.acknowledgements": "Acknowledgements",
+
+        // Onboarding
+        "onboarding.next": "Next",
+        "onboarding.skip": "Skip",
+        "onboarding.getStarted": "Get Started",
+        "onboarding.searchWords.title": "Search Words",
+        "onboarding.searchWords.description":
+            "Search for English or Turkish words instantly and get comprehensive definitions, phonetics, and examples.",
+        "onboarding.learn.title": "Learn & Practice",
+        "onboarding.learn.description":
+            "Master new vocabulary with interactive Flashcards and Quizzes.",
+        "onboarding.pronunciation.title": "Listen to Pronunciation",
+        "onboarding.pronunciation.description":
+            "Hear the correct pronunciation of words with built-in audio playback.",
+        "onboarding.favorites.title": "Save Favorites",
+        "onboarding.favorites.description":
+            "Build your personal vocabulary by saving words to your favorites list for quick access.",
+        "onboarding.recentSearches.title": "Recent Searches",
+        "onboarding.recentSearches.description":
+            "Never lose track of your searches. Access your recent lookups anytime.",
+        "onboarding.offline.title": "Fast & Offline",
+        "onboarding.offline.description":
+            "Lightning-fast searches with offline caching. Previously searched words work without internet.",
+
+        // Learn
+        "learn.title": "Learn",
+        "learn.flashcards": "Flashcards",
+        "learn.flashcardsSubtitle": "Flip cards to learn definitions",
+        "learn.quiz": "Quiz",
+        "learn.quizSubtitle": "Test your knowledge",
+        "learn.statistics": "Statistics",
+        "learn.statisticsSubtitle": "Track your progress",
+        "learn.emptyState": "Add words to favorites to start learning!",
+        "learn.wordsToPractice": "You have %d words to practice",
+
+        // Flashcard
+        "flashcard.word": "WORD",
+        "flashcard.definition": "DEFINITION",
+        "flashcard.tapToFlip": "Tap card to flip",
+        "flashcard.previous": "Previous",
+        "flashcard.next": "Next",
+
+        // Quiz
+        "quiz.score": "Score: %d",
+        "quiz.questionPrompt": "What does this word mean?",
+        "quiz.playAgain": "Play Again",
+        "quiz.excellent": "Excellent!",
+        "quiz.excellentMessage": "You're a vocabulary master!",
+        "quiz.goodJob": "Good Job!",
+        "quiz.goodJobMessage": "Keep practicing to improve!",
+        "quiz.keepLearning": "Keep Learning!",
+        "quiz.keepLearningMessage": "Review your flashcards and try again.",
+
+        // Stats
+        "stats.title": "Statistics",
+        "stats.yourProgress": "Your Progress",
+        "stats.quizAccuracy": "Quiz Accuracy",
+        "stats.streakDays": "Streak Days",
+        "stats.flashcardSessions": "Flashcard Sessions",
+        "stats.quizSessions": "Quiz Sessions",
+        "stats.correctAnswers": "Correct Answers",
+        "stats.totalQuestions": "Total Questions",
+        "stats.resetProgress": "Reset Progress",
+        "stats.resetConfirmTitle": "Reset Progress",
+        "stats.resetConfirmMessage":
+            "This will reset all your learning statistics. This action cannot be undone.",
+        "stats.reset": "Reset",
+        "stats.motivation.streak":
+            "🔥 Amazing! You've been practicing for %d days straight. Keep up the great work!",
+        "stats.motivation.accuracy": "⭐ Excellent accuracy! You're mastering these words quickly.",
+        "stats.motivation.questions": "📚 You've answered %d questions! Practice makes perfect.",
+        "stats.motivation.flashcards":
+            "📖 Great job reviewing flashcards! Try the quiz to test your knowledge.",
+        "stats.motivation.default":
+            "💡 Start with flashcards to learn new words, then test yourself with quizzes!",
+    ]
+
+    private static var turkishStrings: [String: String] = [
+        // Tab Bar
+        "tab.search": "Ara",
+        "tab.favorites": "Favoriler",
+        "tab.learn": "Öğren",
+        "tab.settings": "Ayarlar",
+
+        // Search Screen
+        "search.title": "Ara",
+        "search.placeholder": "Bir kelime arayın…",
+        "search.headerRecent": "Son Aramalar",
+        "search.hintStart": "Aramaya başlayın veya son aramalarınıza göz atın.",
+        "search.hintNoRecent": "Son aramanız bulunmuyor.",
+        "search.button": "Ara",
+
+        // Favorites Screen
+        "favorites.title": "Favoriler",
+        "favorites.hintNoFavorites":
+            "Henüz favori kelimeniz yok.\nSon aramalar listesinden kelime ekleyin.",
+        "favorites.tapToView": "Tanımı görmek için dokunun",
+        "favorites.savedWords": "%d kayıtlı kelime",
+        "favorites.savedWord": "1 kayıtlı kelime",
+
+        // Search Detail
+        "detail.synonyms": "Eş Anlamlılar",
+        "detail.definition": "Tanım",
+        "detail.example": "Örnek",
+        "detail.sharedVia": "— Lingoverse ile paylaşıldı 📖",
+
+        // Part of Speech
+        "partOfSpeech.noun": "İsim",
+        "partOfSpeech.verb": "Fiil",
+        "partOfSpeech.adjective": "Sıfat",
+        "partOfSpeech.adverb": "Zarf",
+        "partOfSpeech.pronoun": "Zamir",
+        "partOfSpeech.preposition": "Edat",
+        "partOfSpeech.conjunction": "Bağlaç",
+        "partOfSpeech.interjection": "Ünlem",
+        "partOfSpeech.determiner": "Belirteç",
+        "partOfSpeech.exclamation": "Ünlem",
+
+        // Actions
+        "action.favorite": "Favori",
+        "action.delete": "Sil",
+        "action.retry": "Tekrar dene",
+        "action.cancel": "İptal",
+        "action.ok": "Tamam",
+        "action.done": "Bitti",
+
+        // Errors
+        "error.generic": "Bir şeyler yanlış gitti.\nBağlantınızı kontrol edip tekrar deneyin.",
+        "error.internetConnection":
+            "İnternet bağlantısı bulunamadı. Lütfen bağlantınızı kontrol edin.",
+        "error.notFound": "Kelime bulunamadı.",
+        "error.title": "Hata",
+        "error.notEnoughWords": "Tanımları olan yeterli kelime yok",
+        "error.definitionNotFound": "Tanım bulunamadı",
+        "error.failedToLoad": "Tanım yüklenemedi",
+        "error.definitionNotAvailable": "Tanım mevcut değil",
+
+        // Settings
+        "settings.title": "Ayarlar",
+        "settings.section.appearance": "Görünüm",
+        "settings.section.language": "Dil",
+        "settings.section.general": "Genel",
+        "settings.section.data": "Veri",
+        "settings.section.legal": "Yasal",
+        "settings.section.about": "Hakkında",
+        "settings.theme": "Tema",
+        "settings.language": "Dil",
+        "settings.showOnboarding": "Tanıtımı Göster",
+        "settings.clearCache": "Önbelleği Temizle",
+        "settings.version": "Sürüm",
+        "settings.selectLanguage": "Dil Seçin",
+        "settings.restartRequired": "Uygulama Yeniden Başlatılmalı",
+        "settings.restartMessage":
+            "Dil değişikliğini uygulamak için uygulamanın yeniden başlatılması gerekiyor.",
+        "settings.restartNow": "Şimdi Yeniden Başlat",
+
+        // Legal
+        "legal.privacyPolicy": "Gizlilik Politikası",
+        "legal.termsOfUse": "Kullanım Koşulları",
+        "legal.acknowledgements": "Teşekkürler",
+
+        // Onboarding
+        "onboarding.next": "İleri",
+        "onboarding.skip": "Atla",
+        "onboarding.getStarted": "Başla",
+        "onboarding.searchWords.title": "Kelime Arayın",
+        "onboarding.searchWords.description":
+            "İngilizce veya Türkçe kelimeleri anında arayın; kapsamlı tanımlar, fonetikler ve örnekler alın.",
+        "onboarding.learn.title": "Öğren ve Pratik Yap",
+        "onboarding.learn.description":
+            "İnteraktif Kartlar ve Testlerle yeni kelimelerde ustalaşın.",
+        "onboarding.pronunciation.title": "Telaffuzu Dinleyin",
+        "onboarding.pronunciation.description":
+            "Yerleşik ses çalma özelliğiyle kelimelerin doğru telaffuzunu duyun.",
+        "onboarding.favorites.title": "Favorilere Kaydedin",
+        "onboarding.favorites.description":
+            "Hızlı erişim için kelimeleri favoriler listenize kaydederek kişisel kelime dağarcığınızı oluşturun.",
+        "onboarding.recentSearches.title": "Son Aramalar",
+        "onboarding.recentSearches.description":
+            "Aramalarınızın izini asla kaybetmeyin. Son aramalarınıza istediğiniz zaman erişin.",
+        "onboarding.offline.title": "Hızlı ve Çevrimdışı",
+        "onboarding.offline.description":
+            "Çevrimdışı önbellek ile yıldırım hızında aramalar. Daha önce aranan kelimeler internet olmadan da çalışır.",
+
+        // Learn
+        "learn.title": "Öğren",
+        "learn.flashcards": "Kartlar",
+        "learn.flashcardsSubtitle": "Tanımları öğrenmek için kartları çevirin",
+        "learn.quiz": "Test",
+        "learn.quizSubtitle": "Bilginizi test edin",
+        "learn.statistics": "İstatistikler",
+        "learn.statisticsSubtitle": "İlerlemenizi takip edin",
+        "learn.emptyState": "Öğrenmeye başlamak için favorilere kelime ekleyin!",
+        "learn.wordsToPractice": "Pratik yapacak %d kelimeniz var",
+
+        // Flashcard
+        "flashcard.word": "KELİME",
+        "flashcard.definition": "TANIM",
+        "flashcard.tapToFlip": "Çevirmek için dokunun",
+        "flashcard.previous": "Önceki",
+        "flashcard.next": "Sonraki",
+
+        // Quiz
+        "quiz.score": "Puan: %d",
+        "quiz.questionPrompt": "Bu kelimenin anlamı nedir?",
+        "quiz.playAgain": "Tekrar Oyna",
+        "quiz.excellent": "Mükemmel!",
+        "quiz.excellentMessage": "Kelime ustasısınız!",
+        "quiz.goodJob": "Aferin!",
+        "quiz.goodJobMessage": "Gelişmek için pratik yapmaya devam edin!",
+        "quiz.keepLearning": "Öğrenmeye Devam!",
+        "quiz.keepLearningMessage": "Kartlarınızı gözden geçirin ve tekrar deneyin.",
+
+        // Stats
+        "stats.title": "İstatistikler",
+        "stats.yourProgress": "İlerlemeniz",
+        "stats.quizAccuracy": "Test Doğruluğu",
+        "stats.streakDays": "Seri Günü",
+        "stats.flashcardSessions": "Kart Oturumları",
+        "stats.quizSessions": "Test Oturumları",
+        "stats.correctAnswers": "Doğru Cevaplar",
+        "stats.totalQuestions": "Toplam Sorular",
+        "stats.resetProgress": "İlerlemeyi Sıfırla",
+        "stats.resetConfirmTitle": "İlerlemeyi Sıfırla",
+        "stats.resetConfirmMessage":
+            "Bu, tüm öğrenme istatistiklerinizi sıfırlayacak. Bu işlem geri alınamaz.",
+        "stats.reset": "Sıfırla",
+        "stats.motivation.streak":
+            "🔥 Muhteşem! %d gündür aralıksız pratik yapıyorsunuz. Harika gidiyorsunuz!",
+        "stats.motivation.accuracy": "⭐ Mükemmel doğruluk! Bu kelimeleri hızla öğreniyorsunuz.",
+        "stats.motivation.questions": "📚 %d soruyu cevapladınız! Pratik mükemmelleştirir.",
+        "stats.motivation.flashcards":
+            "📖 Kartları inceleme konusunda harika iş çıkardınız! Bilginizi test etmek için teste katılın.",
+        "stats.motivation.default":
+            "💡 Yeni kelimeler öğrenmek için kartlarla başlayın, sonra testlerle kendinizi sınayın!",
+    ]
+
+    private static func localizedString(_ key: String) -> String {
+        let strings =
+            LocalizationManager.shared.currentLanguage == .turkish ? turkishStrings : englishStrings
+        return strings[key] ?? key
+    }
+
+    // MARK: - Tab Bar
+    static var tabSearch: String { localizedString("tab.search") }
+    static var tabFavorites: String { localizedString("tab.favorites") }
+    static var tabLearn: String { localizedString("tab.learn") }
+    static var tabSettings: String { localizedString("tab.settings") }
+
+    // MARK: - Search
+    static var title: String { localizedString("search.title") }
+    static var searchPlaceholder: String { localizedString("search.placeholder") }
+    static var headerRecent: String { localizedString("search.headerRecent") }
+    static var hintStart: String { localizedString("search.hintStart") }
+    static var hintNoRecent: String { localizedString("search.hintNoRecent") }
+    static var searchButton: String { localizedString("search.button") }
+
+    // MARK: - Favorites
+    static var favoritesTitle: String { localizedString("favorites.title") }
+    static var hintNoFavorites: String { localizedString("favorites.hintNoFavorites") }
+    static var favoriteTapHint: String { localizedString("favorites.tapToView") }
+    static func savedWordsCount(_ count: Int) -> String {
+        count == 1
+            ? localizedString("favorites.savedWord")
+            : String(format: localizedString("favorites.savedWords"), count)
+    }
+
+    // MARK: - Search Detail
+    static var synonymsText: String { localizedString("detail.synonyms") }
+    static var definitionText: String { localizedString("detail.definition") }
+    static var exampleText: String { localizedString("detail.example") }
+    static var sharedVia: String { localizedString("detail.sharedVia") }
+
+    // MARK: - Part of Speech
+    static func localizedPartOfSpeech(_ partOfSpeech: String) -> String {
+        let key = "partOfSpeech.\(partOfSpeech.lowercased())"
+        let localized = localizedString(key)
+        // If no localization found (key returned as-is), return the original capitalized
+        return localized == key ? partOfSpeech.capitalized : localized
+    }
+
+    // MARK: - Actions
+    static var favoriteActionTitle: String { localizedString("action.favorite") }
+    static var deleteActionTitle: String { localizedString("action.delete") }
+    static var retryButtonLabel: String { localizedString("action.retry") }
+    static var cancelButton: String { localizedString("action.cancel") }
+    static var okButton: String { localizedString("action.ok") }
+    static var doneButton: String { localizedString("action.done") }
+
+    // MARK: - Errors
+    static var errorGeneric: String { localizedString("error.generic") }
+    static var errorIntCon: String { localizedString("error.internetConnection") }
+    static var errorNotFound: String { localizedString("error.notFound") }
+    static var errorLabel: String { localizedString("error.title") }
+    static var errorNotEnoughWords: String { localizedString("error.notEnoughWords") }
+    static var errorDefinitionNotFound: String { localizedString("error.definitionNotFound") }
+    static var errorFailedToLoad: String { localizedString("error.failedToLoad") }
+    static var errorDefinitionNotAvailable: String {
+        localizedString("error.definitionNotAvailable")
+    }
+
+    // MARK: - Settings
+    static var settingsTitle: String { localizedString("settings.title") }
+    static var settingsAppearance: String { localizedString("settings.section.appearance") }
+    static var settingsLanguage: String { localizedString("settings.section.language") }
+    static var settingsGeneral: String { localizedString("settings.section.general") }
+    static var settingsData: String { localizedString("settings.section.data") }
+    static var settingsLegal: String { localizedString("settings.section.legal") }
+    static var settingsAbout: String { localizedString("settings.section.about") }
+    static var settingsTheme: String { localizedString("settings.theme") }
+    static var settingsLanguageRow: String { localizedString("settings.language") }
+    static var settingsShowOnboarding: String { localizedString("settings.showOnboarding") }
+    static var settingsClearCache: String { localizedString("settings.clearCache") }
+    static var settingsVersion: String { localizedString("settings.version") }
+    static var settingsSelectLanguage: String { localizedString("settings.selectLanguage") }
+    static var settingsRestartRequired: String { localizedString("settings.restartRequired") }
+    static var settingsRestartMessage: String { localizedString("settings.restartMessage") }
+    static var settingsRestartNow: String { localizedString("settings.restartNow") }
+
+    // MARK: - Legal
+    static var legalPrivacyPolicy: String { localizedString("legal.privacyPolicy") }
+    static var legalTermsOfUse: String { localizedString("legal.termsOfUse") }
+    static var legalAcknowledgements: String { localizedString("legal.acknowledgements") }
+
+    // MARK: - Onboarding
+    static var onboardingNext: String { localizedString("onboarding.next") }
+    static var onboardingSkip: String { localizedString("onboarding.skip") }
+    static var onboardingGetStarted: String { localizedString("onboarding.getStarted") }
+    static var onboardingSearchTitle: String { localizedString("onboarding.searchWords.title") }
+    static var onboardingSearchDesc: String {
+        localizedString("onboarding.searchWords.description")
+    }
+    static var onboardingPronunciationTitle: String {
+        localizedString("onboarding.pronunciation.title")
+    }
+    static var onboardingPronunciationDesc: String {
+        localizedString("onboarding.pronunciation.description")
+    }
+    static var onboardingFavoritesTitle: String { localizedString("onboarding.favorites.title") }
+    static var onboardingFavoritesDesc: String {
+        localizedString("onboarding.favorites.description")
+    }
+    static var onboardingRecentTitle: String { localizedString("onboarding.recentSearches.title") }
+    static var onboardingRecentDesc: String {
+        localizedString("onboarding.recentSearches.description")
+    }
+    static var onboardingOfflineTitle: String { localizedString("onboarding.offline.title") }
+    static var onboardingOfflineDesc: String { localizedString("onboarding.offline.description") }
+    static var onboardingLearnTitle: String { localizedString("onboarding.learn.title") }
+    static var onboardingLearnDesc: String { localizedString("onboarding.learn.description") }
+
+    // MARK: - Learn
+    static var learnTitle: String { localizedString("learn.title") }
+    static var learnFlashcards: String { localizedString("learn.flashcards") }
+    static var learnFlashcardsSubtitle: String { localizedString("learn.flashcardsSubtitle") }
+    static var learnQuiz: String { localizedString("learn.quiz") }
+    static var learnQuizSubtitle: String { localizedString("learn.quizSubtitle") }
+    static var learnStatistics: String { localizedString("learn.statistics") }
+    static var learnStatisticsSubtitle: String { localizedString("learn.statisticsSubtitle") }
+    static var learnEmptyState: String { localizedString("learn.emptyState") }
+    static func learnWordsToPractice(_ count: Int) -> String {
+        String(format: localizedString("learn.wordsToPractice"), count)
+    }
+
+    // MARK: - Flashcard
+    static var flashcardWord: String { localizedString("flashcard.word") }
+    static var flashcardDefinition: String { localizedString("flashcard.definition") }
+    static var flashcardTapToFlip: String { localizedString("flashcard.tapToFlip") }
+    static var flashcardPrevious: String { localizedString("flashcard.previous") }
+    static var flashcardNext: String { localizedString("flashcard.next") }
+
+    // MARK: - Quiz
+    static func quizScore(_ score: Int) -> String {
+        String(format: localizedString("quiz.score"), score)
+    }
+    static var quizQuestionPrompt: String { localizedString("quiz.questionPrompt") }
+    static var quizPlayAgain: String { localizedString("quiz.playAgain") }
+    static var quizExcellent: String { localizedString("quiz.excellent") }
+    static var quizExcellentMessage: String { localizedString("quiz.excellentMessage") }
+    static var quizGoodJob: String { localizedString("quiz.goodJob") }
+    static var quizGoodJobMessage: String { localizedString("quiz.goodJobMessage") }
+    static var quizKeepLearning: String { localizedString("quiz.keepLearning") }
+    static var quizKeepLearningMessage: String { localizedString("quiz.keepLearningMessage") }
+
+    // MARK: - Stats
+    static var statsTitle: String { localizedString("stats.title") }
+    static var statsYourProgress: String { localizedString("stats.yourProgress") }
+    static var statsQuizAccuracy: String { localizedString("stats.quizAccuracy") }
+    static var statsStreakDays: String { localizedString("stats.streakDays") }
+    static var statsFlashcardSessions: String { localizedString("stats.flashcardSessions") }
+    static var statsQuizSessions: String { localizedString("stats.quizSessions") }
+    static var statsCorrectAnswers: String { localizedString("stats.correctAnswers") }
+    static var statsTotalQuestions: String { localizedString("stats.totalQuestions") }
+    static var statsResetProgress: String { localizedString("stats.resetProgress") }
+    static var statsResetConfirmTitle: String { localizedString("stats.resetConfirmTitle") }
+    static var statsResetConfirmMessage: String { localizedString("stats.resetConfirmMessage") }
+    static var statsReset: String { localizedString("stats.reset") }
+    static func statsMotivationStreak(_ days: Int) -> String {
+        String(format: localizedString("stats.motivation.streak"), days)
+    }
+    static var statsMotivationAccuracy: String { localizedString("stats.motivation.accuracy") }
+    static func statsMotivationQuestions(_ count: Int) -> String {
+        String(format: localizedString("stats.motivation.questions"), count)
+    }
+    static var statsMotivationFlashcards: String { localizedString("stats.motivation.flashcards") }
+    static var statsMotivationDefault: String { localizedString("stats.motivation.default") }
 }
 
 public enum Cammon {

@@ -32,7 +32,7 @@ final class SettingsViewController: UIViewController, SettingsViewInput {
     }
 
     private func setupUI() {
-        title = "Settings"
+        title = Strings.settingsTitle
         view.backgroundColor = .systemBackground
         navigationItem.largeTitleDisplayMode = .always
 
@@ -64,15 +64,16 @@ final class SettingsViewController: UIViewController, SettingsViewInput {
     }
 
     func reloadData() {
+        title = Strings.settingsTitle
         tableView.reloadData()
     }
 }
-
 
 extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
 
     enum Section: Int, CaseIterable {
         case appearance
+        case language
         case general
         case cache
         case legal
@@ -86,6 +87,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch Section(rawValue: section) {
         case .appearance: return 1
+        case .language: return 1
         case .general: return 1
         case .cache: return 1
         case .legal: return LegalDocumentType.allCases.count
@@ -96,11 +98,12 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch Section(rawValue: section) {
-        case .appearance: return "Appearance"
-        case .general: return "General"
-        case .cache: return "Data"
-        case .legal: return "Legal"
-        case .about: return "About"
+        case .appearance: return Strings.settingsAppearance
+        case .language: return Strings.settingsLanguage
+        case .general: return Strings.settingsGeneral
+        case .cache: return Strings.settingsData
+        case .legal: return Strings.settingsLegal
+        case .about: return Strings.settingsAbout
         default: return nil
         }
     }
@@ -114,33 +117,41 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         switch Section(rawValue: indexPath.section) {
         case .appearance:
             let currentTheme = ThemeManager.shared.currentTheme
-            config.text = "Theme"
+            config.text = Strings.settingsTheme
             config.secondaryText = currentTheme.rawValue
             config.image = UIImage(systemName: currentTheme.iconName)
             config.imageProperties.tintColor = DSColor.accent
             cell.accessoryType = .disclosureIndicator
 
+        case .language:
+            let currentLanguage = LocalizationManager.shared.currentLanguage
+            config.text = Strings.settingsLanguageRow
+            config.secondaryText = currentLanguage.displayName
+            config.image = UIImage(systemName: "globe")
+            config.imageProperties.tintColor = DSColor.accent
+            cell.accessoryType = .disclosureIndicator
+
         case .general:
-            config.text = "Show Onboarding"
+            config.text = Strings.settingsShowOnboarding
             config.image = UIImage(systemName: "book.pages")
             config.imageProperties.tintColor = DSColor.accent
             cell.accessoryType = .disclosureIndicator
 
         case .cache:
-            config.text = "Clear Cache"
+            config.text = Strings.settingsClearCache
             config.textProperties.color = DSColor.accent
             config.image = UIImage(systemName: "trash")
             config.imageProperties.tintColor = DSColor.accent
 
         case .legal:
             let documentType = LegalDocumentType.allCases[indexPath.row]
-            config.text = documentType.rawValue
+            config.text = documentType.localizedTitle
             config.image = UIImage(systemName: documentType.iconName)
             config.imageProperties.tintColor = DSColor.textSecondary
             cell.accessoryType = .disclosureIndicator
 
         case .about:
-            config.text = "Version"
+            config.text = Strings.settingsVersion
             config.image = UIImage(systemName: "info.circle")
             config.imageProperties.tintColor = DSColor.textSecondary
             if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
@@ -165,6 +176,9 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         switch Section(rawValue: indexPath.section) {
         case .appearance:
             presenter.didTapTheme()
+
+        case .language:
+            presenter.didTapLanguage()
 
         case .general:
             presenter.didTapShowOnboarding()

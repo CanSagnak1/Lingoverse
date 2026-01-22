@@ -19,7 +19,6 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
     private var pages: [OnboardingPage] = []
     private var currentPageIndex = 0
 
-
     private lazy var scrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +50,7 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
     private lazy var nextButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Next", for: .normal)
+        button.setTitle(Strings.onboardingNext, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
         button.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
 
@@ -76,20 +75,18 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
     private lazy var skipButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Skip", for: .normal)
+        button.setTitle(Strings.onboardingSkip, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.setTitleColor(DSColor.textSecondary, for: .normal)
         button.addTarget(self, action: #selector(skipButtonTapped), for: .touchUpInside)
         return button
     }()
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         presenter.viewDidLoad()
     }
-
 
     private func setupUI() {
         view.backgroundColor = .systemBackground
@@ -126,7 +123,6 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
         ])
     }
 
-
     func configure(with pages: [OnboardingPage]) {
         self.pages = pages
         pageControl.numberOfPages = pages.count
@@ -150,7 +146,6 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
         let offsetX = CGFloat(index) * scrollView.bounds.width
         scrollView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: true)
     }
-
 
     @objc private func nextButtonTapped() {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -179,14 +174,15 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
 
     private func updateButtonTitle() {
         let isLastPage = currentPageIndex == pages.count - 1
+        let buttonTitle = isLastPage ? Strings.onboardingGetStarted : Strings.onboardingNext
 
         UIView.animate(withDuration: 0.2) {
             if #available(iOS 15.0, *) {
                 var config = self.nextButton.configuration
-                config?.title = isLastPage ? "Get Started" : "Next"
+                config?.title = buttonTitle
                 self.nextButton.configuration = config
             } else {
-                self.nextButton.setTitle(isLastPage ? "Get Started" : "Next", for: .normal)
+                self.nextButton.setTitle(buttonTitle, for: .normal)
             }
 
             self.skipButton.alpha = isLastPage ? 0 : 1
@@ -207,7 +203,6 @@ final class OnboardingViewController: UIViewController, OnboardingViewInput {
     }
 }
 
-
 extension OnboardingViewController: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let pageIndex = Int(scrollView.contentOffset.x / scrollView.bounds.width)
@@ -216,7 +211,6 @@ extension OnboardingViewController: UIScrollViewDelegate {
         updateButtonTitle()
     }
 }
-
 
 private final class OnboardingPageView: UIView {
 
