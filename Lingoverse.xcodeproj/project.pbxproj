@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7AF1BA6F2F22409D007971ED /* TDKAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 7AF1BA6E2F22409D007971ED /* TDKAPI */; };
 		7AFA556D2EB7A80B00070855 /* WordAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 7AFA556C2EB7A80B00070855 /* WordAPI */; };
 /* End PBXBuildFile section */
 
@@ -84,18 +85,27 @@
 			buildActionMask = 2147483647;
 			files = (
 				7AFA556D2EB7A80B00070855 /* WordAPI in Frameworks */,
+				7AF1BA6F2F22409D007971ED /* TDKAPI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7AF1BA6D2F22409D007971ED /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		7AFB54172EB7A1A2003451D2 = {
 			isa = PBXGroup;
 			children = (
 				7AFB54222EB7A1A2003451D2 /* Lingoverse */,
 				7AF52F7D2EBE7C27004195CC /* LingoverseTests */,
 				7AF52F932EBE83EF004195CC /* LingoverseUITests */,
+				7AF1BA6D2F22409D007971ED /* Frameworks */,
 				7AFB54212EB7A1A2003451D2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -177,6 +187,7 @@
 			name = Lingoverse;
 			packageProductDependencies = (
 				7AFA556C2EB7A80B00070855 /* WordAPI */,
+				7AF1BA6E2F22409D007971ED /* TDKAPI */,
 			);
 			productName = WorDic;
 			productReference = 7AFB54202EB7A1A2003451D2 /* Lingoverse.app */;
@@ -217,6 +228,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				7AFA55482EB7A3D400070855 /* XCRemoteSwiftPackageReference "WordKit" */,
+				7AF1BA6C2F224060007971ED /* XCRemoteSwiftPackageReference "TDKClient" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7AFB54212EB7A1A2003451D2 /* Products */;
@@ -651,6 +663,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		7AF1BA6C2F224060007971ED /* XCRemoteSwiftPackageReference "TDKClient" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CanSagnak1/TDKClient";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		7AFA55482EB7A3D400070855 /* XCRemoteSwiftPackageReference "WordKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/CanSagnak1/WordKit";
@@ -662,6 +682,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		7AF1BA6E2F22409D007971ED /* TDKAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7AF1BA6C2F224060007971ED /* XCRemoteSwiftPackageReference "TDKClient" */;
+			productName = TDKAPI;
+		};
 		7AFA556C2EB7A80B00070855 /* WordAPI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 7AFA55482EB7A3D400070855 /* XCRemoteSwiftPackageReference "WordKit" */;

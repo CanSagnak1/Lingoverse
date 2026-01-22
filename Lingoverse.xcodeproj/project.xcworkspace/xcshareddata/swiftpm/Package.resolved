@@ -1,6 +1,15 @@
 {
-  "originHash" : "d53e9124c7742456633ef80b012c0943a3036c5f5cf2db6e0e04a2b46728fad8",
+  "originHash" : "c668d5795e0d1e3870a68b141cc459d78691b4036b43adede93e167adb38f342",
   "pins" : [
+    {
+      "identity" : "tdkclient",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/CanSagnak1/TDKClient",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e7bad017d276d2b9f80cb7f1cacfc1ee87c80eda"
+      }
+    },
     {
       "identity" : "wordkit",
       "kind" : "remoteSourceControl",
