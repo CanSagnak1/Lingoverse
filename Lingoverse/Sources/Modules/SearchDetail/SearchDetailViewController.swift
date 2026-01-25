@@ -419,7 +419,7 @@ private final class DefinitionView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     func configure(with vm: SearchDetailDefinitionVM, index: Int) {
@@ -465,7 +465,7 @@ private final class SynonymPillButton: UIButton {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 }
 
@@ -489,7 +489,7 @@ private final class SynonymPillContainerView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     private func setupPills() {

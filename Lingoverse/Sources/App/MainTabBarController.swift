@@ -76,7 +76,7 @@ final class MainTabBarController: UITabBarController {
     }
 
     private func makeProfileTab() -> UINavigationController {
-        let vc = ProfileViewController()
+        let vc = ProfileRouter.createModule()
         vc.tabBarItem = UITabBarItem(
             title: Strings.profileTitle,
             image: UIImage(systemName: "person.crop.circle"),

@@ -119,7 +119,7 @@ final class WordHuntViewController: UIViewController {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     // MARK: - Lifecycle
@@ -479,7 +479,7 @@ private final class LetterCell: UIControl {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     private func setupUI() {

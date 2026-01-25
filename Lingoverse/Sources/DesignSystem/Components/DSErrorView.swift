@@ -88,5 +88,5 @@ final class DSErrorView: UIView {
         onRetry?()
     }
 
-    required init?(coder: NSCoder) { fatalError(Cammon.fatalError) }
+    required init?(coder: NSCoder) { fatalError(Common.fatalError) }
 }

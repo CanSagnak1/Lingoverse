@@ -257,7 +257,7 @@ private final class OnboardingPageView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     private func setupUI() {

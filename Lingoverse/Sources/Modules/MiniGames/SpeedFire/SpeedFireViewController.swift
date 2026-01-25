@@ -173,7 +173,7 @@ final class SpeedFireViewController: UIViewController {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     // MARK: - Lifecycle

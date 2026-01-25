@@ -304,7 +304,7 @@ private final class SettingsCell: UITableViewCell {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     private func setupUI() {

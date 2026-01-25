@@ -810,7 +810,7 @@ public enum Strings {
     static var gameKeepTryingMessage: String { localizedString("game.keepTryingMessage") }
 }
 
-public enum Cammon {
+public enum Common {
     static let fatalError = "init(coder:) has not been implemented"
 }
 

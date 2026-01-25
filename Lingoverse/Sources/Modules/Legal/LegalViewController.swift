@@ -75,7 +75,7 @@ final class LegalViewController: UIViewController {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     override func viewDidLoad() {

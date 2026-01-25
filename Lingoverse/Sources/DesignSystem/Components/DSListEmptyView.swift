@@ -92,5 +92,5 @@ public final class DSListEmptyView: UIView {
         iconView.image = UIImage(systemName: icon)
     }
 
-    required init?(coder: NSCoder) { fatalError(Cammon.fatalError) }
+    required init?(coder: NSCoder) { fatalError(Common.fatalError) }
 }

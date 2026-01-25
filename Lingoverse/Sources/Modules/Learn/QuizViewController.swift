@@ -119,7 +119,7 @@ final class QuizViewController: UIViewController {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     override func viewDidLoad() {
@@ -402,7 +402,7 @@ final class QuizAnswerButton: UIControl {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     private func setupUI() {
@@ -550,7 +550,7 @@ final class QuizResultView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     private func setupUI() {

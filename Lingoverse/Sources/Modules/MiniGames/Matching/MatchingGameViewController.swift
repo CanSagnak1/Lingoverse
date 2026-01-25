@@ -107,7 +107,7 @@ final class MatchingGameViewController: UIViewController {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     // MARK: - Lifecycle
@@ -410,7 +410,7 @@ private final class MatchingCardCell: UICollectionViewCell {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     private func setupUI() {

@@ -4,13 +4,20 @@
 //
 //  Created by Celal Can Sağnak on 23.01.2026.
 //  UI Redesigned on 25.01.2026.
+//  VIPER Refactored on 26.01.2026.
 //
 
 import UIKit
 
-final class ProfileViewController: UIViewController {
+protocol ProfileViewInput: AnyObject {
+    func render(viewModel: ProfileViewModel)
+}
 
-    private let gamificationService: GamificationServiceProtocol
+final class ProfileViewController: UIViewController, ProfileViewInput {
+
+    var presenter: ProfileViewOutput!
+
+    private var badges: [Badge] = []
 
     private lazy var scrollView: UIScrollView = {
         let sv = UIScrollView()
@@ -176,10 +183,7 @@ final class ProfileViewController: UIViewController {
         return cv
     }()
 
-    private var badges: [Badge] = []
-
-    init(gamificationService: GamificationServiceProtocol = GamificationService()) {
-        self.gamificationService = gamificationService
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -194,7 +198,7 @@ final class ProfileViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadData()
+        presenter?.viewWillAppear()
     }
 
     override func viewDidLayoutSubviews() {
@@ -203,27 +207,26 @@ final class ProfileViewController: UIViewController {
         badgesCollectionView.invalidateIntrinsicContentSize()
     }
 
-    private func reloadData() {
-        gamificationService.checkBadges()  // Ensure latest state
-        let progress = gamificationService.progress
-        badges = gamificationService.badges
+    // MARK: - ProfileViewInput
 
+    func render(viewModel: ProfileViewModel) {
         title = Strings.profileTitle
+        badges = viewModel.badges
 
         // Hero section
-        xpLabel.text = "\(progress.totalXP) XP"
-        levelBadgeLabel.text = "Lv.\(progress.currentLevel)"
+        xpLabel.text = "\(viewModel.totalXP) XP"
+        levelBadgeLabel.text = "Lv.\(viewModel.currentLevel)"
 
         // Stats cards
-        streakCard.setValue("\(progress.currentStreak)", subtitle: "Gün Serisi")
-        levelCard.setValue("Lv.\(progress.currentLevel)", subtitle: "Seviye")
-
-        let unlockedCount = badges.filter { $0.isUnlocked }.count
-        badgesEarnedCard.setValue("\(unlockedCount)/\(badges.count)", subtitle: "Rozet")
+        streakCard.setValue("\(viewModel.currentStreak)", subtitle: Strings.profileStreakSubtitle)
+        levelCard.setValue("Lv.\(viewModel.currentLevel)", subtitle: "Seviye")
+        badgesEarnedCard.setValue(
+            "\(viewModel.unlockedBadgesCount)/\(viewModel.totalBadgesCount)",
+            subtitle: Strings.profileBadges)
 
         // Badges section
         badgesTitleLabel.text = Strings.profileBadges
-        badgesSubtitleLabel.text = "\(unlockedCount) rozet kazandınız"
+        badgesSubtitleLabel.text = "\(viewModel.unlockedBadgesCount) rozet kazandınız"
 
         badgesCollectionView.reloadData()
         badgesCollectionView.layoutIfNeeded()

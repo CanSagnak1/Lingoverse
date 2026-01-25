@@ -107,7 +107,7 @@ final class HangmanViewController: UIViewController {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     // MARK: - Lifecycle
@@ -473,7 +473,7 @@ private final class HangmanFigureView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError(Cammon.fatalError)
+        fatalError(Common.fatalError)
     }
 
     private func setupLayers() {
