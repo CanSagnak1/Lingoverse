@@ -20,8 +20,10 @@ final class SettingsViewController: UIViewController, SettingsViewInput {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "SettingsCell")
+        tableView.register(SettingsCell.self, forCellReuseIdentifier: SettingsCell.identifier)
         tableView.backgroundColor = .systemGroupedBackground
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: 56, bottom: 0, right: 0)
+        tableView.rowHeight = 56
         return tableView
     }()
 
@@ -96,76 +98,129 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         }
     }
 
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = .clear
+
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.textColor = DSColor.textSecondary
+
         switch Section(rawValue: section) {
-        case .appearance: return Strings.settingsAppearance
-        case .language: return Strings.settingsLanguage
-        case .general: return Strings.settingsGeneral
-        case .cache: return Strings.settingsData
-        case .legal: return Strings.settingsLegal
-        case .about: return Strings.settingsAbout
+        case .appearance: label.text = Strings.settingsAppearance.uppercased()
+        case .language: label.text = Strings.settingsLanguage.uppercased()
+        case .general: label.text = Strings.settingsGeneral.uppercased()
+        case .cache: label.text = Strings.settingsData.uppercased()
+        case .legal: label.text = Strings.settingsLegal.uppercased()
+        case .about: label.text = Strings.settingsAbout.uppercased()
         default: return nil
         }
+
+        headerView.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 20),
+            label.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -8),
+        ])
+
+        return headerView
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 44
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "SettingsCell", for: indexPath)
-        var config = cell.defaultContentConfiguration()
-        cell.selectionStyle = .default
-        cell.accessoryType = .none
+        guard
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: SettingsCell.identifier, for: indexPath) as? SettingsCell
+        else {
+            return UITableViewCell()
+        }
 
         switch Section(rawValue: indexPath.section) {
         case .appearance:
             let currentTheme = ThemeManager.shared.currentTheme
-            config.text = Strings.settingsTheme
-            config.secondaryText = currentTheme.rawValue
-            config.image = UIImage(systemName: currentTheme.iconName)
-            config.imageProperties.tintColor = DSColor.accent
-            cell.accessoryType = .disclosureIndicator
+            cell.configure(
+                icon: currentTheme.iconName,
+                iconColor: DSColor.accent,
+                iconBackground: DSColor.accent.withAlphaComponent(0.12),
+                title: Strings.settingsTheme,
+                subtitle: currentTheme.rawValue,
+                showDisclosure: true,
+                isDestructive: false
+            )
 
         case .language:
             let currentLanguage = LocalizationManager.shared.currentLanguage
-            config.text = Strings.settingsLanguageRow
-            config.secondaryText = currentLanguage.displayName
-            config.image = UIImage(systemName: "globe")
-            config.imageProperties.tintColor = DSColor.accent
-            cell.accessoryType = .disclosureIndicator
+            cell.configure(
+                icon: "globe",
+                iconColor: .systemBlue,
+                iconBackground: UIColor.systemBlue.withAlphaComponent(0.12),
+                title: Strings.settingsLanguageRow,
+                subtitle: currentLanguage.displayName,
+                showDisclosure: true,
+                isDestructive: false
+            )
 
         case .general:
-            config.text = Strings.settingsShowOnboarding
-            config.image = UIImage(systemName: "book.pages")
-            config.imageProperties.tintColor = DSColor.accent
-            cell.accessoryType = .disclosureIndicator
+            cell.configure(
+                icon: "book.pages",
+                iconColor: .systemOrange,
+                iconBackground: UIColor.systemOrange.withAlphaComponent(0.12),
+                title: Strings.settingsShowOnboarding,
+                subtitle: nil,
+                showDisclosure: true,
+                isDestructive: false
+            )
 
         case .cache:
-            config.text = Strings.settingsClearCache
-            config.textProperties.color = DSColor.accent
-            config.image = UIImage(systemName: "trash")
-            config.imageProperties.tintColor = DSColor.accent
+            cell.configure(
+                icon: "trash",
+                iconColor: DSColor.accent,
+                iconBackground: DSColor.accent.withAlphaComponent(0.12),
+                title: Strings.settingsClearCache,
+                subtitle: nil,
+                showDisclosure: false,
+                isDestructive: true
+            )
 
         case .legal:
             let documentType = LegalDocumentType.allCases[indexPath.row]
-            config.text = documentType.localizedTitle
-            config.image = UIImage(systemName: documentType.iconName)
-            config.imageProperties.tintColor = DSColor.textSecondary
-            cell.accessoryType = .disclosureIndicator
+            let colors: [UIColor] = [.systemPurple, .systemTeal, .systemPink]
+            let color = colors[indexPath.row % colors.count]
+            cell.configure(
+                icon: documentType.iconName,
+                iconColor: color,
+                iconBackground: color.withAlphaComponent(0.12),
+                title: documentType.localizedTitle,
+                subtitle: nil,
+                showDisclosure: true,
+                isDestructive: false
+            )
 
         case .about:
-            config.text = Strings.settingsVersion
-            config.image = UIImage(systemName: "info.circle")
-            config.imageProperties.tintColor = DSColor.textSecondary
+            var versionText: String? = nil
             if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
                 let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
             {
-                config.secondaryText = "\(version) (\(build))"
+                versionText = "\(version) (\(build))"
             }
+            cell.configure(
+                icon: "info.circle",
+                iconColor: .systemGray,
+                iconBackground: UIColor.systemGray.withAlphaComponent(0.12),
+                title: Strings.settingsVersion,
+                subtitle: versionText,
+                showDisclosure: false,
+                isDestructive: false
+            )
             cell.selectionStyle = .none
 
         default:
             break
         }
 
-        cell.contentConfiguration = config
         return cell
     }
 
@@ -193,5 +248,135 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         default:
             break
         }
+    }
+}
+
+// MARK: - Custom Settings Cell
+
+private final class SettingsCell: UITableViewCell {
+
+    static let identifier = "SettingsCell"
+
+    private lazy var iconContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 8
+        return view
+    }()
+
+    private lazy var iconImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 16, weight: .regular)
+        label.textColor = DSColor.textPrimary
+        return label
+    }()
+
+    private lazy var subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.textColor = DSColor.textSecondary
+        label.textAlignment = .right
+        return label
+    }()
+
+    private lazy var disclosureIcon: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(systemName: "chevron.right")?
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 13, weight: .semibold))
+        iv.tintColor = DSColor.textSecondary.withAlphaComponent(0.5)
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupUI()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError(Cammon.fatalError)
+    }
+
+    private func setupUI() {
+        backgroundColor = .secondarySystemGroupedBackground
+        selectionStyle = .default
+
+        contentView.addSubview(iconContainer)
+        iconContainer.addSubview(iconImageView)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(subtitleLabel)
+        contentView.addSubview(disclosureIcon)
+
+        NSLayoutConstraint.activate([
+            iconContainer.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor, constant: 16),
+            iconContainer.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            iconContainer.widthAnchor.constraint(equalToConstant: 32),
+            iconContainer.heightAnchor.constraint(equalToConstant: 32),
+
+            iconImageView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            iconImageView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+            iconImageView.widthAnchor.constraint(equalToConstant: 18),
+            iconImageView.heightAnchor.constraint(equalToConstant: 18),
+
+            titleLabel.leadingAnchor.constraint(
+                equalTo: iconContainer.trailingAnchor, constant: 12),
+            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+
+            disclosureIcon.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -16),
+            disclosureIcon.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            disclosureIcon.widthAnchor.constraint(equalToConstant: 12),
+
+            subtitleLabel.trailingAnchor.constraint(
+                equalTo: disclosureIcon.leadingAnchor, constant: -8),
+            subtitleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            subtitleLabel.leadingAnchor.constraint(
+                greaterThanOrEqualTo: titleLabel.trailingAnchor, constant: 8),
+        ])
+    }
+
+    func configure(
+        icon: String,
+        iconColor: UIColor,
+        iconBackground: UIColor,
+        title: String,
+        subtitle: String?,
+        showDisclosure: Bool,
+        isDestructive: Bool
+    ) {
+        iconContainer.backgroundColor = iconBackground
+        iconImageView.image = UIImage(systemName: icon)?
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 15, weight: .medium))
+        iconImageView.tintColor = iconColor
+
+        titleLabel.text = title
+        titleLabel.textColor = isDestructive ? DSColor.accent : DSColor.textPrimary
+
+        subtitleLabel.text = subtitle
+        subtitleLabel.isHidden = subtitle == nil
+
+        disclosureIcon.isHidden = !showDisclosure
+
+        selectionStyle = showDisclosure || isDestructive ? .default : .none
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleLabel.textColor = DSColor.textPrimary
+        subtitleLabel.text = nil
+        subtitleLabel.isHidden = true
+        disclosureIcon.isHidden = false
+        selectionStyle = .default
     }
 }

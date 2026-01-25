@@ -32,6 +32,21 @@ final class OnboardingPresenter: OnboardingViewOutput {
                 description: Strings.onboardingLearnDesc
             ),
             OnboardingPage(
+                iconName: "hand.draw.fill",
+                title: Strings.onboardingSwipeNavigationTitle,
+                description: Strings.onboardingSwipeNavigationDesc
+            ),
+            OnboardingPage(
+                iconName: "hand.tap.fill",
+                title: Strings.onboardingTapToFlipTitle,
+                description: Strings.onboardingTapToFlipDesc
+            ),
+            OnboardingPage(
+                iconName: "hand.point.left.fill",
+                title: Strings.onboardingSwipeToDeleteTitle,
+                description: Strings.onboardingSwipeToDeleteDesc
+            ),
+            OnboardingPage(
                 iconName: "speaker.wave.3.fill",
                 title: Strings.onboardingPronunciationTitle,
                 description: Strings.onboardingPronunciationDesc

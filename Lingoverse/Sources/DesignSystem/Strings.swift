@@ -117,6 +117,15 @@ public enum Strings {
         "onboarding.profile.title": "Profile & Badges",
         "onboarding.profile.description":
             "Track your progress, keep your streak alive, and earn badges as you learn.",
+        "onboarding.swipeNavigation.title": "Swipe to Navigate",
+        "onboarding.swipeNavigation.description":
+            "Swipe left or right on flashcards to navigate between words quickly.",
+        "onboarding.tapToFlip.title": "Tap to Reveal",
+        "onboarding.tapToFlip.description":
+            "Tap on a flashcard to flip it and see the definition on the other side.",
+        "onboarding.swipeToDelete.title": "Swipe to Manage",
+        "onboarding.swipeToDelete.description":
+            "Swipe left on any favorite word to quickly remove it from your collection.",
 
         // Learn
         "learn.title": "Learn",
@@ -304,6 +313,15 @@ public enum Strings {
         "onboarding.profile.title": "Profil ve Rozetler",
         "onboarding.profile.description":
             "İlerlemeni takip et, serini canlı tut ve öğrenirken rozetler kazan.",
+        "onboarding.swipeNavigation.title": "Kaydırarak Gezin",
+        "onboarding.swipeNavigation.description":
+            "Kelimeler arasında hızlıca gezinmek için kartları sola veya sağa kaydırın.",
+        "onboarding.tapToFlip.title": "Dokunarak Çevir",
+        "onboarding.tapToFlip.description":
+            "Kartın diğer tarafındaki tanımı görmek için karta dokunun.",
+        "onboarding.swipeToDelete.title": "Kaydırarak Yönetin",
+        "onboarding.swipeToDelete.description":
+            "Bir kelimeyi koleksiyonunuzdan hızlıca kaldırmak için sola kaydırın.",
 
         // Learn
         "learn.title": "Öğren",
@@ -496,6 +514,22 @@ public enum Strings {
     static var onboardingProfileDesc: String { localizedString("onboarding.profile.description") }
     static var onboardingLearnTitle: String { localizedString("onboarding.learn.title") }
     static var onboardingLearnDesc: String { localizedString("onboarding.learn.description") }
+    static var onboardingSwipeNavigationTitle: String {
+        localizedString("onboarding.swipeNavigation.title")
+    }
+    static var onboardingSwipeNavigationDesc: String {
+        localizedString("onboarding.swipeNavigation.description")
+    }
+    static var onboardingTapToFlipTitle: String { localizedString("onboarding.tapToFlip.title") }
+    static var onboardingTapToFlipDesc: String {
+        localizedString("onboarding.tapToFlip.description")
+    }
+    static var onboardingSwipeToDeleteTitle: String {
+        localizedString("onboarding.swipeToDelete.title")
+    }
+    static var onboardingSwipeToDeleteDesc: String {
+        localizedString("onboarding.swipeToDelete.description")
+    }
 
     // MARK: - Learn
     static var learnTitle: String { localizedString("learn.title") }
