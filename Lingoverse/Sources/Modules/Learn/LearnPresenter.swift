@@ -12,6 +12,7 @@ protocol LearnViewOutput: AnyObject {
     func didTapFlashcard()
     func didTapQuiz()
     func didTapStats()
+    func didTapMiniGames()
 }
 
 final class LearnPresenter: LearnViewOutput {
@@ -72,8 +73,13 @@ final class LearnPresenter: LearnViewOutput {
         guard let vc = view as? UIViewController else { return }
         router.routeToStats(from: vc)
     }
-}
 
+    func didTapMiniGames() {
+        guard !favoriteWords.isEmpty else { return }
+        guard let vc = view as? UIViewController else { return }
+        router.routeToMiniGames(from: vc, words: favoriteWords)
+    }
+}
 
 final class LearnProgressManager {
 

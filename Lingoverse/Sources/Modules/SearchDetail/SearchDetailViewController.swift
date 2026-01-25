@@ -18,6 +18,8 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
     private var allMeanings: [SearchDetailMeaningVM] = []
     private var player: AVPlayer?
     private var audioURL: URL?
+    private let favoritesRepo = FavoritesRepository()
+    private var currentWord: String = ""
 
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -108,7 +110,40 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
             action: #selector(didTapShare)
         )
         shareButton.tintColor = DSColor.accent
-        navigationItem.rightBarButtonItem = shareButton
+
+        let favoriteButton = UIBarButtonItem(
+            image: UIImage(systemName: "heart"),
+            style: .plain,
+            target: self,
+            action: #selector(didTapFavorite)
+        )
+        favoriteButton.tintColor = DSColor.accent
+
+        navigationItem.rightBarButtonItems = [shareButton, favoriteButton]
+    }
+
+    private func updateFavoriteButton() {
+        guard !currentWord.isEmpty else { return }
+        let isFavorite = favoritesRepo.isFavorite(currentWord)
+        let imageName = isFavorite ? "heart.fill" : "heart"
+        if let favoriteButton = navigationItem.rightBarButtonItems?.last {
+            favoriteButton.image = UIImage(systemName: imageName)
+            favoriteButton.tintColor = isFavorite ? .systemRed : DSColor.accent
+        }
+    }
+
+    @objc private func didTapFavorite() {
+        guard !currentWord.isEmpty else { return }
+
+        if favoritesRepo.isFavorite(currentWord) {
+            favoritesRepo.deleteFavorite(currentWord)
+            HapticManager.shared.lightTap()
+        } else {
+            favoritesRepo.saveFavorite(currentWord)
+            HapticManager.shared.success()
+        }
+
+        updateFavoriteButton()
     }
 
     @objc private func didTapShare() {
@@ -222,6 +257,7 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
         case .content(let header, let segments, let meanings):
             mainStackView.isHidden = false
             allMeanings = meanings
+            currentWord = header.title
 
             titleLabel.text = header.title
             phoneticLabel.text = header.phonetic
@@ -239,6 +275,7 @@ final class SearchDetailViewController: UIViewController, SearchDetailViewInput 
             }
 
             drawMeanings(for: 0)
+            updateFavoriteButton()
 
         case .error(let message):
             errorView.isHidden = false

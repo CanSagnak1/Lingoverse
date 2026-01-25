@@ -2,7 +2,7 @@
 //  GamificationModels.swift
 //  Lingoverse
 //
-//  Created by Antigravity on 23.01.2026.
+//  Created by Celal Can Sağnak on 23.01.2026.
 //
 
 import Foundation

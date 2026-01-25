@@ -2,7 +2,8 @@
 //  ProfileViewController.swift
 //  Lingoverse
 //
-//  Created by Antigravity on 23.01.2026.
+//  Created by Celal Can Sağnak on 23.01.2026.
+//  UI Redesigned on 25.01.2026.
 //
 
 import UIKit
@@ -15,6 +16,7 @@ final class ProfileViewController: UIViewController {
         let sv = UIScrollView()
         sv.translatesAutoresizingMaskIntoConstraints = false
         sv.alwaysBounceVertical = true
+        sv.showsVerticalScrollIndicator = false
         return sv
     }()
 
@@ -24,19 +26,60 @@ final class ProfileViewController: UIViewController {
         return view
     }()
 
-    // MARK: - Header Section
-    private lazy var levelContainer: UIView = {
+    // MARK: - Hero Header Section
+
+    private lazy var heroContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = DSColor.accent.withAlphaComponent(0.1)
-        view.layer.cornerRadius = 20
+        view.layer.cornerRadius = 28
+        view.clipsToBounds = true
         return view
     }()
 
-    private lazy var levelLabel: UILabel = {
+    private lazy var heroGradientLayer: CAGradientLayer = {
+        let gradient = CAGradientLayer()
+        gradient.colors = [
+            DSColor.accent.cgColor,
+            DSColor.accent.withAlphaComponent(0.7).cgColor,
+        ]
+        gradient.startPoint = CGPoint(x: 0, y: 0)
+        gradient.endPoint = CGPoint(x: 1, y: 1)
+        return gradient
+    }()
+
+    private lazy var avatarContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white.withAlphaComponent(0.2)
+        view.layer.cornerRadius = 50
+        return view
+    }()
+
+    private lazy var avatarEmoji: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.text = "🧠"
+        label.font = .systemFont(ofSize: 48)
+        label.textAlignment = .center
+        return label
+    }()
+
+    private lazy var levelBadge: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 14
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowRadius = 6
+        view.layer.shadowOpacity = 0.15
+        return view
+    }()
+
+    private lazy var levelBadgeLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 14, weight: .bold)
         label.textColor = DSColor.accent
         label.textAlignment = .center
         return label
@@ -45,40 +88,68 @@ final class ProfileViewController: UIViewController {
     private lazy var xpLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 15, weight: .medium)
-        label.textColor = DSColor.textSecondary
+        label.font = .systemFont(ofSize: 36, weight: .bold)
+        label.textColor = .white
         label.textAlignment = .center
         return label
     }()
 
-    // MARK: - Streak Section
-    private lazy var streakCard: UIView = {
+    private lazy var xpSubtitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Toplam Deneyim Puanı"
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .white.withAlphaComponent(0.8)
+        label.textAlignment = .center
+        return label
+    }()
+
+    // MARK: - Stats Cards Row
+
+    private lazy var statsRow: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.spacing = 12
+        stack.distribution = .fillEqually
+        return stack
+    }()
+
+    private lazy var streakCard: ProfileStatCard = {
+        let card = ProfileStatCard()
+        card.configure(icon: "flame.fill", iconColor: .systemOrange)
+        return card
+    }()
+
+    private lazy var levelCard: ProfileStatCard = {
+        let card = ProfileStatCard()
+        card.configure(icon: "star.fill", iconColor: .systemYellow)
+        return card
+    }()
+
+    private lazy var badgesEarnedCard: ProfileStatCard = {
+        let card = ProfileStatCard()
+        card.configure(icon: "medal.fill", iconColor: .systemPurple)
+        return card
+    }()
+
+    // MARK: - Badges Section
+
+    private lazy var badgesSectionHeader: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = DSColor.surface
-        view.layer.cornerRadius = 16
-        view.layer.borderWidth = 1
-        view.layer.borderColor = DSColor.border.cgColor
         return view
     }()
 
-    private lazy var streakIcon: UIImageView = {
-        let iv = UIImageView(image: UIImage(systemName: "flame.fill"))
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.tintColor = .systemOrange
-        iv.contentMode = .scaleAspectFit
-        return iv
-    }()
-
-    private lazy var streakLabel: UILabel = {
+    private lazy var badgesTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.font = .systemFont(ofSize: 20, weight: .bold)
         label.textColor = DSColor.textPrimary
         return label
     }()
 
-    private lazy var streakSubLabel: UILabel = {
+    private lazy var badgesSubtitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 13)
@@ -86,30 +157,22 @@ final class ProfileViewController: UIViewController {
         return label
     }()
 
-    // MARK: - Badges Section
-    private lazy var badgesTitleLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 18, weight: .bold)
-        label.textColor = DSColor.textPrimary
-        return label
-    }()
-
-    private lazy var badgesCollectionView: UICollectionView = {
+    private lazy var badgesCollectionView: IntrinsicCollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 100, height: 120)
+        let width = UIScreen.main.bounds.width
+        let itemWidth: CGFloat = (width - 40 - 24) / 3  // 3 columns with 20 padding sides + 12 spacing
+        layout.itemSize = CGSize(width: floor(itemWidth), height: 130)
         layout.minimumInteritemSpacing = 12
-        layout.minimumLineSpacing = 12
+        layout.minimumLineSpacing = 16
         layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 20, right: 20)
         layout.scrollDirection = .vertical
 
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let cv = IntrinsicCollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.backgroundColor = .clear
         cv.register(BadgeCell.self, forCellWithReuseIdentifier: BadgeCell.identifier)
         cv.delegate = self
         cv.dataSource = self
-        cv.isScrollEnabled = false
         return cv
     }()
 
@@ -134,19 +197,36 @@ final class ProfileViewController: UIViewController {
         reloadData()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        heroGradientLayer.frame = heroContainer.bounds
+        badgesCollectionView.invalidateIntrinsicContentSize()
+    }
+
     private func reloadData() {
         gamificationService.checkBadges()  // Ensure latest state
         let progress = gamificationService.progress
         badges = gamificationService.badges
 
         title = Strings.profileTitle
-        levelLabel.text = Strings.profileLevel(progress.currentLevel)
+
+        // Hero section
         xpLabel.text = "\(progress.totalXP) XP"
-        streakLabel.text = Strings.profileStreakDays(progress.currentStreak)
-        streakSubLabel.text = Strings.profileStreakSubtitle
+        levelBadgeLabel.text = "Lv.\(progress.currentLevel)"
+
+        // Stats cards
+        streakCard.setValue("\(progress.currentStreak)", subtitle: "Gün Serisi")
+        levelCard.setValue("Lv.\(progress.currentLevel)", subtitle: "Seviye")
+
+        let unlockedCount = badges.filter { $0.isUnlocked }.count
+        badgesEarnedCard.setValue("\(unlockedCount)/\(badges.count)", subtitle: "Rozet")
+
+        // Badges section
         badgesTitleLabel.text = Strings.profileBadges
+        badgesSubtitleLabel.text = "\(unlockedCount) rozet kazandınız"
 
         badgesCollectionView.reloadData()
+        badgesCollectionView.layoutIfNeeded()
     }
 
     private func setupUI() {
@@ -155,16 +235,26 @@ final class ProfileViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
 
-        contentView.addSubview(levelContainer)
-        levelContainer.addSubview(levelLabel)
-        levelContainer.addSubview(xpLabel)
+        // Hero Container
+        contentView.addSubview(heroContainer)
+        heroContainer.layer.insertSublayer(heroGradientLayer, at: 0)
+        heroContainer.addSubview(avatarContainer)
+        avatarContainer.addSubview(avatarEmoji)
+        heroContainer.addSubview(levelBadge)
+        levelBadge.addSubview(levelBadgeLabel)
+        heroContainer.addSubview(xpLabel)
+        heroContainer.addSubview(xpSubtitleLabel)
 
-        contentView.addSubview(streakCard)
-        streakCard.addSubview(streakIcon)
-        streakCard.addSubview(streakLabel)
-        streakCard.addSubview(streakSubLabel)
+        // Stats Row
+        statsRow.addArrangedSubview(streakCard)
+        statsRow.addArrangedSubview(levelCard)
+        statsRow.addArrangedSubview(badgesEarnedCard)
+        contentView.addSubview(statsRow)
 
-        contentView.addSubview(badgesTitleLabel)
+        // Badges Section Header
+        badgesSectionHeader.addSubview(badgesTitleLabel)
+        badgesSectionHeader.addSubview(badgesSubtitleLabel)
+        contentView.addSubview(badgesSectionHeader)
         contentView.addSubview(badgesCollectionView)
 
         NSLayoutConstraint.activate([
@@ -179,50 +269,82 @@ final class ProfileViewController: UIViewController {
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
 
-            // Level Section
-            levelContainer.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            levelContainer.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            levelContainer.widthAnchor.constraint(equalToConstant: 200),
-            levelContainer.heightAnchor.constraint(equalToConstant: 120),
-
-            levelLabel.centerXAnchor.constraint(equalTo: levelContainer.centerXAnchor),
-            levelLabel.centerYAnchor.constraint(
-                equalTo: levelContainer.centerYAnchor, constant: -10),
-
-            xpLabel.topAnchor.constraint(equalTo: levelLabel.bottomAnchor, constant: 8),
-            xpLabel.centerXAnchor.constraint(equalTo: levelContainer.centerXAnchor),
-
-            // Streak Section
-            streakCard.topAnchor.constraint(equalTo: levelContainer.bottomAnchor, constant: 24),
-            streakCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            streakCard.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor, constant: -20),
-            streakCard.heightAnchor.constraint(equalToConstant: 80),
-
-            streakIcon.leadingAnchor.constraint(equalTo: streakCard.leadingAnchor, constant: 24),
-            streakIcon.centerYAnchor.constraint(equalTo: streakCard.centerYAnchor),
-            streakIcon.widthAnchor.constraint(equalToConstant: 32),
-            streakIcon.heightAnchor.constraint(equalToConstant: 32),
-
-            streakLabel.leadingAnchor.constraint(equalTo: streakIcon.trailingAnchor, constant: 16),
-            streakLabel.centerYAnchor.constraint(equalTo: streakCard.centerYAnchor, constant: -10),
-
-            streakSubLabel.topAnchor.constraint(equalTo: streakLabel.bottomAnchor, constant: 2),
-            streakSubLabel.leadingAnchor.constraint(equalTo: streakLabel.leadingAnchor),
-
-            // Badges Section
-            badgesTitleLabel.topAnchor.constraint(equalTo: streakCard.bottomAnchor, constant: 32),
-            badgesTitleLabel.leadingAnchor.constraint(
+            // Hero Container
+            heroContainer.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            heroContainer.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor, constant: 20),
+            heroContainer.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -20),
+            heroContainer.heightAnchor.constraint(equalToConstant: 240),  // Increased height
 
+            avatarContainer.topAnchor.constraint(equalTo: heroContainer.topAnchor, constant: 32),
+            avatarContainer.centerXAnchor.constraint(equalTo: heroContainer.centerXAnchor),
+            avatarContainer.widthAnchor.constraint(equalToConstant: 100),
+            avatarContainer.heightAnchor.constraint(equalToConstant: 100),
+
+            avatarEmoji.centerXAnchor.constraint(equalTo: avatarContainer.centerXAnchor),
+            avatarEmoji.centerYAnchor.constraint(equalTo: avatarContainer.centerYAnchor),
+
+            levelBadge.bottomAnchor.constraint(equalTo: avatarContainer.bottomAnchor, constant: 4),
+            levelBadge.trailingAnchor.constraint(
+                equalTo: avatarContainer.trailingAnchor, constant: 4),
+            levelBadge.widthAnchor.constraint(equalToConstant: 48),
+            levelBadge.heightAnchor.constraint(equalToConstant: 28),
+
+            levelBadgeLabel.centerXAnchor.constraint(equalTo: levelBadge.centerXAnchor),
+            levelBadgeLabel.centerYAnchor.constraint(equalTo: levelBadge.centerYAnchor),
+
+            xpLabel.topAnchor.constraint(equalTo: avatarContainer.bottomAnchor, constant: 20),
+            xpLabel.centerXAnchor.constraint(equalTo: heroContainer.centerXAnchor),
+
+            xpSubtitleLabel.topAnchor.constraint(equalTo: xpLabel.bottomAnchor, constant: 8),
+            xpSubtitleLabel.centerXAnchor.constraint(equalTo: heroContainer.centerXAnchor),
+
+            // Stats Row
+            statsRow.topAnchor.constraint(equalTo: heroContainer.bottomAnchor, constant: 24),
+            statsRow.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            statsRow.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            statsRow.heightAnchor.constraint(equalToConstant: 100),  // Increased height
+
+            // Badges Section Header
+            badgesSectionHeader.topAnchor.constraint(equalTo: statsRow.bottomAnchor, constant: 32),
+            badgesSectionHeader.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor, constant: 20),
+            badgesSectionHeader.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -20),
+            badgesSectionHeader.heightAnchor.constraint(equalToConstant: 50),
+
+            badgesTitleLabel.topAnchor.constraint(equalTo: badgesSectionHeader.topAnchor),
+            badgesTitleLabel.leadingAnchor.constraint(equalTo: badgesSectionHeader.leadingAnchor),
+
+            badgesSubtitleLabel.topAnchor.constraint(
+                equalTo: badgesTitleLabel.bottomAnchor, constant: 4),
+            badgesSubtitleLabel.leadingAnchor.constraint(
+                equalTo: badgesSectionHeader.leadingAnchor),
+
+            // Badges Collection
             badgesCollectionView.topAnchor.constraint(
-                equalTo: badgesTitleLabel.bottomAnchor, constant: 16),
+                equalTo: badgesSectionHeader.bottomAnchor, constant: 12),
             badgesCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             badgesCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            badgesCollectionView.heightAnchor.constraint(equalToConstant: 400),  // Fixed height for now
+            // Removed fixed height constraint
             badgesCollectionView.bottomAnchor.constraint(
                 equalTo: contentView.bottomAnchor, constant: -20),
         ])
+    }
+}
+
+// MARK: - Intrinsic Collection View
+final class IntrinsicCollectionView: UICollectionView {
+    override var intrinsicContentSize: CGSize {
+        return self.collectionViewLayout.collectionViewContentSize
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if !self.bounds.size.equalTo(self.intrinsicContentSize) {
+            self.invalidateIntrinsicContentSize()
+        }
     }
 }
 
@@ -249,25 +371,40 @@ extension ProfileViewController: UICollectionViewDataSource, UICollectionViewDel
     }
 }
 
-// MARK: - Badge Cell
-final class BadgeCell: UICollectionViewCell {
-    static let identifier = "BadgeCell"
+// MARK: - Profile Stat Card
+
+private final class ProfileStatCard: UIView {
+
+    private lazy var iconContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 16
+        return view
+    }()
 
     private lazy var iconView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
-        iv.tintColor = DSColor.textSecondary
+        iv.tintColor = .white
         return iv
     }()
 
-    private lazy var titleLabel: UILabel = {
+    private lazy var valueLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textColor = DSColor.textPrimary
         label.textAlignment = .center
-        label.numberOfLines = 2
+        return label
+    }()
+
+    private lazy var subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 11)
+        label.textColor = DSColor.textSecondary
+        label.textAlignment = .center
         return label
     }()
 
@@ -281,25 +418,138 @@ final class BadgeCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        contentView.backgroundColor = DSColor.surface
-        contentView.layer.cornerRadius = 12
-        contentView.layer.borderWidth = 1
-        contentView.layer.borderColor = DSColor.border.cgColor
+        backgroundColor = DSColor.surface
+        layer.cornerRadius = 16
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOffset = CGSize(width: 0, height: 2)
+        layer.shadowRadius = 8
+        layer.shadowOpacity = 0.06
 
-        contentView.addSubview(iconView)
-        contentView.addSubview(titleLabel)
+        addSubview(iconContainer)
+        iconContainer.addSubview(iconView)
+        addSubview(valueLabel)
+        addSubview(subtitleLabel)
 
         NSLayoutConstraint.activate([
-            iconView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            iconView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            iconView.widthAnchor.constraint(equalToConstant: 40),
-            iconView.heightAnchor.constraint(equalToConstant: 40),
+            iconContainer.topAnchor.constraint(equalTo: topAnchor, constant: 12),
+            iconContainer.centerXAnchor.constraint(equalTo: centerXAnchor),
+            iconContainer.widthAnchor.constraint(equalToConstant: 32),
+            iconContainer.heightAnchor.constraint(equalToConstant: 32),
 
-            titleLabel.topAnchor.constraint(equalTo: iconView.bottomAnchor, constant: 8),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            titleLabel.bottomAnchor.constraint(
-                lessThanOrEqualTo: contentView.bottomAnchor, constant: -8),
+            iconView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 18),
+            iconView.heightAnchor.constraint(equalToConstant: 18),
+
+            valueLabel.topAnchor.constraint(equalTo: iconContainer.bottomAnchor, constant: 8),
+            valueLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+
+            subtitleLabel.topAnchor.constraint(equalTo: valueLabel.bottomAnchor, constant: 2),
+            subtitleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+        ])
+    }
+
+    func configure(icon: String, iconColor: UIColor) {
+        iconView.image = UIImage(systemName: icon)
+        iconContainer.backgroundColor = iconColor.withAlphaComponent(0.15)
+        iconView.tintColor = iconColor
+    }
+
+    func setValue(_ value: String, subtitle: String) {
+        valueLabel.text = value
+        subtitleLabel.text = subtitle
+    }
+}
+
+// MARK: - Badge Cell
+
+final class BadgeCell: UICollectionViewCell {
+    static let identifier = "BadgeCell"
+
+    private lazy var containerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = DSColor.surface
+        view.layer.cornerRadius = 16
+        return view
+    }()
+
+    private lazy var iconContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 24
+        return view
+    }()
+
+    private lazy var iconView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.contentMode = .scaleAspectFit
+        iv.tintColor = DSColor.textSecondary
+        return iv
+    }()
+
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 12, weight: .semibold)
+        label.textColor = DSColor.textPrimary
+        label.textAlignment = .center
+        label.numberOfLines = 2
+        return label
+    }()
+
+    private lazy var checkmark: UIImageView = {
+        let iv = UIImageView(image: UIImage(systemName: "checkmark.circle.fill"))
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.tintColor = .systemGreen
+        iv.contentMode = .scaleAspectFit
+        iv.isHidden = true
+        return iv
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupUI() {
+        contentView.addSubview(containerView)
+        containerView.addSubview(iconContainer)
+        iconContainer.addSubview(iconView)
+        containerView.addSubview(titleLabel)
+        containerView.addSubview(checkmark)
+
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+
+            iconContainer.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 16),
+            iconContainer.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            iconContainer.widthAnchor.constraint(equalToConstant: 48),
+            iconContainer.heightAnchor.constraint(equalToConstant: 48),
+
+            iconView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 24),
+            iconView.heightAnchor.constraint(equalToConstant: 24),
+
+            titleLabel.topAnchor.constraint(equalTo: iconContainer.bottomAnchor, constant: 12),
+            titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+            titleLabel.trailingAnchor.constraint(
+                equalTo: containerView.trailingAnchor, constant: -8),
+
+            checkmark.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
+            checkmark.trailingAnchor.constraint(
+                equalTo: containerView.trailingAnchor, constant: -8),
+            checkmark.widthAnchor.constraint(equalToConstant: 20),
+            checkmark.heightAnchor.constraint(equalToConstant: 20),
         ])
     }
 
@@ -308,13 +558,19 @@ final class BadgeCell: UICollectionViewCell {
         titleLabel.text = Strings.badgeTitle(badge.type.rawValue)
 
         if badge.isUnlocked {
-            contentView.alpha = 1.0
+            containerView.alpha = 1.0
+            iconContainer.backgroundColor = DSColor.accent.withAlphaComponent(0.15)
             iconView.tintColor = DSColor.accent
-            contentView.layer.borderColor = DSColor.accent.cgColor
+            containerView.layer.borderWidth = 2
+            containerView.layer.borderColor = DSColor.accent.withAlphaComponent(0.3).cgColor
+            checkmark.isHidden = false
         } else {
-            contentView.alpha = 0.5
+            containerView.alpha = 0.6
+            iconContainer.backgroundColor = DSColor.textSecondary.withAlphaComponent(0.1)
             iconView.tintColor = DSColor.textSecondary
-            contentView.layer.borderColor = DSColor.border.cgColor
+            containerView.layer.borderWidth = 1
+            containerView.layer.borderColor = DSColor.border.cgColor
+            checkmark.isHidden = true
         }
     }
 }

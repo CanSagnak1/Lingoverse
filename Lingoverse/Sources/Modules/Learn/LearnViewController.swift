@@ -68,8 +68,21 @@ final class LearnViewController: UIViewController, LearnViewInput {
         return button
     }()
 
+    private lazy var miniGamesButton: LearnModeButton = {
+        let button = LearnModeButton(
+            title: Strings.minigamesTitle,
+            subtitle: Strings.minigamesSubtitle,
+            iconName: "gamecontroller.fill",
+            color: .systemPurple
+        )
+        button.addTarget(self, action: #selector(didTapMiniGames), for: .touchUpInside)
+        return button
+    }()
+
     private lazy var buttonsStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [flashcardButton, quizButton, statsButton])
+        let stack = UIStackView(arrangedSubviews: [
+            flashcardButton, quizButton, miniGamesButton, statsButton,
+        ])
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .vertical
         stack.spacing = 16
@@ -182,6 +195,11 @@ final class LearnViewController: UIViewController, LearnViewInput {
     @objc private func didTapStats() {
         HapticManager.shared.buttonPressed()
         presenter.didTapStats()
+    }
+
+    @objc private func didTapMiniGames() {
+        HapticManager.shared.buttonPressed()
+        presenter.didTapMiniGames()
     }
 }
 

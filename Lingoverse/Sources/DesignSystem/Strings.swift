@@ -202,6 +202,65 @@ public enum Strings {
         "badge.xp_5000.desc": "You are at the top with 5000 XP.",
         "badge.quiz_master.title": "Quiz Master",
         "badge.quiz_master.desc": "You completed a quiz perfectly.",
+
+        // Mini Games
+        "minigames.title": "Mini Games",
+        "minigames.subtitle": "Have fun while learning!",
+        "minigames.availableWords": "%d words available",
+        "minigames.needWords": "Need %d words to play",
+        "minigames.minWordsShort": "Min %d Words",
+        "minigames.headerTitle": "Champions Arena",
+        "minigames.headerSubtitle": "Test your vocabulary, break new records!",
+        "minigames.learnedWords": "%d Learned Words",
+        "minigames.needMore": "Need %d more",
+
+        // Word Hunt
+        "wordhunt.title": "Word Hunt",
+        "wordhunt.subtitle": "Find hidden words in the grid",
+        "wordhunt.found": "Found: %d/%d",
+        "wordhunt.instruction": "Tap letters to form a word",
+
+        // Matching
+        "matching.title": "Matching",
+        "matching.subtitle": "Match words with definitions",
+        "matching.moves": "Moves: %d",
+        "matching.pairs": "Pairs: %d/%d",
+
+        // Word Chain
+        "wordchain.title": "Word Chain",
+        "wordchain.subtitle": "Continue the word chain",
+        "wordchain.lastLetter": "Start with: %@",
+        "wordchain.chainLength": "Chain: %d",
+        "wordchain.yourTurn": "Your turn!",
+        "wordchain.hint": "Hint",
+
+        // Hangman
+        "hangman.title": "Hangman",
+        "hangman.subtitle": "Guess the hidden word",
+        "hangman.lives": "%d lives",
+        "hangman.hint": "Hint: %@",
+        "hangman.won": "You Won!",
+        "hangman.lost": "Game Over",
+
+        // Speed Fire
+        "speedfire.title": "Speed Fire",
+        "speedfire.subtitle": "60 seconds challenge!",
+        "speedfire.combo": "%dx Combo!",
+        "speedfire.true": "TRUE",
+        "speedfire.false": "FALSE",
+        "speedfire.isThisCorrect": "Is this definition correct?",
+
+        // Common Game
+        "game.score": "Score: %d",
+        "game.timeUp": "Time's Up!",
+        "game.xpEarned": "+%d XP",
+        "game.playAgain": "Play Again",
+        "game.excellent": "Excellent!",
+        "game.excellentMessage": "You're a vocabulary champion!",
+        "game.greatJob": "Great Job!",
+        "game.greatJobMessage": "Keep practicing to improve!",
+        "game.keepTrying": "Keep Trying!",
+        "game.keepTryingMessage": "Practice makes perfect.",
     ]
 
     private static var turkishStrings: [String: String] = [
@@ -397,6 +456,65 @@ public enum Strings {
         "badge.xp_5000.desc": "5000 XP ile zirvedesin.",
         "badge.quiz_master.title": "Quiz Ustası",
         "badge.quiz_master.desc": "Bir quiz'i hatasız tamamladın.",
+
+        // Mini Games
+        "minigames.title": "Mini Oyunlar",
+        "minigames.subtitle": "Eğlenerek öğren!",
+        "minigames.availableWords": "%d kelime mevcut",
+        "minigames.needWords": "Oynamak için %d kelime gerekli",
+        "minigames.minWordsShort": "Min %d Kelime",
+        "minigames.headerTitle": "Şampiyonlar Arenası",
+        "minigames.headerSubtitle": "Kelime bilgini teste tabi tut, yeni rekorlar kır!",
+        "minigames.learnedWords": "%d Öğrenilen Kelime",
+        "minigames.needMore": "%d Kelime eksik",
+
+        // Word Hunt
+        "wordhunt.title": "Kelime Avı",
+        "wordhunt.subtitle": "Gizli kelimeleri bul",
+        "wordhunt.found": "Bulunan: %d/%d",
+        "wordhunt.instruction": "Kelime oluşturmak için harflere dokun",
+
+        // Matching
+        "matching.title": "Eşleştirme",
+        "matching.subtitle": "Kelimeleri tanımlarla eşleştir",
+        "matching.moves": "Hamle: %d",
+        "matching.pairs": "Çift: %d/%d",
+
+        // Word Chain
+        "wordchain.title": "Kelime Zinciri",
+        "wordchain.subtitle": "Kelime zincirini sürdür",
+        "wordchain.lastLetter": "Şu harfle başla: %@",
+        "wordchain.chainLength": "Zincir: %d",
+        "wordchain.yourTurn": "Senin sıran!",
+        "wordchain.hint": "İpucu",
+
+        // Hangman
+        "hangman.title": "Adam Asmaca",
+        "hangman.subtitle": "Gizli kelimeyi tahmin et",
+        "hangman.lives": "%d can",
+        "hangman.hint": "İpucu: %@",
+        "hangman.won": "Kazandın!",
+        "hangman.lost": "Oyun Bitti",
+
+        // Speed Fire
+        "speedfire.title": "Hızlı Ateş",
+        "speedfire.subtitle": "60 saniye meydan okuması!",
+        "speedfire.combo": "%dx Kombo!",
+        "speedfire.true": "DOĞRU",
+        "speedfire.false": "YANLIŞ",
+        "speedfire.isThisCorrect": "Bu tanım doğru mu?",
+
+        // Common Game
+        "game.score": "Puan: %d",
+        "game.timeUp": "Süre Doldu!",
+        "game.xpEarned": "+%d XP",
+        "game.playAgain": "Tekrar Oyna",
+        "game.excellent": "Mükemmel!",
+        "game.excellentMessage": "Kelime şampiyonusun!",
+        "game.greatJob": "Harika!",
+        "game.greatJobMessage": "Gelişmek için pratik yapmaya devam et!",
+        "game.keepTrying": "Denemeye Devam!",
+        "game.keepTryingMessage": "Pratik mükemmelleştirir.",
     ]
 
     private static func localizedString(_ key: String) -> String {
@@ -601,6 +719,95 @@ public enum Strings {
     // MARK: - Badges
     static func badgeTitle(_ key: String) -> String { localizedString("badge.\(key).title") }
     static func badgeDesc(_ key: String) -> String { localizedString("badge.\(key).desc") }
+
+    // MARK: - Mini Games
+    static var minigamesTitle: String { localizedString("minigames.title") }
+    static var minigamesSubtitle: String { localizedString("minigames.subtitle") }
+    static func minigamesAvailableWords(_ count: Int) -> String {
+        String(format: localizedString("minigames.availableWords"), count)
+    }
+    static func minigamesNeedWords(_ count: Int) -> String {
+        String(format: localizedString("minigames.needWords"), count)
+    }
+    static func minigamesMinWordsShort(_ count: Int) -> String {
+        String(format: localizedString("minigames.minWordsShort"), count)
+    }
+    static var minigamesHeaderTitle: String { localizedString("minigames.headerTitle") }
+    static var minigamesHeaderSubtitle: String { localizedString("minigames.headerSubtitle") }
+    static func minigamesLearnedWords(_ count: Int) -> String {
+        String(format: localizedString("minigames.learnedWords"), count)
+    }
+    static func minigamesNeedMore(_ count: Int) -> String {
+        String(format: localizedString("minigames.needMore"), count)
+    }
+
+    // MARK: - Word Hunt
+    static var wordhuntTitle: String { localizedString("wordhunt.title") }
+    static var wordhuntSubtitle: String { localizedString("wordhunt.subtitle") }
+    static func wordhuntFound(_ found: Int, _ total: Int) -> String {
+        String(format: localizedString("wordhunt.found"), found, total)
+    }
+    static var wordhuntInstruction: String { localizedString("wordhunt.instruction") }
+
+    // MARK: - Matching
+    static var matchingTitle: String { localizedString("matching.title") }
+    static var matchingSubtitle: String { localizedString("matching.subtitle") }
+    static func matchingMoves(_ moves: Int) -> String {
+        String(format: localizedString("matching.moves"), moves)
+    }
+    static func matchingPairs(_ found: Int, _ total: Int) -> String {
+        String(format: localizedString("matching.pairs"), found, total)
+    }
+
+    // MARK: - Word Chain
+    static var wordchainTitle: String { localizedString("wordchain.title") }
+    static var wordchainSubtitle: String { localizedString("wordchain.subtitle") }
+    static func wordchainLastLetter(_ letter: String) -> String {
+        String(format: localizedString("wordchain.lastLetter"), letter)
+    }
+    static func wordchainChainLength(_ length: Int) -> String {
+        String(format: localizedString("wordchain.chainLength"), length)
+    }
+    static var wordchainYourTurn: String { localizedString("wordchain.yourTurn") }
+    static var wordchainHint: String { localizedString("wordchain.hint") }
+
+    // MARK: - Hangman
+    static var hangmanTitle: String { localizedString("hangman.title") }
+    static var hangmanSubtitle: String { localizedString("hangman.subtitle") }
+    static func hangmanLives(_ lives: Int) -> String {
+        String(format: localizedString("hangman.lives"), lives)
+    }
+    static func hangmanHint(_ hint: String) -> String {
+        String(format: localizedString("hangman.hint"), hint)
+    }
+    static var hangmanWon: String { localizedString("hangman.won") }
+    static var hangmanLost: String { localizedString("hangman.lost") }
+
+    // MARK: - Speed Fire
+    static var speedfireTitle: String { localizedString("speedfire.title") }
+    static var speedfireSubtitle: String { localizedString("speedfire.subtitle") }
+    static func speedfireCombo(_ combo: Int) -> String {
+        String(format: localizedString("speedfire.combo"), combo)
+    }
+    static var speedfireTrue: String { localizedString("speedfire.true") }
+    static var speedfireFalse: String { localizedString("speedfire.false") }
+    static var speedfireIsThisCorrect: String { localizedString("speedfire.isThisCorrect") }
+
+    // MARK: - Common Game
+    static func gameScore(_ score: Int) -> String {
+        String(format: localizedString("game.score"), score)
+    }
+    static var gameTimeUp: String { localizedString("game.timeUp") }
+    static func gameXPEarned(_ xp: Int) -> String {
+        String(format: localizedString("game.xpEarned"), xp)
+    }
+    static var gamePlayAgain: String { localizedString("game.playAgain") }
+    static var gameExcellent: String { localizedString("game.excellent") }
+    static var gameExcellentMessage: String { localizedString("game.excellentMessage") }
+    static var gameGreatJob: String { localizedString("game.greatJob") }
+    static var gameGreatJobMessage: String { localizedString("game.greatJobMessage") }
+    static var gameKeepTrying: String { localizedString("game.keepTrying") }
+    static var gameKeepTryingMessage: String { localizedString("game.keepTryingMessage") }
 }
 
 public enum Cammon {

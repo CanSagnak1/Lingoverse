@@ -3,17 +3,25 @@
 //  Lingoverse
 //
 //  Created by Celal Can Sağnak on 1.01.2026.
+//  Redesigned by Antigravity on 25.01.2026.
 //
 
 import UIKit
 
 final class StatsViewController: UIViewController {
 
-    private let progressManager = LearnProgressManager.shared
+    // MARK: - Managers
+
+    private let learnProgress = LearnProgressManager.shared
+    private let miniGameProgress = MiniGameProgressManager.shared
+    private let gamificationService = GamificationService()
+
+    // MARK: - UI Components
 
     private lazy var scrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.translatesAutoresizingMaskIntoConstraints = false
+        sv.showsVerticalScrollIndicator = false
         return sv
     }()
 
@@ -25,108 +33,19 @@ final class StatsViewController: UIViewController {
         return stack
     }()
 
-    private lazy var headerLabel: UILabel = {
-        let label = UILabel()
-        label.text = Strings.statsYourProgress
-        label.font = .systemFont(ofSize: 28, weight: .bold)
-        label.textColor = DSColor.textPrimary
-        return label
-    }()
-
-    private lazy var statsGrid: UIStackView = {
-        let row1 = UIStackView(arrangedSubviews: [
-            createStatCard(
-                title: Strings.statsQuizAccuracy,
-                value: String(format: "%.0f%%", progressManager.accuracy),
-                icon: "target", color: .systemGreen),
-            createStatCard(
-                title: Strings.statsStreakDays, value: "\(progressManager.streakDays)",
-                icon: "flame.fill",
-                color: .systemOrange),
-        ])
-        row1.axis = .horizontal
-        row1.spacing = 16
-        row1.distribution = .fillEqually
-
-        let row2 = UIStackView(arrangedSubviews: [
-            createStatCard(
-                title: Strings.statsFlashcardSessions,
-                value: "\(progressManager.flashcardSessions)",
-                icon: "rectangle.stack.fill", color: .systemBlue),
-            createStatCard(
-                title: Strings.statsQuizSessions, value: "\(progressManager.quizSessions)",
-                icon: "questionmark.circle.fill", color: .systemPurple),
-        ])
-        row2.axis = .horizontal
-        row2.spacing = 16
-        row2.distribution = .fillEqually
-
-        let row3 = UIStackView(arrangedSubviews: [
-            createStatCard(
-                title: Strings.statsCorrectAnswers, value: "\(progressManager.correctAnswers)",
-                icon: "checkmark.circle.fill", color: .systemGreen),
-            createStatCard(
-                title: Strings.statsTotalQuestions, value: "\(progressManager.totalQuestions)",
-                icon: "list.number", color: .systemGray),
-        ])
-        row3.axis = .horizontal
-        row3.spacing = 16
-        row3.distribution = .fillEqually
-
-        let stack = UIStackView(arrangedSubviews: [row1, row2, row3])
-        stack.axis = .vertical
-        stack.spacing = 16
-        return stack
-    }()
-
-    private lazy var motivationCard: UIView = {
-        let card = UIView()
-        card.backgroundColor = DSColor.accent.withAlphaComponent(0.1)
-        card.layer.cornerRadius = 16
-
-        let iconView = UIImageView(image: UIImage(systemName: "lightbulb.fill"))
-        iconView.translatesAutoresizingMaskIntoConstraints = false
-        iconView.tintColor = DSColor.accent
-        iconView.contentMode = .scaleAspectFit
-
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = getMotivationalMessage()
-        label.font = .systemFont(ofSize: 15)
-        label.textColor = DSColor.textPrimary
-        label.numberOfLines = 0
-
-        card.addSubview(iconView)
-        card.addSubview(label)
-
-        NSLayoutConstraint.activate([
-            iconView.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            iconView.centerYAnchor.constraint(equalTo: card.centerYAnchor),
-            iconView.widthAnchor.constraint(equalToConstant: 24),
-            iconView.heightAnchor.constraint(equalToConstant: 24),
-
-            label.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
-            label.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-            label.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
-            label.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -16),
-        ])
-
-        return card
-    }()
-
-    private lazy var resetButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle(Strings.statsResetProgress, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 16)
-        button.setTitleColor(.systemRed, for: .normal)
-        button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
-        return button
-    }()
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        refreshStats()
+    }
+
+    // MARK: - Setup
 
     private func setupUI() {
         title = Strings.statsTitle
@@ -135,13 +54,6 @@ final class StatsViewController: UIViewController {
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentStack)
-
-        contentStack.addArrangedSubview(headerLabel)
-        contentStack.addArrangedSubview(statsGrid)
-        contentStack.addArrangedSubview(motivationCard)
-        contentStack.addArrangedSubview(resetButton)
-
-        contentStack.setCustomSpacing(32, after: headerLabel)
 
         let safeArea = view.safeAreaLayoutGuide
 
@@ -152,7 +64,7 @@ final class StatsViewController: UIViewController {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
             contentStack.topAnchor.constraint(
-                equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 24),
+                equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 16),
             contentStack.leadingAnchor.constraint(
                 equalTo: scrollView.frameLayoutGuide.leadingAnchor, constant: 20),
             contentStack.trailingAnchor.constraint(
@@ -160,70 +72,747 @@ final class StatsViewController: UIViewController {
             contentStack.bottomAnchor.constraint(
                 equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -24),
         ])
+
+        buildUI()
     }
 
-    private func createStatCard(title: String, value: String, icon: String, color: UIColor)
-        -> UIView
-    {
+    private func refreshStats() {
+        contentStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        buildUI()
+    }
+
+    private func buildUI() {
+        // 1. Overview Hero Card
+        contentStack.addArrangedSubview(createOverviewHeroCard())
+
+        // 2. Quick Stats Row
+        contentStack.addArrangedSubview(createQuickStatsRow())
+
+        // 3. Learning Section
+        contentStack.addArrangedSubview(
+            createSectionHeader(
+                title: "📚 Öğrenme", subtitle: "Kartlar & Sınavlar"))
+        contentStack.addArrangedSubview(createLearningSection())
+
+        // 4. Mini Games Section
+        contentStack.addArrangedSubview(
+            createSectionHeader(
+                title: "🎮 Mini Oyunlar", subtitle: "Tüm oyun istatistikleri"))
+        contentStack.addArrangedSubview(createMiniGamesSection())
+
+        // 5. Achievements Section
+        contentStack.addArrangedSubview(
+            createSectionHeader(
+                title: "🏆 Başarılar", subtitle: "En iyi performanslar"))
+        contentStack.addArrangedSubview(createAchievementsSection())
+
+        // 6. Reset Button
+        contentStack.addArrangedSubview(createResetButton())
+    }
+
+    // MARK: - Overview Hero Card
+
+    private func createOverviewHeroCard() -> UIView {
         let card = UIView()
-        card.backgroundColor = DSColor.surface
-        card.layer.cornerRadius = 16
+        card.translatesAutoresizingMaskIntoConstraints = false
+
+        // Gradient background
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            DSColor.accent.cgColor,
+            DSColor.accent.withAlphaComponent(0.7).cgColor,
+        ]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
+        gradientLayer.cornerRadius = 24
+
+        let gradientView = UIView()
+        gradientView.translatesAutoresizingMaskIntoConstraints = false
+        gradientView.layer.addSublayer(gradientLayer)
+        gradientView.layer.cornerRadius = 24
+        gradientView.clipsToBounds = true
+
+        // Stats
+        let totalXP = gamificationService.progress.totalXP
+        let level = gamificationService.progress.currentLevel
+        let streak = learnProgress.streakDays
+        let totalSessions =
+            learnProgress.flashcardSessions + learnProgress.quizSessions
+            + miniGameProgress.totalMiniGameSessions
+
+        // XP Label
+        let xpLabel = UILabel()
+        xpLabel.translatesAutoresizingMaskIntoConstraints = false
+        xpLabel.text = "\(totalXP)"
+        xpLabel.font = .systemFont(ofSize: 56, weight: .bold)
+        xpLabel.textColor = .white
+
+        let xpTitleLabel = UILabel()
+        xpTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        xpTitleLabel.text = "Toplam XP"
+        xpTitleLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        xpTitleLabel.textColor = .white.withAlphaComponent(0.8)
+
+        // Level Badge
+        let levelBadge = createHeroBadge(value: "Lv.\(level)", icon: "star.fill")
+
+        // Streak Badge
+        let streakBadge = createHeroBadge(value: "\(streak) Gün", icon: "flame.fill")
+
+        // Sessions Badge
+        let sessionsBadge = createHeroBadge(value: "\(totalSessions)", icon: "play.circle.fill")
+
+        let badgesStack = UIStackView(arrangedSubviews: [levelBadge, streakBadge, sessionsBadge])
+        badgesStack.translatesAutoresizingMaskIntoConstraints = false
+        badgesStack.axis = NSLayoutConstraint.Axis.horizontal
+        badgesStack.spacing = 12
+        badgesStack.distribution = UIStackView.Distribution.fillEqually
+
+        card.addSubview(gradientView)
+        gradientView.addSubview(xpLabel)
+        gradientView.addSubview(xpTitleLabel)
+        gradientView.addSubview(badgesStack)
+
+        NSLayoutConstraint.activate([
+            card.heightAnchor.constraint(equalToConstant: 200),
+
+            gradientView.topAnchor.constraint(equalTo: card.topAnchor),
+            gradientView.leadingAnchor.constraint(equalTo: card.leadingAnchor),
+            gradientView.trailingAnchor.constraint(equalTo: card.trailingAnchor),
+            gradientView.bottomAnchor.constraint(equalTo: card.bottomAnchor),
+
+            xpLabel.topAnchor.constraint(equalTo: gradientView.topAnchor, constant: 24),
+            xpLabel.leadingAnchor.constraint(equalTo: gradientView.leadingAnchor, constant: 24),
+
+            xpTitleLabel.topAnchor.constraint(equalTo: xpLabel.bottomAnchor, constant: 4),
+            xpTitleLabel.leadingAnchor.constraint(
+                equalTo: gradientView.leadingAnchor, constant: 24),
+
+            badgesStack.leadingAnchor.constraint(equalTo: gradientView.leadingAnchor, constant: 16),
+            badgesStack.trailingAnchor.constraint(
+                equalTo: gradientView.trailingAnchor, constant: -16),
+            badgesStack.bottomAnchor.constraint(equalTo: gradientView.bottomAnchor, constant: -16),
+            badgesStack.heightAnchor.constraint(equalToConstant: 52),
+        ])
+
+        // Layout gradient after constraints
+        DispatchQueue.main.async {
+            gradientLayer.frame = gradientView.bounds
+        }
+
+        return card
+    }
+
+    private func createHeroBadge(value: String, icon: String) -> UIView {
+        let container = UIView()
+        container.backgroundColor = .white.withAlphaComponent(0.2)
+        container.layer.cornerRadius = 12
 
         let iconView = UIImageView(image: UIImage(systemName: icon))
         iconView.translatesAutoresizingMaskIntoConstraints = false
-        iconView.tintColor = color
+        iconView.tintColor = .white
         iconView.contentMode = .scaleAspectFit
+
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = value
+        label.font = .systemFont(ofSize: 14, weight: .bold)
+        label.textColor = .white
+
+        container.addSubview(iconView)
+        container.addSubview(label)
+
+        NSLayoutConstraint.activate([
+            iconView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 10),
+            iconView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 16),
+            iconView.heightAnchor.constraint(equalToConstant: 16),
+
+            label.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 6),
+            label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+        ])
+
+        return container
+    }
+
+    // MARK: - Quick Stats Row
+
+    private func createQuickStatsRow() -> UIView {
+        let accuracy = learnProgress.accuracy
+        let totalQuestions = learnProgress.totalQuestions
+        let correctAnswers = learnProgress.correctAnswers
+
+        let accuracyCard = createQuickStatCard(
+            value: String(format: "%.0f%%", accuracy),
+            title: "Doğruluk",
+            color: accuracy >= 70 ? .systemGreen : .systemOrange
+        )
+
+        let questionsCard = createQuickStatCard(
+            value: "\(totalQuestions)",
+            title: "Soru",
+            color: .systemBlue
+        )
+
+        let correctCard = createQuickStatCard(
+            value: "\(correctAnswers)",
+            title: "Doğru",
+            color: .systemGreen
+        )
+
+        let stack = UIStackView(arrangedSubviews: [accuracyCard, questionsCard, correctCard])
+        stack.axis = .horizontal
+        stack.spacing = 12
+        stack.distribution = .fillEqually
+
+        return stack
+    }
+
+    private func createQuickStatCard(value: String, title: String, color: UIColor) -> UIView {
+        let card = UIView()
+        card.backgroundColor = color.withAlphaComponent(0.1)
+        card.layer.cornerRadius = 16
 
         let valueLabel = UILabel()
         valueLabel.translatesAutoresizingMaskIntoConstraints = false
         valueLabel.text = value
-        valueLabel.font = .systemFont(ofSize: 28, weight: .bold)
-        valueLabel.textColor = DSColor.textPrimary
+        valueLabel.font = .systemFont(ofSize: 24, weight: .bold)
+        valueLabel.textColor = color
+        valueLabel.textAlignment = .center
 
         let titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = title
-        titleLabel.font = .systemFont(ofSize: 13)
+        titleLabel.font = .systemFont(ofSize: 12, weight: .medium)
         titleLabel.textColor = DSColor.textSecondary
+        titleLabel.textAlignment = .center
 
-        card.addSubview(iconView)
         card.addSubview(valueLabel)
         card.addSubview(titleLabel)
 
         NSLayoutConstraint.activate([
-            card.heightAnchor.constraint(equalToConstant: 120),
+            card.heightAnchor.constraint(equalToConstant: 80),
 
-            iconView.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
-            iconView.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            iconView.widthAnchor.constraint(equalToConstant: 24),
-            iconView.heightAnchor.constraint(equalToConstant: 24),
+            valueLabel.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
+            valueLabel.centerXAnchor.constraint(equalTo: card.centerXAnchor),
 
-            valueLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            valueLabel.bottomAnchor.constraint(equalTo: titleLabel.topAnchor, constant: -4),
-
-            titleLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            titleLabel.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -16),
+            titleLabel.topAnchor.constraint(equalTo: valueLabel.bottomAnchor, constant: 4),
+            titleLabel.centerXAnchor.constraint(equalTo: card.centerXAnchor),
         ])
 
         return card
     }
 
-    private func getMotivationalMessage() -> String {
-        let accuracy = progressManager.accuracy
-        let streak = progressManager.streakDays
+    // MARK: - Section Header
 
-        if streak >= 7 {
-            return Strings.statsMotivationStreak(streak)
-        } else if accuracy >= 80 {
-            return Strings.statsMotivationAccuracy
-        } else if progressManager.totalQuestions >= 50 {
-            return Strings.statsMotivationQuestions(progressManager.totalQuestions)
-        } else if progressManager.flashcardSessions >= 5 {
-            return Strings.statsMotivationFlashcards
-        } else {
-            return Strings.statsMotivationDefault
-        }
+    private func createSectionHeader(title: String, subtitle: String) -> UIView {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+
+        let titleLabel = UILabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.text = title
+        titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
+        titleLabel.textColor = DSColor.textPrimary
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.text = subtitle
+        subtitleLabel.font = .systemFont(ofSize: 13)
+        subtitleLabel.textColor = DSColor.textSecondary
+
+        container.addSubview(titleLabel)
+        container.addSubview(subtitleLabel)
+
+        NSLayoutConstraint.activate([
+            container.heightAnchor.constraint(equalToConstant: 50),
+
+            titleLabel.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
+            titleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
+            subtitleLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+        ])
+
+        return container
     }
+
+    // MARK: - Learning Section
+
+    private func createLearningSection() -> UIView {
+        let container = UIView()
+        container.backgroundColor = DSColor.surface
+        container.layer.cornerRadius = 20
+
+        let flashcardRow = createStatRow(
+            icon: "rectangle.stack.fill",
+            iconColor: .systemBlue,
+            title: "Kart Oturumları",
+            value: "\(learnProgress.flashcardSessions)"
+        )
+
+        let quizRow = createStatRow(
+            icon: "questionmark.circle.fill",
+            iconColor: .systemPurple,
+            title: "Sınav Oturumları",
+            value: "\(learnProgress.quizSessions)"
+        )
+
+        let streakRow = createStatRow(
+            icon: "flame.fill",
+            iconColor: .systemOrange,
+            title: "Günlük Seri",
+            value: "\(learnProgress.streakDays) gün"
+        )
+
+        let stack = UIStackView(arrangedSubviews: [
+            flashcardRow, createDivider(), quizRow, createDivider(), streakRow,
+        ])
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 0
+
+        container.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
+            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8),
+        ])
+
+        return container
+    }
+
+    // MARK: - Mini Games Section
+
+    private func createMiniGamesSection() -> UIView {
+        let container = UIView()
+        container.backgroundColor = DSColor.surface
+        container.layer.cornerRadius = 20
+
+        var rows: [UIView] = []
+
+        // Word Hunt
+        if miniGameProgress.wordhuntSessions > 0 {
+            rows.append(
+                createGameStatRow(
+                    emoji: "🎯",
+                    title: "Word Hunt",
+                    sessions: miniGameProgress.wordhuntSessions,
+                    bestLabel: "En İyi",
+                    bestValue: "\(miniGameProgress.wordhuntBestScore) puan"
+                ))
+        }
+
+        // Matching
+        if miniGameProgress.matchingSessions > 0 {
+            rows.append(
+                createGameStatRow(
+                    emoji: "🔗",
+                    title: "Matching",
+                    sessions: miniGameProgress.matchingSessions,
+                    bestLabel: "En Az Hamle",
+                    bestValue: "\(miniGameProgress.matchingBestMoves)"
+                ))
+        }
+
+        // Word Chain
+        if miniGameProgress.wordchainSessions > 0 {
+            rows.append(
+                createGameStatRow(
+                    emoji: "⛓️",
+                    title: "Word Chain",
+                    sessions: miniGameProgress.wordchainSessions,
+                    bestLabel: "En Uzun Zincir",
+                    bestValue: "\(miniGameProgress.wordchainBestChain)"
+                ))
+        }
+
+        // Hangman
+        if miniGameProgress.hangmanSessions > 0 {
+            rows.append(
+                createGameStatRow(
+                    emoji: "🎭",
+                    title: "Hangman",
+                    sessions: miniGameProgress.hangmanSessions,
+                    bestLabel: "Kazanma Oranı",
+                    bestValue: String(format: "%.0f%%", miniGameProgress.hangmanWinRate)
+                ))
+        }
+
+        // Speed Fire
+        if miniGameProgress.speedfireSessions > 0 {
+            rows.append(
+                createGameStatRow(
+                    emoji: "⚡",
+                    title: "Speed Fire",
+                    sessions: miniGameProgress.speedfireSessions,
+                    bestLabel: "En İyi Kombo",
+                    bestValue: "\(miniGameProgress.speedfireBestCombo)x"
+                ))
+        }
+
+        // Empty state
+        if rows.isEmpty {
+            let emptyLabel = UILabel()
+            emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+            emptyLabel.text = "Henüz mini oyun oynamadınız.\nLearn > Mini Games'den başlayın!"
+            emptyLabel.font = .systemFont(ofSize: 14)
+            emptyLabel.textColor = DSColor.textSecondary
+            emptyLabel.textAlignment = .center
+            emptyLabel.numberOfLines = 0
+
+            container.addSubview(emptyLabel)
+
+            NSLayoutConstraint.activate([
+                emptyLabel.topAnchor.constraint(equalTo: container.topAnchor, constant: 24),
+                emptyLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+                emptyLabel.trailingAnchor.constraint(
+                    equalTo: container.trailingAnchor, constant: -16),
+                emptyLabel.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -24),
+            ])
+
+            return container
+        }
+
+        // Add dividers between rows
+        var stackItems: [UIView] = []
+        for (index, row) in rows.enumerated() {
+            stackItems.append(row)
+            if index < rows.count - 1 {
+                stackItems.append(createDivider())
+            }
+        }
+
+        let stack = UIStackView(arrangedSubviews: stackItems)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 0
+
+        container.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
+            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8),
+        ])
+
+        return container
+    }
+
+    private func createGameStatRow(
+        emoji: String, title: String, sessions: Int, bestLabel: String, bestValue: String
+    ) -> UIView {
+        let container = UIView()
+
+        let emojiLabel = UILabel()
+        emojiLabel.translatesAutoresizingMaskIntoConstraints = false
+        emojiLabel.text = emoji
+        emojiLabel.font = .systemFont(ofSize: 28)
+
+        let titleLabel = UILabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.text = title
+        titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        titleLabel.textColor = DSColor.textPrimary
+
+        let sessionsLabel = UILabel()
+        sessionsLabel.translatesAutoresizingMaskIntoConstraints = false
+        sessionsLabel.text = "\(sessions) oturum"
+        sessionsLabel.font = .systemFont(ofSize: 13)
+        sessionsLabel.textColor = DSColor.textSecondary
+
+        let bestStack = UIStackView()
+        bestStack.translatesAutoresizingMaskIntoConstraints = false
+        bestStack.axis = .vertical
+        bestStack.alignment = .trailing
+        bestStack.spacing = 2
+
+        let bestValueLabel = UILabel()
+        bestValueLabel.text = bestValue
+        bestValueLabel.font = .systemFont(ofSize: 16, weight: .bold)
+        bestValueLabel.textColor = DSColor.accent
+
+        let bestTitleLabel = UILabel()
+        bestTitleLabel.text = bestLabel
+        bestTitleLabel.font = .systemFont(ofSize: 11)
+        bestTitleLabel.textColor = DSColor.textSecondary
+
+        bestStack.addArrangedSubview(bestValueLabel)
+        bestStack.addArrangedSubview(bestTitleLabel)
+
+        container.addSubview(emojiLabel)
+        container.addSubview(titleLabel)
+        container.addSubview(sessionsLabel)
+        container.addSubview(bestStack)
+
+        NSLayoutConstraint.activate([
+            container.heightAnchor.constraint(equalToConstant: 72),
+
+            emojiLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            emojiLabel.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+
+            titleLabel.leadingAnchor.constraint(equalTo: emojiLabel.trailingAnchor, constant: 12),
+            titleLabel.topAnchor.constraint(equalTo: container.topAnchor, constant: 18),
+
+            sessionsLabel.leadingAnchor.constraint(
+                equalTo: emojiLabel.trailingAnchor, constant: 12),
+            sessionsLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
+
+            bestStack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            bestStack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+        ])
+
+        return container
+    }
+
+    // MARK: - Achievements Section
+
+    private func createAchievementsSection() -> UIView {
+        let container = UIView()
+        container.backgroundColor = DSColor.surface
+        container.layer.cornerRadius = 20
+
+        var achievements: [(emoji: String, title: String, value: String)] = []
+
+        // Best quiz accuracy
+        if learnProgress.totalQuestions >= 10 {
+            achievements.append(
+                (
+                    emoji: "🎯",
+                    title: "Sınav Ustası",
+                    value: String(format: "%.0f%% doğruluk", learnProgress.accuracy)
+                ))
+        }
+
+        // Longest streak
+        if learnProgress.streakDays >= 3 {
+            achievements.append(
+                (
+                    emoji: "🔥",
+                    title: "Seri Rekoru",
+                    value: "\(learnProgress.streakDays) gün"
+                ))
+        }
+
+        // Total mini game XP
+        if miniGameProgress.totalMiniGameXP > 0 {
+            achievements.append(
+                (
+                    emoji: "🎮",
+                    title: "Oyun XP'si",
+                    value: "\(miniGameProgress.totalMiniGameXP) XP"
+                ))
+        }
+
+        // Most sessions
+        if let mostPlayed = miniGameProgress.mostPlayedGame,
+            miniGameProgress.totalMiniGameSessions > 0
+        {
+            achievements.append(
+                (
+                    emoji: "⭐",
+                    title: "Favori Oyun",
+                    value: mostPlayed
+                ))
+        }
+
+        // Speed Fire best combo
+        if miniGameProgress.speedfireBestCombo >= 3 {
+            achievements.append(
+                (
+                    emoji: "⚡",
+                    title: "Kombo Ustası",
+                    value: "\(miniGameProgress.speedfireBestCombo)x"
+                ))
+        }
+
+        if achievements.isEmpty {
+            let emptyLabel = UILabel()
+            emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+            emptyLabel.text = "Daha fazla oynayarak başarılar kazanın!"
+            emptyLabel.font = .systemFont(ofSize: 14)
+            emptyLabel.textColor = DSColor.textSecondary
+            emptyLabel.textAlignment = .center
+
+            container.addSubview(emptyLabel)
+
+            NSLayoutConstraint.activate([
+                emptyLabel.topAnchor.constraint(equalTo: container.topAnchor, constant: 20),
+                emptyLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+                emptyLabel.trailingAnchor.constraint(
+                    equalTo: container.trailingAnchor, constant: -16),
+                emptyLabel.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -20),
+            ])
+
+            return container
+        }
+
+        var cards: [UIView] = []
+        for achievement in achievements {
+            cards.append(
+                createAchievementCard(
+                    emoji: achievement.emoji,
+                    title: achievement.title,
+                    value: achievement.value
+                ))
+        }
+
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.showsHorizontalScrollIndicator = false
+
+        let stack = UIStackView(arrangedSubviews: cards)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.spacing = 12
+
+        scrollView.addSubview(stack)
+        container.addSubview(scrollView)
+
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: container.topAnchor, constant: 16),
+            scrollView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            scrollView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            scrollView.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -16),
+            scrollView.heightAnchor.constraint(equalToConstant: 90),
+
+            stack.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            stack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            stack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            stack.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
+        ])
+
+        return container
+    }
+
+    private func createAchievementCard(emoji: String, title: String, value: String) -> UIView {
+        let card = UIView()
+        card.backgroundColor = DSColor.accent.withAlphaComponent(0.1)
+        card.layer.cornerRadius = 14
+
+        let emojiLabel = UILabel()
+        emojiLabel.translatesAutoresizingMaskIntoConstraints = false
+        emojiLabel.text = emoji
+        emojiLabel.font = .systemFont(ofSize: 24)
+
+        let titleLabel = UILabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.text = title
+        titleLabel.font = .systemFont(ofSize: 12)
+        titleLabel.textColor = DSColor.textSecondary
+
+        let valueLabel = UILabel()
+        valueLabel.translatesAutoresizingMaskIntoConstraints = false
+        valueLabel.text = value
+        valueLabel.font = .systemFont(ofSize: 14, weight: .bold)
+        valueLabel.textColor = DSColor.accent
+
+        card.addSubview(emojiLabel)
+        card.addSubview(titleLabel)
+        card.addSubview(valueLabel)
+
+        NSLayoutConstraint.activate([
+            card.widthAnchor.constraint(equalToConstant: 120),
+
+            emojiLabel.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
+            emojiLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
+
+            titleLabel.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 6),
+            titleLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
+
+            valueLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
+            valueLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
+        ])
+
+        return card
+    }
+
+    // MARK: - Helper Views
+
+    private func createStatRow(icon: String, iconColor: UIColor, title: String, value: String)
+        -> UIView
+    {
+        let container = UIView()
+
+        let iconContainer = UIView()
+        iconContainer.translatesAutoresizingMaskIntoConstraints = false
+        iconContainer.backgroundColor = iconColor.withAlphaComponent(0.15)
+        iconContainer.layer.cornerRadius = 12
+
+        let iconView = UIImageView(image: UIImage(systemName: icon))
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.tintColor = iconColor
+        iconView.contentMode = .scaleAspectFit
+
+        let titleLabel = UILabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.text = title
+        titleLabel.font = .systemFont(ofSize: 16)
+        titleLabel.textColor = DSColor.textPrimary
+
+        let valueLabel = UILabel()
+        valueLabel.translatesAutoresizingMaskIntoConstraints = false
+        valueLabel.text = value
+        valueLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        valueLabel.textColor = DSColor.textPrimary
+
+        container.addSubview(iconContainer)
+        iconContainer.addSubview(iconView)
+        container.addSubview(titleLabel)
+        container.addSubview(valueLabel)
+
+        NSLayoutConstraint.activate([
+            container.heightAnchor.constraint(equalToConstant: 56),
+
+            iconContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            iconContainer.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            iconContainer.widthAnchor.constraint(equalToConstant: 32),
+            iconContainer.heightAnchor.constraint(equalToConstant: 32),
+
+            iconView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 16),
+            iconView.heightAnchor.constraint(equalToConstant: 16),
+
+            titleLabel.leadingAnchor.constraint(
+                equalTo: iconContainer.trailingAnchor, constant: 12),
+            titleLabel.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+
+            valueLabel.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            valueLabel.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+        ])
+
+        return container
+    }
+
+    private func createDivider() -> UIView {
+        let divider = UIView()
+        divider.translatesAutoresizingMaskIntoConstraints = false
+        divider.backgroundColor = DSColor.textSecondary.withAlphaComponent(0.1)
+        divider.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        return divider
+    }
+
+    private func createResetButton() -> UIView {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("🗑️ " + Strings.statsResetProgress, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.setTitleColor(.systemRed, for: .normal)
+        button.backgroundColor = .systemRed.withAlphaComponent(0.1)
+        button.layer.cornerRadius = 14
+        button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
+
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+
+        return button
+    }
+
+    // MARK: - Actions
 
     @objc private func didTapReset() {
         HapticManager.shared.warning()
@@ -237,7 +826,8 @@ final class StatsViewController: UIViewController {
         alert.addAction(UIAlertAction(title: Strings.cancelButton, style: .cancel))
         alert.addAction(
             UIAlertAction(title: Strings.statsReset, style: .destructive) { [weak self] _ in
-                self?.progressManager.resetProgress()
+                self?.learnProgress.resetProgress()
+                self?.miniGameProgress.resetProgress()
                 HapticManager.shared.success()
                 self?.navigationController?.popViewController(animated: true)
             })

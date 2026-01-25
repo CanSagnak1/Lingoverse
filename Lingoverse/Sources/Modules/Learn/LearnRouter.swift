@@ -11,6 +11,7 @@ protocol LearnRouterProtocol {
     func routeToFlashcard(from vc: UIViewController, words: [String])
     func routeToQuiz(from vc: UIViewController, words: [String])
     func routeToStats(from vc: UIViewController)
+    func routeToMiniGames(from vc: UIViewController, words: [String])
 }
 
 final class LearnRouter: LearnRouterProtocol {
@@ -38,5 +39,10 @@ final class LearnRouter: LearnRouterProtocol {
     func routeToStats(from vc: UIViewController) {
         let statsVC = StatsViewController()
         vc.navigationController?.pushViewController(statsVC, animated: true)
+    }
+
+    func routeToMiniGames(from vc: UIViewController, words: [String]) {
+        let miniGamesVC = MiniGamesHubViewController(words: words)
+        vc.navigationController?.pushViewController(miniGamesVC, animated: true)
     }
 }
