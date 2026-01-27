@@ -35,8 +35,8 @@ final class LearnViewController: UIViewController, LearnViewInput {
         return label
     }()
 
-    private lazy var flashcardButton: LearnModeButton = {
-        let button = LearnModeButton(
+    private lazy var flashcardButton: LearnModeCard = {
+        let button = LearnModeCard(
             title: Strings.learnFlashcards,
             subtitle: Strings.learnFlashcardsSubtitle,
             iconName: "rectangle.stack.fill",
@@ -46,8 +46,8 @@ final class LearnViewController: UIViewController, LearnViewInput {
         return button
     }()
 
-    private lazy var quizButton: LearnModeButton = {
-        let button = LearnModeButton(
+    private lazy var quizButton: LearnModeCard = {
+        let button = LearnModeCard(
             title: Strings.learnQuiz,
             subtitle: Strings.learnQuizSubtitle,
             iconName: "questionmark.circle.fill",
@@ -57,8 +57,8 @@ final class LearnViewController: UIViewController, LearnViewInput {
         return button
     }()
 
-    private lazy var statsButton: LearnModeButton = {
-        let button = LearnModeButton(
+    private lazy var statsButton: LearnModeCard = {
+        let button = LearnModeCard(
             title: Strings.learnStatistics,
             subtitle: Strings.learnStatisticsSubtitle,
             iconName: "chart.bar.fill",
@@ -68,8 +68,8 @@ final class LearnViewController: UIViewController, LearnViewInput {
         return button
     }()
 
-    private lazy var miniGamesButton: LearnModeButton = {
-        let button = LearnModeButton(
+    private lazy var miniGamesButton: LearnModeCard = {
+        let button = LearnModeCard(
             title: Strings.minigamesTitle,
             subtitle: Strings.minigamesSubtitle,
             iconName: "gamecontroller.fill",
@@ -134,6 +134,32 @@ final class LearnViewController: UIViewController, LearnViewInput {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
+        animateCardsEntrance()
+    }
+
+    private func animateCardsEntrance() {
+        let cards = [flashcardButton, quizButton, miniGamesButton, statsButton]
+
+        // Prepare for animation (start slightly lower and transparent)
+        cards.forEach {
+            $0.alpha = 0
+            $0.transform = CGAffineTransform(translationX: 0, y: 30)
+        }
+
+        // Staggered animation
+        for (index, card) in cards.enumerated() {
+            UIView.animate(
+                withDuration: 0.6,
+                delay: Double(index) * 0.1,
+                usingSpringWithDamping: 0.7,
+                initialSpringVelocity: 0.5,
+                options: .curveEaseOut,
+                animations: {
+                    card.alpha = 1
+                    card.transform = .identity
+                }
+            )
+        }
     }
 
     private func setupUI() {
@@ -203,14 +229,30 @@ final class LearnViewController: UIViewController, LearnViewInput {
     }
 }
 
-final class LearnModeButton: UIControl {
+final class LearnModeCard: UIControl {
 
     private lazy var containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = DSColor.surface
-        view.layer.cornerRadius = 16
+        view.layer.cornerRadius = 24
         view.isUserInteractionEnabled = false
+
+        // Premium Card styling
+        view.layer.borderWidth = 1
+        view.layer.borderColor = DSColor.textSecondary.withAlphaComponent(0.05).cgColor
+
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 8)
+        view.layer.shadowRadius = 16
+        view.layer.shadowOpacity = 0.08
+        return view
+    }()
+
+    private lazy var iconContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 18
         return view
     }()
 
@@ -218,13 +260,14 @@ final class LearnModeButton: UIControl {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
+        iv.tintColor = .white
         return iv
     }()
 
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.font = .systemFont(ofSize: 20, weight: .bold)  // Bolder
         label.textColor = DSColor.textPrimary
         return label
     }()
@@ -232,7 +275,7 @@ final class LearnModeButton: UIControl {
     private lazy var subtitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 14)
+        label.font = .systemFont(ofSize: 15, weight: .medium)
         label.textColor = DSColor.textSecondary
         return label
     }()
@@ -240,7 +283,7 @@ final class LearnModeButton: UIControl {
     private lazy var arrowView: UIImageView = {
         let iv = UIImageView(image: UIImage(systemName: "chevron.right"))
         iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.tintColor = DSColor.textSecondary
+        iv.tintColor = DSColor.textSecondary.withAlphaComponent(0.5)
         iv.contentMode = .scaleAspectFit
         return iv
     }()
@@ -251,6 +294,9 @@ final class LearnModeButton: UIControl {
         titleLabel.text = title
         subtitleLabel.text = subtitle
         iconView.image = UIImage(systemName: iconName)
+
+        // Icon container styling
+        iconContainer.backgroundColor = color.withAlphaComponent(0.15)
         iconView.tintColor = color
 
         setupUI()
@@ -264,7 +310,8 @@ final class LearnModeButton: UIControl {
         translatesAutoresizingMaskIntoConstraints = false
 
         addSubview(containerView)
-        containerView.addSubview(iconView)
+        containerView.addSubview(iconContainer)
+        iconContainer.addSubview(iconView)
         containerView.addSubview(titleLabel)
         containerView.addSubview(subtitleLabel)
         containerView.addSubview(arrowView)
@@ -274,23 +321,31 @@ final class LearnModeButton: UIControl {
             containerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            containerView.heightAnchor.constraint(equalToConstant: 80),
+            containerView.heightAnchor.constraint(equalToConstant: 100),  // Taller card
 
-            iconView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            iconView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            iconView.widthAnchor.constraint(equalToConstant: 40),
-            iconView.heightAnchor.constraint(equalToConstant: 40),
+            iconContainer.leadingAnchor.constraint(
+                equalTo: containerView.leadingAnchor, constant: 20),
+            iconContainer.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+            iconContainer.widthAnchor.constraint(equalToConstant: 56),  // Larger icon
+            iconContainer.heightAnchor.constraint(equalToConstant: 56),
 
-            titleLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 16),
-            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 18),
+            iconView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 28),
+            iconView.heightAnchor.constraint(equalToConstant: 28),
+
+            titleLabel.leadingAnchor.constraint(
+                equalTo: iconContainer.trailingAnchor, constant: 16),
+            titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 24),
             titleLabel.trailingAnchor.constraint(equalTo: arrowView.leadingAnchor, constant: -8),
 
-            subtitleLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 16),
+            subtitleLabel.leadingAnchor.constraint(
+                equalTo: iconContainer.trailingAnchor, constant: 16),
             subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
             subtitleLabel.trailingAnchor.constraint(equalTo: arrowView.leadingAnchor, constant: -8),
 
             arrowView.trailingAnchor.constraint(
-                equalTo: containerView.trailingAnchor, constant: -20),
+                equalTo: containerView.trailingAnchor, constant: -24),
             arrowView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
             arrowView.widthAnchor.constraint(equalToConstant: 12),
             arrowView.heightAnchor.constraint(equalToConstant: 20),
@@ -299,10 +354,9 @@ final class LearnModeButton: UIControl {
 
     override var isHighlighted: Bool {
         didSet {
-            UIView.animate(withDuration: 0.1) {
-                self.containerView.alpha = self.isHighlighted ? 0.7 : 1.0
+            UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseOut) {
                 self.transform =
-                    self.isHighlighted ? CGAffineTransform(scaleX: 0.98, y: 0.98) : .identity
+                    self.isHighlighted ? CGAffineTransform(scaleX: 0.96, y: 0.96) : .identity
             }
         }
     }

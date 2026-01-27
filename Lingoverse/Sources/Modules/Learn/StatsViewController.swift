@@ -91,19 +91,22 @@ final class StatsViewController: UIViewController {
         // 3. Learning Section
         contentStack.addArrangedSubview(
             createSectionHeader(
-                title: "📚 Öğrenme", subtitle: "Kartlar & Sınavlar"))
+                title: Strings.statsSectionLearning, subtitle: Strings.statsSectionLearningSubtitle)
+        )
         contentStack.addArrangedSubview(createLearningSection())
 
         // 4. Mini Games Section
         contentStack.addArrangedSubview(
             createSectionHeader(
-                title: "🎮 Mini Oyunlar", subtitle: "Tüm oyun istatistikleri"))
+                title: Strings.statsSectionMinigames,
+                subtitle: Strings.statsSectionMinigamesSubtitle))
         contentStack.addArrangedSubview(createMiniGamesSection())
 
         // 5. Achievements Section
         contentStack.addArrangedSubview(
             createSectionHeader(
-                title: "🏆 Başarılar", subtitle: "En iyi performanslar"))
+                title: Strings.statsSectionAchievements,
+                subtitle: Strings.statsSectionAchievementsSubtitle))
         contentStack.addArrangedSubview(createAchievementsSection())
 
         // 6. Reset Button
@@ -149,15 +152,16 @@ final class StatsViewController: UIViewController {
 
         let xpTitleLabel = UILabel()
         xpTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        xpTitleLabel.text = "Toplam XP"
+        xpTitleLabel.text = Strings.statsTotalXP
         xpTitleLabel.font = .systemFont(ofSize: 16, weight: .medium)
         xpTitleLabel.textColor = .white.withAlphaComponent(0.8)
 
         // Level Badge
-        let levelBadge = createHeroBadge(value: "Lv.\(level)", icon: "star.fill")
+        let levelBadge = createHeroBadge(value: Strings.profileLevel(level), icon: "star.fill")
 
         // Streak Badge
-        let streakBadge = createHeroBadge(value: "\(streak) Gün", icon: "flame.fill")
+        let streakBadge = createHeroBadge(
+            value: Strings.profileStreakDays(streak), icon: "flame.fill")
 
         // Sessions Badge
         let sessionsBadge = createHeroBadge(value: "\(totalSessions)", icon: "play.circle.fill")
@@ -244,19 +248,19 @@ final class StatsViewController: UIViewController {
 
         let accuracyCard = createQuickStatCard(
             value: String(format: "%.0f%%", accuracy),
-            title: "Doğruluk",
+            title: Strings.statsQuickAccuracy,
             color: accuracy >= 70 ? .systemGreen : .systemOrange
         )
 
         let questionsCard = createQuickStatCard(
             value: "\(totalQuestions)",
-            title: "Soru",
+            title: Strings.statsQuickQuestions,
             color: .systemBlue
         )
 
         let correctCard = createQuickStatCard(
             value: "\(correctAnswers)",
-            title: "Doğru",
+            title: Strings.statsQuickCorrect,
             color: .systemGreen
         )
 
@@ -347,22 +351,22 @@ final class StatsViewController: UIViewController {
         let flashcardRow = createStatRow(
             icon: "rectangle.stack.fill",
             iconColor: .systemBlue,
-            title: "Kart Oturumları",
+            title: Strings.statsRowFlashcardSessions,
             value: "\(learnProgress.flashcardSessions)"
         )
 
         let quizRow = createStatRow(
             icon: "questionmark.circle.fill",
             iconColor: .systemPurple,
-            title: "Sınav Oturumları",
+            title: Strings.statsRowQuizSessions,
             value: "\(learnProgress.quizSessions)"
         )
 
         let streakRow = createStatRow(
             icon: "flame.fill",
             iconColor: .systemOrange,
-            title: "Günlük Seri",
-            value: "\(learnProgress.streakDays) gün"
+            title: Strings.statsRowDailyStreak,
+            value: Strings.profileStreakDays(learnProgress.streakDays)
         )
 
         let stack = UIStackView(arrangedSubviews: [
@@ -398,10 +402,10 @@ final class StatsViewController: UIViewController {
             rows.append(
                 createGameStatRow(
                     emoji: "🎯",
-                    title: "Word Hunt",
+                    title: Strings.wordhuntTitle,
                     sessions: miniGameProgress.wordhuntSessions,
-                    bestLabel: "En İyi",
-                    bestValue: "\(miniGameProgress.wordhuntBestScore) puan"
+                    bestLabel: Strings.statsGameBestScore,
+                    bestValue: Strings.statsGamePoints("\(miniGameProgress.wordhuntBestScore)")
                 ))
         }
 
@@ -410,9 +414,9 @@ final class StatsViewController: UIViewController {
             rows.append(
                 createGameStatRow(
                     emoji: "🔗",
-                    title: "Matching",
+                    title: Strings.matchingTitle,
                     sessions: miniGameProgress.matchingSessions,
-                    bestLabel: "En Az Hamle",
+                    bestLabel: Strings.statsGameFewestMoves,
                     bestValue: "\(miniGameProgress.matchingBestMoves)"
                 ))
         }
@@ -422,9 +426,9 @@ final class StatsViewController: UIViewController {
             rows.append(
                 createGameStatRow(
                     emoji: "⛓️",
-                    title: "Word Chain",
+                    title: Strings.wordchainTitle,
                     sessions: miniGameProgress.wordchainSessions,
-                    bestLabel: "En Uzun Zincir",
+                    bestLabel: Strings.statsGameLongestChain,
                     bestValue: "\(miniGameProgress.wordchainBestChain)"
                 ))
         }
@@ -434,9 +438,9 @@ final class StatsViewController: UIViewController {
             rows.append(
                 createGameStatRow(
                     emoji: "🎭",
-                    title: "Hangman",
+                    title: Strings.hangmanTitle,
                     sessions: miniGameProgress.hangmanSessions,
-                    bestLabel: "Kazanma Oranı",
+                    bestLabel: Strings.statsGameWinRate,
                     bestValue: String(format: "%.0f%%", miniGameProgress.hangmanWinRate)
                 ))
         }
@@ -446,9 +450,9 @@ final class StatsViewController: UIViewController {
             rows.append(
                 createGameStatRow(
                     emoji: "⚡",
-                    title: "Speed Fire",
+                    title: Strings.speedfireTitle,
                     sessions: miniGameProgress.speedfireSessions,
-                    bestLabel: "En İyi Kombo",
+                    bestLabel: Strings.statsGameBestCombo,
                     bestValue: "\(miniGameProgress.speedfireBestCombo)x"
                 ))
         }
@@ -457,8 +461,8 @@ final class StatsViewController: UIViewController {
         if rows.isEmpty {
             let emptyLabel = UILabel()
             emptyLabel.translatesAutoresizingMaskIntoConstraints = false
-            emptyLabel.text = "Henüz mini oyun oynamadınız.\nLearn > Mini Games'den başlayın!"
-            emptyLabel.font = .systemFont(ofSize: 14)
+            emptyLabel.text = Strings.statsEmptyMinigames
+            emptyLabel.font = .systemFont(ofSize: 14)  // Assuming font size is consistent
             emptyLabel.textColor = DSColor.textSecondary
             emptyLabel.textAlignment = .center
             emptyLabel.numberOfLines = 0
@@ -520,7 +524,7 @@ final class StatsViewController: UIViewController {
 
         let sessionsLabel = UILabel()
         sessionsLabel.translatesAutoresizingMaskIntoConstraints = false
-        sessionsLabel.text = "\(sessions) oturum"
+        sessionsLabel.text = Strings.statsSessions(sessions)
         sessionsLabel.font = .systemFont(ofSize: 13)
         sessionsLabel.textColor = DSColor.textSecondary
 
@@ -582,8 +586,8 @@ final class StatsViewController: UIViewController {
             achievements.append(
                 (
                     emoji: "🎯",
-                    title: "Sınav Ustası",
-                    value: String(format: "%.0f%% doğruluk", learnProgress.accuracy)
+                    title: Strings.achievementQuizMaster,
+                    value: Strings.achievementAccuracy(learnProgress.accuracy)
                 ))
         }
 
@@ -592,8 +596,8 @@ final class StatsViewController: UIViewController {
             achievements.append(
                 (
                     emoji: "🔥",
-                    title: "Seri Rekoru",
-                    value: "\(learnProgress.streakDays) gün"
+                    title: Strings.achievementStreakRecord,
+                    value: Strings.profileStreakDays(learnProgress.streakDays)
                 ))
         }
 
@@ -602,7 +606,7 @@ final class StatsViewController: UIViewController {
             achievements.append(
                 (
                     emoji: "🎮",
-                    title: "Oyun XP'si",
+                    title: Strings.achievementGameXP,
                     value: "\(miniGameProgress.totalMiniGameXP) XP"
                 ))
         }
@@ -614,7 +618,7 @@ final class StatsViewController: UIViewController {
             achievements.append(
                 (
                     emoji: "⭐",
-                    title: "Favori Oyun",
+                    title: Strings.achievementFavoriteGame,
                     value: mostPlayed
                 ))
         }
@@ -624,7 +628,7 @@ final class StatsViewController: UIViewController {
             achievements.append(
                 (
                     emoji: "⚡",
-                    title: "Kombo Ustası",
+                    title: Strings.achievementComboMaster,
                     value: "\(miniGameProgress.speedfireBestCombo)x"
                 ))
         }
@@ -632,10 +636,10 @@ final class StatsViewController: UIViewController {
         if achievements.isEmpty {
             let emptyLabel = UILabel()
             emptyLabel.translatesAutoresizingMaskIntoConstraints = false
-            emptyLabel.text = "Daha fazla oynayarak başarılar kazanın!"
-            emptyLabel.font = .systemFont(ofSize: 14)
+            emptyLabel.text = Strings.statsEmptyAchievements
+            emptyLabel.font = .systemFont(ofSize: 14)  // Assuming font size is consistent
             emptyLabel.textColor = DSColor.textSecondary
-            emptyLabel.textAlignment = .center
+            emptyLabel.textAlignment = .center  // Alignment should be center
 
             container.addSubview(emptyLabel)
 

@@ -126,10 +126,15 @@ final class SpeedFireViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("✓ \(Strings.speedfireTrue)", for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        button.titleLabel?.font = .systemFont(ofSize: 22, weight: .heavy)
         button.backgroundColor = .systemGreen
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 16
+        button.layer.cornerRadius = 20
+        // Game Show Button Shadow
+        button.layer.shadowColor = UIColor.systemGreen.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.layer.shadowRadius = 8
+        button.layer.shadowOpacity = 0.4
         button.addTarget(self, action: #selector(didTapTrue), for: .touchUpInside)
         return button
     }()
@@ -138,10 +143,15 @@ final class SpeedFireViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("✗ \(Strings.speedfireFalse)", for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        button.titleLabel?.font = .systemFont(ofSize: 22, weight: .heavy)
         button.backgroundColor = .systemRed
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 16
+        button.layer.cornerRadius = 20
+        // Game Show Button Shadow
+        button.layer.shadowColor = UIColor.systemRed.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 4)
+        button.layer.shadowRadius = 8
+        button.layer.shadowOpacity = 0.4
         button.addTarget(self, action: #selector(didTapFalse), for: .touchUpInside)
         return button
     }()
@@ -434,11 +444,20 @@ final class SpeedFireViewController: UIViewController {
     }
 
     private func flashCard(color: UIColor) {
-        let originalBg = questionCard.backgroundColor
-        questionCard.backgroundColor = color.withAlphaComponent(0.2)
+        let originalBg = DSColor.surface
 
-        UIView.animate(withDuration: 0.2, delay: 0.1) {
-            self.questionCard.backgroundColor = originalBg
+        // Instant visual feedback
+        UIView.animate(
+            withDuration: 0.1,
+            animations: {
+                self.questionCard.backgroundColor = color.withAlphaComponent(0.3)
+                self.questionCard.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+            }
+        ) { _ in
+            UIView.animate(withDuration: 0.2) {
+                self.questionCard.backgroundColor = originalBg
+                self.questionCard.transform = .identity
+            }
         }
     }
 

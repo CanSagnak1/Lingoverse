@@ -34,17 +34,32 @@ final class WordHuntViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = Strings.wordhuntInstruction
-        label.font = .systemFont(ofSize: 15)
+        label.font = .systemFont(ofSize: 15, weight: .medium)
         label.textColor = DSColor.textSecondary
         label.textAlignment = .center
         return label
+    }()
+
+    private lazy var currentWordContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = DSColor.surface
+        view.layer.cornerRadius = 16
+        view.layer.borderWidth = 2
+        view.layer.borderColor = DSColor.accent.withAlphaComponent(0.3).cgColor
+        return view
     }()
 
     private lazy var gridContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = DSColor.surface
-        view.layer.cornerRadius = 16
+        view.layer.cornerRadius = 24
+        // Premium Shadow
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowRadius = 12
+        view.layer.shadowOpacity = 0.1
         return view
     }()
 
@@ -64,6 +79,7 @@ final class WordHuntViewController: UIViewController {
         label.textColor = DSColor.accent
         label.textAlignment = .center
         label.text = ""
+        // Placeholder-like appearance initially
         return label
     }()
 
@@ -88,14 +104,21 @@ final class WordHuntViewController: UIViewController {
         return button
     }()
 
-    private lazy var foundWordsLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 14, weight: .medium)
-        label.textColor = DSColor.textSecondary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
+    private lazy var foundWordsScrollView: UIScrollView = {
+        let sv = UIScrollView()
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        sv.showsHorizontalScrollIndicator = false
+        sv.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        return sv
+    }()
+
+    private lazy var foundWordsStack: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.spacing = 8
+        stack.alignment = .center
+        return stack
     }()
 
     private lazy var resultView: GameResultView = {
@@ -143,10 +166,18 @@ final class WordHuntViewController: UIViewController {
         view.addSubview(instructionLabel)
         view.addSubview(gridContainer)
         gridContainer.addSubview(gridStack)
-        view.addSubview(currentWordLabel)
+
+        // Current Word Area
+        view.addSubview(currentWordContainer)
+        currentWordContainer.addSubview(currentWordLabel)
+
         view.addSubview(clearButton)
         view.addSubview(submitButton)
-        view.addSubview(foundWordsLabel)
+
+        // Found Words Area
+        view.addSubview(foundWordsScrollView)
+        foundWordsScrollView.addSubview(foundWordsStack)
+
         view.addSubview(resultView)
 
         let safeArea = view.safeAreaLayoutGuide
@@ -156,9 +187,8 @@ final class WordHuntViewController: UIViewController {
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
-            instructionLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 16),
-            instructionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            instructionLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            instructionLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 12),
+            instructionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
             gridContainer.topAnchor.constraint(
                 equalTo: instructionLabel.bottomAnchor, constant: 20),
@@ -166,31 +196,53 @@ final class WordHuntViewController: UIViewController {
             gridContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             gridContainer.heightAnchor.constraint(equalTo: gridContainer.widthAnchor),
 
-            gridStack.topAnchor.constraint(equalTo: gridContainer.topAnchor, constant: 8),
-            gridStack.leadingAnchor.constraint(equalTo: gridContainer.leadingAnchor, constant: 8),
+            gridStack.topAnchor.constraint(equalTo: gridContainer.topAnchor, constant: 12),
+            gridStack.leadingAnchor.constraint(equalTo: gridContainer.leadingAnchor, constant: 12),
             gridStack.trailingAnchor.constraint(
-                equalTo: gridContainer.trailingAnchor, constant: -8),
-            gridStack.bottomAnchor.constraint(equalTo: gridContainer.bottomAnchor, constant: -8),
+                equalTo: gridContainer.trailingAnchor, constant: -12),
+            gridStack.bottomAnchor.constraint(equalTo: gridContainer.bottomAnchor, constant: -12),
 
-            currentWordLabel.topAnchor.constraint(
-                equalTo: gridContainer.bottomAnchor, constant: 20),
-            currentWordLabel.leadingAnchor.constraint(
-                equalTo: clearButton.trailingAnchor, constant: 8),
-            currentWordLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            // Current Word Input Field Style
+            currentWordContainer.topAnchor.constraint(
+                equalTo: gridContainer.bottomAnchor, constant: 24),
+            currentWordContainer.leadingAnchor.constraint(
+                equalTo: clearButton.trailingAnchor, constant: 12),
+            currentWordContainer.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -20),
+            currentWordContainer.heightAnchor.constraint(equalToConstant: 60),
 
-            clearButton.centerYAnchor.constraint(equalTo: currentWordLabel.centerYAnchor),
+            currentWordLabel.centerXAnchor.constraint(equalTo: currentWordContainer.centerXAnchor),
+            currentWordLabel.centerYAnchor.constraint(equalTo: currentWordContainer.centerYAnchor),
+
+            clearButton.centerYAnchor.constraint(equalTo: currentWordContainer.centerYAnchor),
             clearButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            clearButton.widthAnchor.constraint(equalToConstant: 40),
-            clearButton.heightAnchor.constraint(equalToConstant: 40),
+            clearButton.widthAnchor.constraint(equalToConstant: 44),
+            clearButton.heightAnchor.constraint(equalToConstant: 44),
 
-            submitButton.topAnchor.constraint(equalTo: currentWordLabel.bottomAnchor, constant: 20),
+            submitButton.topAnchor.constraint(
+                equalTo: currentWordContainer.bottomAnchor, constant: 16),
             submitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             submitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             submitButton.heightAnchor.constraint(equalToConstant: 56),
 
-            foundWordsLabel.topAnchor.constraint(equalTo: submitButton.bottomAnchor, constant: 16),
-            foundWordsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            foundWordsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            // Found Words Scroll
+            foundWordsScrollView.topAnchor.constraint(
+                equalTo: submitButton.bottomAnchor, constant: 20),
+            foundWordsScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            foundWordsScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            foundWordsScrollView.heightAnchor.constraint(equalToConstant: 40),
+            foundWordsScrollView.bottomAnchor.constraint(
+                lessThanOrEqualTo: safeArea.bottomAnchor, constant: -20),
+
+            foundWordsStack.leadingAnchor.constraint(
+                equalTo: foundWordsScrollView.contentLayoutGuide.leadingAnchor),
+            foundWordsStack.trailingAnchor.constraint(
+                equalTo: foundWordsScrollView.contentLayoutGuide.trailingAnchor),
+            foundWordsStack.topAnchor.constraint(
+                equalTo: foundWordsScrollView.contentLayoutGuide.topAnchor),
+            foundWordsStack.bottomAnchor.constraint(
+                equalTo: foundWordsScrollView.contentLayoutGuide.bottomAnchor),
+            foundWordsStack.heightAnchor.constraint(equalTo: foundWordsScrollView.heightAnchor),
 
             resultView.topAnchor.constraint(equalTo: view.topAnchor),
             resultView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -239,7 +291,7 @@ final class WordHuntViewController: UIViewController {
 
         // Update UI
         updateGrid()
-        updateFoundWordsLabel()
+        // No initial found words
     }
 
     private func placeWordsInGrid() {
@@ -352,6 +404,9 @@ final class WordHuntViewController: UIViewController {
             // Animate found
             animateCorrect()
 
+            // Add Chip
+            addFoundWordChip(word)
+
             // Check if all found
             if foundWords.count == targetWords.count {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -365,7 +420,6 @@ final class WordHuntViewController: UIViewController {
         }
 
         clearSelection()
-        updateFoundWordsLabel()
     }
 
     @objc private func didTapClear() {
@@ -389,9 +443,45 @@ final class WordHuntViewController: UIViewController {
         currentWordLabel.text = word
     }
 
-    private func updateFoundWordsLabel() {
-        let foundList = foundWords.joined(separator: ", ")
-        foundWordsLabel.text = foundList.isEmpty ? "" : "✓ \(foundList)"
+    private func addFoundWordChip(_ word: String) {
+        let chipContainer = UIView()
+        chipContainer.backgroundColor = DSColor.accent.withAlphaComponent(0.1)
+        chipContainer.layer.cornerRadius = 16
+        chipContainer.layer.borderWidth = 1
+        chipContainer.layer.borderColor = DSColor.accent.withAlphaComponent(0.2).cgColor
+        chipContainer.translatesAutoresizingMaskIntoConstraints = false
+
+        let label = UILabel()
+        label.text = word.uppercased()
+        label.font = .systemFont(ofSize: 14, weight: .bold)
+        label.textColor = DSColor.accent
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        chipContainer.addSubview(label)
+
+        NSLayoutConstraint.activate([
+            chipContainer.heightAnchor.constraint(equalToConstant: 32),
+            label.leadingAnchor.constraint(equalTo: chipContainer.leadingAnchor, constant: 12),
+            label.trailingAnchor.constraint(equalTo: chipContainer.trailingAnchor, constant: -12),
+            label.centerYAnchor.constraint(equalTo: chipContainer.centerYAnchor),
+        ])
+
+        // Initial state for animation
+        chipContainer.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        chipContainer.alpha = 0
+
+        foundWordsStack.insertArrangedSubview(chipContainer, at: 0)
+
+        UIView.animate(
+            withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.5
+        ) {
+            chipContainer.transform = .identity
+            chipContainer.alpha = 1
+            self.foundWordsScrollView.layoutIfNeeded()
+        }
+
+        // Scroll to start
+        foundWordsScrollView.setContentOffset(.zero, animated: true)
     }
 
     private func animateCorrect() {
@@ -404,9 +494,21 @@ final class WordHuntViewController: UIViewController {
     }
 
     private func animateWrong() {
+        // Shake Grid
+        let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        animation.timingFunction = CAMediaTimingFunction(name: .linear)
+        animation.duration = 0.6
+        animation.values = [-10.0, 10.0, -10.0, 10.0, -5.0, 5.0, -2.0, 2.0, 0.0]
+        gridContainer.layer.add(animation, forKey: "shake")
+
         submitButton.backgroundColor = .systemRed
+        currentWordContainer.layer.borderColor = UIColor.systemRed.cgColor
+
         UIView.animate(withDuration: 0.2, delay: 0.3) {
             self.submitButton.backgroundColor = DSColor.accent
+            self.currentWordContainer.layer.borderColor =
+                DSColor.accent.withAlphaComponent(0.3).cgColor
+            self.currentWordLabel.text = ""
         }
     }
 
@@ -451,6 +553,7 @@ final class WordHuntViewController: UIViewController {
         score = 0
         foundWords.removeAll()
         selectedIndices.removeAll()
+        foundWordsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         headerView.updateScore(0)
         setupGame()
         headerView.configure(initialTime: gameTime) { [weak self] in
@@ -467,10 +570,24 @@ private final class LetterCell: UIControl {
     private lazy var label: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 22, weight: .bold)
+        label.font = .systemFont(ofSize: 24, weight: .bold)  // Larger font
         label.textColor = DSColor.textPrimary
         label.textAlignment = .center
         return label
+    }()
+
+    private lazy var bgView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = DSColor.surface
+        view.layer.cornerRadius = 12
+        view.isUserInteractionEnabled = false
+        // Shadow for premium feel
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowRadius = 3
+        view.layer.shadowOpacity = 0.08
+        return view
     }()
 
     override init(frame: CGRect) {
@@ -483,14 +600,18 @@ private final class LetterCell: UIControl {
     }
 
     private func setupUI() {
-        backgroundColor = DSColor.surface
-        layer.cornerRadius = 8
-        layer.borderWidth = 2
-        layer.borderColor = UIColor.clear.cgColor
+        // Transparent container
+        backgroundColor = .clear
 
+        addSubview(bgView)
         addSubview(label)
 
         NSLayoutConstraint.activate([
+            bgView.topAnchor.constraint(equalTo: topAnchor, constant: 2),
+            bgView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2),
+            bgView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -2),
+            bgView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
+
             label.centerXAnchor.constraint(equalTo: centerXAnchor),
             label.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
@@ -501,18 +622,32 @@ private final class LetterCell: UIControl {
     }
 
     func setSelected(_ selected: Bool) {
-        UIView.animate(withDuration: 0.15) {
-            self.backgroundColor =
-                selected ? DSColor.accent.withAlphaComponent(0.2) : DSColor.surface
-            self.layer.borderColor = selected ? DSColor.accent.cgColor : UIColor.clear.cgColor
-            self.transform = selected ? CGAffineTransform(scaleX: 0.95, y: 0.95) : .identity
+        let targetColor = selected ? DSColor.accent : DSColor.surface
+        let targetTextColor = selected ? UIColor.white : DSColor.textPrimary
+        let targetScale: CGFloat = selected ? 1.05 : 1.0
+
+        UIView.animate(
+            withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.5
+        ) {
+            self.bgView.backgroundColor = targetColor
+            self.label.textColor = targetTextColor
+            self.transform = CGAffineTransform(scaleX: targetScale, y: targetScale)
+
+            // Remove shadow when selected to look "pressed" or "glowing" depending on design
+            // Here we just keep it clean
+            if selected {
+                self.bgView.layer.shadowOpacity = 0
+            } else {
+                self.bgView.layer.shadowOpacity = 0.08
+            }
         }
     }
 
     override var isHighlighted: Bool {
         didSet {
             UIView.animate(withDuration: 0.1) {
-                self.alpha = self.isHighlighted ? 0.7 : 1.0
+                self.transform =
+                    self.isHighlighted ? CGAffineTransform(scaleX: 0.92, y: 0.92) : .identity
             }
         }
     }

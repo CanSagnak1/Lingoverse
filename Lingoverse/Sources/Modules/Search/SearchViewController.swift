@@ -55,18 +55,20 @@ final class SearchViewController: UIViewController, SearchViewInput {
     }()
 
     private lazy var tableView: UITableView = {
-        let tableView = UITableView(frame: .zero, style: .insetGrouped)
+        let tableView = UITableView(frame: .zero, style: .grouped)  // Grouped for headers
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(RecentSearchCell.self, forCellReuseIdentifier: CellIdentifier.recentCell)
 
         tableView.backgroundColor = .systemGroupedBackground
+        tableView.separatorStyle = .none  // No separators for cards
 
         if #available(iOS 15.0, *) {
             tableView.sectionHeaderTopPadding = 0
         }
-        tableView.tableFooterView = UIView()
+        tableView.showsVerticalScrollIndicator = false
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
         return tableView
     }()
 
@@ -130,6 +132,32 @@ final class SearchViewController: UIViewController, SearchViewInput {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
+        animateTableEntrance()
+    }
+
+    private func animateTableEntrance() {
+        tableView.reloadData()
+
+        let cells = tableView.visibleCells
+        let tableHeight: CGFloat = tableView.bounds.size.height
+
+        for (index, cell) in cells.enumerated() {
+            cell.transform = CGAffineTransform(translationX: 0, y: tableHeight)
+            cell.alpha = 0
+
+            UIView.animate(
+                withDuration: 0.8,
+                delay: 0.05 * Double(index),
+                usingSpringWithDamping: 0.7,
+                initialSpringVelocity: 0,
+                options: .curveEaseOut,
+                animations: {
+                    cell.transform = .identity
+                    cell.alpha = 1
+                },
+                completion: nil
+            )
+        }
     }
 
     deinit {
@@ -542,10 +570,23 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         let springDamping: CGFloat = 0.72
         let springVelocity: CGFloat = 0.3
 
+        let cardHeight = cellHeight - 12
+        let cardY: CGFloat = 6
+
         let favView = UIView()
         favView.backgroundColor = DSColor.favoriteGreen
-        favView.frame = CGRect(x: 0, y: 0, width: moveDistance, height: cellHeight)
+        // Frame at "Revealed" position (x=16)
+        favView.frame = CGRect(x: 16, y: cardY, width: moveDistance, height: cardHeight)
+
+        // Start "Tucked" behind the card (Shifted Left)
+        favView.transform = CGAffineTransform(translationX: -moveDistance, y: 0)
+
         favView.clipsToBounds = true
+        favView.layer.cornerRadius = 20
+        // Match card corners
+        favView.layer.maskedCorners = [
+            .layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner,
+        ]
 
         let favGradient = CAGradientLayer()
         favGradient.colors = [
@@ -559,7 +600,7 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         let favIconContainer = UIView()
         favIconContainer.frame = CGRect(
             x: (moveDistance - iconSize) / 2,
-            y: (cellHeight - iconSize - labelHeight - 4) / 2,
+            y: (cardHeight - iconSize - labelHeight - 4) / 2,
             width: iconSize,
             height: iconSize
         )
@@ -591,9 +632,19 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
 
         let delView = UIView()
         delView.backgroundColor = DSColor.accent
+        // Frame at "Revealed" position (Right side)
         delView.frame = CGRect(
-            x: cellWidth - moveDistance, y: 0, width: moveDistance, height: cellHeight)
+            x: cellWidth - 16 - moveDistance, y: cardY, width: moveDistance, height: cardHeight)
+
+        // Start "Tucked" behind the card (Shifted Right)
+        delView.transform = CGAffineTransform(translationX: moveDistance, y: 0)
+        delView.alpha = 0  // Initially hidden (Wait for second swipe)
+
         delView.clipsToBounds = true
+        delView.layer.cornerRadius = 20
+        delView.layer.maskedCorners = [
+            .layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner,
+        ]
 
         let delGradient = CAGradientLayer()
         delGradient.colors = [
@@ -607,7 +658,7 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         let delIconContainer = UIView()
         delIconContainer.frame = CGRect(
             x: (moveDistance - iconSize) / 2,
-            y: (cellHeight - iconSize - labelHeight - 4) / 2,
+            y: (cardHeight - iconSize - labelHeight - 4) / 2,
             width: iconSize,
             height: iconSize
         )
@@ -637,8 +688,11 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         delLabel.alpha = 0
         delView.addSubview(delLabel)
 
-        cell.insertSubview(favView, belowSubview: cell.contentView)
-        cell.insertSubview(delView, belowSubview: cell.contentView)
+        // Fix Z-Ordering: Insert into contentView at index 0 (Back)
+        cell.contentView.insertSubview(favView, at: 0)
+        cell.contentView.insertSubview(delView, at: 0)
+
+        // Ensure card background is opaque (it is DSColor.surface, so it should cover)
 
         cell.contentView.layer.shadowColor = UIColor.black.cgColor
         cell.contentView.layer.shadowOffset = .zero
@@ -654,9 +708,15 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             initialSpringVelocity: springVelocity,
             options: [.curveEaseOut, .allowUserInteraction]
         ) {
-            cell.contentView.transform = CGAffineTransform(translationX: moveDistance, y: 0)
-            cell.contentView.layer.shadowRadius = 8
-            cell.contentView.layer.shadowOpacity = 0.15
+            // Animate card container Right
+            if let recentCell = cell as? RecentSearchCell {
+                recentCell.cardContainer.transform = CGAffineTransform(
+                    translationX: moveDistance, y: 0)
+            } else {
+                cell.contentView.transform = CGAffineTransform(translationX: moveDistance, y: 0)
+            }
+            // Animate FavView along with it (into view)
+            favView.transform = .identity
         }
 
         UIView.animate(
@@ -686,9 +746,15 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             initialSpringVelocity: 0.2,
             options: [.curveEaseInOut]
         ) {
-            cell.contentView.transform = .identity
-            cell.contentView.layer.shadowRadius = 0
-            cell.contentView.layer.shadowOpacity = 0
+            if let recentCell = cell as? RecentSearchCell {
+                recentCell.cardContainer.transform = .identity
+            } else {
+                cell.contentView.transform = .identity
+                cell.contentView.layer.shadowRadius = 0
+                cell.contentView.layer.shadowOpacity = 0
+            }
+            // Animate FavView back out
+            favView.transform = CGAffineTransform(translationX: -moveDistance, y: 0)
         }
 
         UIView.animate(withDuration: 0.2, delay: step2Delay) {
@@ -706,9 +772,20 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             initialSpringVelocity: springVelocity,
             options: [.curveEaseOut, .allowUserInteraction]
         ) {
-            cell.contentView.transform = CGAffineTransform(translationX: -moveDistance, y: 0)
-            cell.contentView.layer.shadowRadius = 8
-            cell.contentView.layer.shadowOpacity = 0.15
+            if let recentCell = cell as? RecentSearchCell {
+                recentCell.cardContainer.transform = CGAffineTransform(
+                    translationX: -moveDistance, y: 0)
+            } else {
+                cell.contentView.transform = CGAffineTransform(translationX: -moveDistance, y: 0)
+                cell.contentView.layer.shadowRadius = 8
+                cell.contentView.layer.shadowOpacity = 0.15
+            }
+            // Switch active view visibility
+            favView.alpha = 0
+            delView.alpha = 1
+
+            // Animate DelView along with it (into view)
+            delView.transform = .identity
         }
 
         UIView.animate(
@@ -738,9 +815,15 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             initialSpringVelocity: 0.2,
             options: [.curveEaseInOut]
         ) {
-            cell.contentView.transform = .identity
-            cell.contentView.layer.shadowRadius = 0
-            cell.contentView.layer.shadowOpacity = 0
+            if let recentCell = cell as? RecentSearchCell {
+                recentCell.cardContainer.transform = .identity
+            } else {
+                cell.contentView.transform = .identity
+                cell.contentView.layer.shadowRadius = 0
+                cell.contentView.layer.shadowOpacity = 0
+            }
+            // Animate DelView back out
+            delView.transform = CGAffineTransform(translationX: moveDistance, y: 0)
         }
 
         UIView.animate(withDuration: 0.2, delay: step4Delay) {
@@ -757,7 +840,11 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
             } completion: { _ in
                 favView.removeFromSuperview()
                 delView.removeFromSuperview()
-                cell.contentView.layer.shadowOpacity = 0
+
+                // Reset card shadow
+                if let recentCell = cell as? RecentSearchCell {
+                    recentCell.cardContainer.layer.shadowOpacity = 0.06
+                }
 
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             }
@@ -766,49 +853,131 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 private final class RecentSearchCell: UITableViewCell {
+
+    // Exposed for animation
+    lazy var cardContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = DSColor.surface
+        view.layer.cornerRadius = 20
+
+        // Premium Shadow
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowRadius = 8
+        view.layer.shadowOpacity = 0.06
+
+        // Subtle Border
+        view.layer.borderWidth = 1
+        view.layer.borderColor = DSColor.textSecondary.withAlphaComponent(0.05).cgColor
+
+        return view
+    }()
+
+    private lazy var iconContainer: UIView = {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.backgroundColor = DSColor.accent.withAlphaComponent(0.12)
+        container.layer.cornerRadius = 18  // Squircle
+        return container
+    }()
+
+    private lazy var iconView: UIImageView = {
+        let iv = UIImageView(
+            image: UIImage(systemName: "clock.arrow.circlepath")?
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)))
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.tintColor = DSColor.accent
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+
+    private lazy var wordLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = DSTypo.body
+        label.textColor = DSColor.textSecondary
+        label.numberOfLines = 1
+        return label
+    }()
+
     private let chevronImageView: UIImageView = {
         let iv = UIImageView(image: UIImage(systemName: "chevron.right"))
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
-        iv.tintColor = DSColor.textSecondary.withAlphaComponent(0.5)
-        var cfg = UIImage.SymbolConfiguration(weight: .semibold)
+        iv.tintColor = DSColor.textSecondary.withAlphaComponent(0.4)
+        var cfg = UIImage.SymbolConfiguration(weight: .bold)
         iv.preferredSymbolConfiguration = cfg
         return iv
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .default, reuseIdentifier: reuseIdentifier)
-        selectionStyle = .default
-        accessoryType = .none
-        backgroundColor = nil
-        backgroundConfiguration = nil
-
-        contentView.addSubview(chevronImageView)
-
-        NSLayoutConstraint.activate([
-            chevronImageView.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor, constant: -DSSpacing.x4),
-            chevronImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            chevronImageView.widthAnchor.constraint(equalToConstant: 12),
-            chevronImageView.heightAnchor.constraint(equalToConstant: 16),
-        ])
+        setupUI()
     }
 
     required init?(coder: NSCoder) {
         fatalError(Common.fatalError)
     }
 
-    func configure(with term: String) {
-        var cfg = defaultContentConfiguration()
-        cfg.text = term
-        cfg.textProperties.font = DSTypo.body
-        cfg.textProperties.color = DSColor.textSecondary
-        cfg.image = UIImage(systemName: "clock.arrow.circlepath")
-        cfg.imageProperties.tintColor = DSColor.accent
-        cfg.imageToTextPadding = DSSpacing.x2
+    private func setupUI() {
+        selectionStyle = .none
+        accessoryType = .none
+        backgroundColor = .clear
 
-        contentConfiguration = cfg
-        backgroundConfiguration = nil
-        contentView.backgroundColor = .secondarySystemGroupedBackground
+        contentView.addSubview(cardContainer)
+        cardContainer.addSubview(iconContainer)
+        iconContainer.addSubview(iconView)
+        cardContainer.addSubview(wordLabel)
+        cardContainer.addSubview(chevronImageView)
+
+        NSLayoutConstraint.activate([
+            // Card
+            cardContainer.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor, constant: 16),
+            cardContainer.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -16),
+            cardContainer.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
+            cardContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6),
+            cardContainer.heightAnchor.constraint(greaterThanOrEqualToConstant: 72),
+
+            // Icon
+            iconContainer.leadingAnchor.constraint(
+                equalTo: cardContainer.leadingAnchor, constant: 16),
+            iconContainer.centerYAnchor.constraint(equalTo: cardContainer.centerYAnchor),
+            iconContainer.widthAnchor.constraint(equalToConstant: 48),
+            iconContainer.heightAnchor.constraint(equalToConstant: 48),
+
+            iconView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+
+            // Text
+            wordLabel.leadingAnchor.constraint(equalTo: iconContainer.trailingAnchor, constant: 16),
+            wordLabel.centerYAnchor.constraint(equalTo: cardContainer.centerYAnchor),
+            wordLabel.trailingAnchor.constraint(
+                lessThanOrEqualTo: chevronImageView.leadingAnchor, constant: -8),
+
+            // Chevron
+            chevronImageView.trailingAnchor.constraint(
+                equalTo: cardContainer.trailingAnchor, constant: -20),
+            chevronImageView.centerYAnchor.constraint(equalTo: cardContainer.centerYAnchor),
+            chevronImageView.widthAnchor.constraint(equalToConstant: 12),
+            chevronImageView.heightAnchor.constraint(equalToConstant: 16),
+        ])
+    }
+
+    func configure(with term: String) {
+        wordLabel.text = term
+    }
+
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+
+        UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) {
+            self.cardContainer.transform =
+                highlighted ? CGAffineTransform(scaleX: 0.96, y: 0.96) : .identity
+            self.cardContainer.backgroundColor =
+                highlighted ? DSColor.surface.withAlphaComponent(0.9) : DSColor.surface
+        }
     }
 }

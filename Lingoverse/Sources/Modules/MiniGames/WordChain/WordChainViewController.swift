@@ -62,7 +62,7 @@ final class WordChainViewController: UIViewController {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
-        stack.spacing = 8
+        stack.spacing = 12  // More spacing for bubbles
         stack.alignment = .center
         return stack
     }()
@@ -71,7 +71,12 @@ final class WordChainViewController: UIViewController {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = DSColor.surface
-        view.layer.cornerRadius = 20
+        view.layer.cornerRadius = 24
+        // Premium Shadow
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowRadius = 12
+        view.layer.shadowOpacity = 0.1
         return view
     }()
 
@@ -87,9 +92,14 @@ final class WordChainViewController: UIViewController {
     private lazy var letterLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 72, weight: .bold)
+        label.font = .systemFont(ofSize: 96, weight: .heavy)  // Larger
         label.textColor = DSColor.accent
         label.textAlignment = .center
+        // Shadow for the letter itself
+        label.layer.shadowColor = DSColor.accent.cgColor
+        label.layer.shadowOffset = CGSize(width: 0, height: 4)
+        label.layer.shadowRadius = 8
+        label.layer.shadowOpacity = 0.3
         return label
     }()
 
@@ -110,7 +120,11 @@ final class WordChainViewController: UIViewController {
         tf.textAlignment = .center
         tf.placeholder = "Type a word..."
         tf.backgroundColor = DSColor.surface
-        tf.layer.cornerRadius = 14
+        tf.layer.cornerRadius = 16
+        // Input field focused look
+        tf.layer.borderWidth = 2
+        tf.layer.borderColor = DSColor.accent.withAlphaComponent(0.3).cgColor
+
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.delegate = self
@@ -321,13 +335,22 @@ final class WordChainViewController: UIViewController {
 
         for (index, word) in chain.suffix(5).enumerated() {
             let label = createChainWordLabel(word)
+
+            // Highlight the very last word most prominently
+            if index == chain.suffix(5).count - 1 {
+                label.backgroundColor = DSColor.accent
+                label.textColor = .white
+                label.layer.borderColor = DSColor.accent.cgColor
+            }
+
             chainStack.addArrangedSubview(label)
 
+            // Removed manual arrow, bubble style implies flow
             if index < chain.suffix(5).count - 1 {
                 let arrow = UILabel()
-                arrow.text = "→"
-                arrow.textColor = DSColor.textSecondary
-                arrow.font = .systemFont(ofSize: 16)
+                arrow.text = "›"
+                arrow.textColor = DSColor.textSecondary.withAlphaComponent(0.5)
+                arrow.font = .systemFont(ofSize: 20, weight: .bold)
                 chainStack.addArrangedSubview(arrow)
             }
         }
@@ -346,12 +369,17 @@ final class WordChainViewController: UIViewController {
     private func createChainWordLabel(_ word: String) -> UILabel {
         let label = PaddedLabel()
         label.text = word.capitalized
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .systemFont(ofSize: 15, weight: .bold)
         label.textColor = DSColor.textPrimary
         label.backgroundColor = DSColor.surface
-        label.layer.cornerRadius = 8
+        label.layer.cornerRadius = 16
         label.clipsToBounds = true
         label.textAlignment = .center
+
+        // Border for clear separation
+        label.layer.borderWidth = 1
+        label.layer.borderColor = DSColor.textSecondary.withAlphaComponent(0.2).cgColor
+
         return label
     }
 

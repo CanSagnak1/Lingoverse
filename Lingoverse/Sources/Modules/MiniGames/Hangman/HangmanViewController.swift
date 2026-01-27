@@ -38,25 +38,39 @@ final class HangmanViewController: UIViewController {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
-        stack.spacing = 4
+        stack.spacing = 6
         stack.distribution = .fillEqually
         return stack
+    }()
+
+    private lazy var hangmanContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = DSColor.surface
+        view.layer.cornerRadius = 24
+        // Premium Card Shadow
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowRadius = 12
+        view.layer.shadowOpacity = 0.1
+        return view
     }()
 
     private lazy var hangmanView: HangmanFigureView = {
         let view = HangmanFigureView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
         return view
     }()
 
-    private lazy var wordLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 36, weight: .bold)
-        label.textColor = DSColor.textPrimary
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
+    private lazy var wordStack: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.spacing = 6
+        stack.distribution = .fillEqually
+        stack.alignment = .center
+        return stack
     }()
 
     private lazy var hintLabel: UILabel = {
@@ -126,8 +140,9 @@ final class HangmanViewController: UIViewController {
 
         view.addSubview(closeButton)
         view.addSubview(livesStack)
-        view.addSubview(hangmanView)
-        view.addSubview(wordLabel)
+        view.addSubview(hangmanContainer)
+        hangmanContainer.addSubview(hangmanView)
+        view.addSubview(wordStack)
         view.addSubview(hintLabel)
         view.addSubview(keyboardStack)
         view.addSubview(loadingIndicator)
@@ -145,23 +160,36 @@ final class HangmanViewController: UIViewController {
             livesStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             livesStack.heightAnchor.constraint(equalToConstant: 24),
 
-            hangmanView.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 20),
-            hangmanView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            hangmanView.widthAnchor.constraint(equalToConstant: 150),
-            hangmanView.heightAnchor.constraint(equalToConstant: 180),
+            // Card Container
+            hangmanContainer.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 16),
+            hangmanContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            hangmanContainer.widthAnchor.constraint(equalToConstant: 220),
+            hangmanContainer.heightAnchor.constraint(equalToConstant: 260),
 
-            wordLabel.topAnchor.constraint(equalTo: hangmanView.bottomAnchor, constant: 24),
-            wordLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            wordLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            // Drawing inside card
+            hangmanView.centerXAnchor.constraint(equalTo: hangmanContainer.centerXAnchor),
+            hangmanView.centerYAnchor.constraint(
+                equalTo: hangmanContainer.centerYAnchor, constant: 10),
+            hangmanView.widthAnchor.constraint(equalToConstant: 160),
+            hangmanView.heightAnchor.constraint(equalToConstant: 200),
 
-            hintLabel.topAnchor.constraint(equalTo: wordLabel.bottomAnchor, constant: 12),
-            hintLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            hintLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            wordStack.topAnchor.constraint(equalTo: hangmanContainer.bottomAnchor, constant: 32),
+            wordStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            wordStack.heightAnchor.constraint(equalToConstant: 50),
+            // constraint width to avoid overflowing screen
+            wordStack.leadingAnchor.constraint(
+                greaterThanOrEqualTo: view.leadingAnchor, constant: 20),
+            wordStack.trailingAnchor.constraint(
+                lessThanOrEqualTo: view.trailingAnchor, constant: -20),
 
-            keyboardStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            keyboardStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            keyboardStack.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -20),
-            keyboardStack.heightAnchor.constraint(equalToConstant: 160),
+            hintLabel.topAnchor.constraint(equalTo: wordStack.bottomAnchor, constant: 20),
+            hintLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            hintLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+
+            keyboardStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            keyboardStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            keyboardStack.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -10),
+            keyboardStack.heightAnchor.constraint(equalToConstant: 170),
 
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -201,10 +229,17 @@ final class HangmanViewController: UIViewController {
     private func createLetterButton(_ letter: Character) -> UIButton {
         let button = UIButton(type: .system)
         button.setTitle(String(letter), for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
         button.backgroundColor = DSColor.surface
         button.setTitleColor(DSColor.textPrimary, for: .normal)
         button.layer.cornerRadius = 8
+
+        // Premium Key Shadow (Depth)
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowRadius = 0
+        button.layer.shadowOpacity = 0.15
+
         button.tag = Int(letter.asciiValue ?? 0)
         button.addTarget(self, action: #selector(letterTapped(_:)), for: .touchUpInside)
         return button
@@ -261,17 +296,25 @@ final class HangmanViewController: UIViewController {
     }
 
     private func updateUI() {
-        var displayWord = ""
+        wordStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
         for char in currentWord {
             if char == " " {
-                displayWord += "  "
-            } else if guessedLetters.contains(char) {
-                displayWord += "\(char) "
+                // Spacer for spaces
+                let spacer = UIView()
+                spacer.translatesAutoresizingMaskIntoConstraints = false
+                spacer.widthAnchor.constraint(equalToConstant: 10).isActive = true
+                wordStack.addArrangedSubview(spacer)
             } else {
-                displayWord += "_ "
+                let isGuessed = guessedLetters.contains(char)
+                let tile = HangmanTileView(character: char, isRevealed: isGuessed)
+                tile.translatesAutoresizingMaskIntoConstraints = false
+                tile.widthAnchor.constraint(equalToConstant: 36).isActive = true
+                tile.heightAnchor.constraint(equalToConstant: 44).isActive = true
+                wordStack.addArrangedSubview(tile)
             }
         }
-        wordLabel.text = displayWord.trimmingCharacters(in: .whitespaces)
+
         hintLabel.text = Strings.hangmanHint(currentHint)
     }
 
@@ -407,17 +450,19 @@ private final class HangmanFigureView: UIView {
     private lazy var gallowsLayer: CAShapeLayer = {
         let layer = CAShapeLayer()
         layer.strokeColor = DSColor.textSecondary.cgColor
-        layer.lineWidth = 4
+        layer.lineWidth = 5  // Thicker
         layer.fillColor = UIColor.clear.cgColor
         layer.lineCap = .round
+        layer.lineJoin = .round
         return layer
     }()
 
     private lazy var headLayer: CAShapeLayer = {
         let layer = CAShapeLayer()
         layer.strokeColor = DSColor.accent.cgColor
-        layer.lineWidth = 3
+        layer.lineWidth = 4
         layer.fillColor = UIColor.clear.cgColor
+        layer.lineCap = .round
         layer.isHidden = true
         return layer
     }()
@@ -564,6 +609,78 @@ private final class HangmanFigureView: UIView {
         currentStep = 0
         [headLayer, bodyLayer, leftArmLayer, rightArmLayer, leftLegLayer, rightLegLayer].forEach {
             $0.isHidden = true
+        }
+    }
+}
+
+// MARK: - Tile View
+
+private final class HangmanTileView: UIView {
+
+    private let char: Character
+    private let isRevealed: Bool
+
+    private lazy var label: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 22, weight: .bold)
+        label.textColor = DSColor.textPrimary
+        label.textAlignment = .center
+        return label
+    }()
+
+    private lazy var bottomLine: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = DSColor.textSecondary.withAlphaComponent(0.5)
+        view.layer.cornerRadius = 1.5
+        return view
+    }()
+
+    init(character: Character, isRevealed: Bool) {
+        self.char = character
+        self.isRevealed = isRevealed
+        super.init(frame: .zero)
+        setupUI()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupUI() {
+        // Tile Background
+        backgroundColor = DSColor.surface
+        layer.cornerRadius = 8
+        layer.borderWidth = 1
+        layer.borderColor = DSColor.textSecondary.withAlphaComponent(0.1).cgColor
+
+        addSubview(label)
+        addSubview(bottomLine)
+
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: centerYAnchor),
+
+            bottomLine.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -6),
+            bottomLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
+            bottomLine.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
+            bottomLine.heightAnchor.constraint(equalToConstant: 3),
+        ])
+
+        configureState()
+    }
+
+    private func configureState() {
+        if isRevealed {
+            label.text = String(char)
+            bottomLine.isHidden = true
+            backgroundColor = DSColor.accent.withAlphaComponent(0.15)
+            layer.borderColor = DSColor.accent.cgColor
+        } else {
+            label.text = ""
+            bottomLine.isHidden = false
+            backgroundColor = DSColor.surface
         }
     }
 }

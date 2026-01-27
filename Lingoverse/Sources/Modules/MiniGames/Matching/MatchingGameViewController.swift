@@ -30,6 +30,9 @@ final class MatchingGameViewController: UIViewController {
         label.font = .systemFont(ofSize: 15)
         label.textColor = DSColor.textSecondary
         label.textAlignment = .center
+        label.numberOfLines = 2  // Allow 2 lines for long definitions
+        label.minimumScaleFactor = 0.8
+        label.adjustsFontSizeToFitWidth = true
         return label
     }()
 
@@ -64,6 +67,20 @@ final class MatchingGameViewController: UIViewController {
         label.font = .systemFont(ofSize: 16, weight: .semibold)
         label.textColor = DSColor.accent
         return label
+    }()
+
+    // NEW: Container for the grid to give it a board feel
+    private lazy var gridContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = DSColor.surface
+        view.layer.cornerRadius = 24
+        // Premium Shadow
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowRadius = 12
+        view.layer.shadowOpacity = 0.1
+        return view
     }()
 
     private lazy var collectionView: UICollectionView = {
@@ -128,7 +145,11 @@ final class MatchingGameViewController: UIViewController {
         view.addSubview(statsStack)
         statsStack.addArrangedSubview(movesLabel)
         statsStack.addArrangedSubview(pairsLabel)
-        view.addSubview(collectionView)
+
+        // Wrap collection view in container
+        view.addSubview(gridContainer)
+        gridContainer.addSubview(collectionView)
+
         view.addSubview(loadingIndicator)
         view.addSubview(resultView)
 
@@ -146,13 +167,23 @@ final class MatchingGameViewController: UIViewController {
             headerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
             statsStack.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 20),
-            statsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            statsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            statsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            statsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
 
-            collectionView.topAnchor.constraint(equalTo: statsStack.bottomAnchor, constant: 20),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            collectionView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -20),
+            // Grid Container constraints
+            gridContainer.topAnchor.constraint(equalTo: statsStack.bottomAnchor, constant: 20),
+            gridContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            gridContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            gridContainer.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -20),
+
+            // CollectionView inside Container
+            collectionView.topAnchor.constraint(equalTo: gridContainer.topAnchor, constant: 16),
+            collectionView.leadingAnchor.constraint(
+                equalTo: gridContainer.leadingAnchor, constant: 16),
+            collectionView.trailingAnchor.constraint(
+                equalTo: gridContainer.trailingAnchor, constant: -16),
+            collectionView.bottomAnchor.constraint(
+                equalTo: gridContainer.bottomAnchor, constant: -16),
 
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -232,6 +263,12 @@ final class MatchingGameViewController: UIViewController {
         cards[index].isFlipped = true
         flippedIndices.append(index)
 
+        // Show content in header for readability
+        let content = cards[index].content
+        UIView.transition(with: headerLabel, duration: 0.2, options: .transitionCrossDissolve) {
+            self.headerLabel.text = content
+        }
+
         collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
         HapticManager.shared.selectionChanged()
 
@@ -272,6 +309,13 @@ final class MatchingGameViewController: UIViewController {
             self.collectionView.reloadData()
             self.updateStats()
             self.isProcessing = false
+
+            // Reset header
+            UIView.transition(
+                with: self.headerLabel, duration: 0.2, options: .transitionCrossDissolve
+            ) {
+                self.headerLabel.text = Strings.matchingSubtitle
+            }
         }
     }
 
@@ -381,25 +425,43 @@ private final class MatchingCardCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = DSColor.surface
         view.layer.cornerRadius = 12
+        // Shadow for 3D effect
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowRadius = 4
+        view.layer.shadowOpacity = 0.1
+        view.layer.masksToBounds = false
         return view
     }()
 
     private lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .systemFont(ofSize: 14, weight: .bold)  // Bolder font
         label.textColor = DSColor.textPrimary
         label.textAlignment = .center
-        label.numberOfLines = 3
+        label.numberOfLines = 0  // Allow multiple lines
+        label.lineBreakMode = .byWordWrapping
         return label
+    }()
+
+    private lazy var selectionBorderInfo: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.borderWidth = 3
+        view.layer.borderColor = DSColor.accent.cgColor
+        view.layer.cornerRadius = 12
+        view.isHidden = true
+        view.isUserInteractionEnabled = false
+        return view
     }()
 
     private lazy var questionMark: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "?"
-        label.font = .systemFont(ofSize: 32, weight: .bold)
-        label.textColor = DSColor.accent
+        label.font = .systemFont(ofSize: 36, weight: .heavy)
+        label.textColor = DSColor.accent.withAlphaComponent(0.5)  // Subtle color
         label.textAlignment = .center
         return label
     }()
@@ -414,15 +476,25 @@ private final class MatchingCardCell: UICollectionViewCell {
     }
 
     private func setupUI() {
+        // Clear background
+        backgroundColor = .clear
+
         contentView.addSubview(containerView)
         containerView.addSubview(contentLabel)
         containerView.addSubview(questionMark)
+        containerView.addSubview(selectionBorderInfo)
 
         NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
+            containerView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -4),
+            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
+
+            selectionBorderInfo.topAnchor.constraint(equalTo: containerView.topAnchor),
+            selectionBorderInfo.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            selectionBorderInfo.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            selectionBorderInfo.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
 
             contentLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
             contentLabel.leadingAnchor.constraint(
@@ -437,25 +509,53 @@ private final class MatchingCardCell: UICollectionViewCell {
     }
 
     func configure(with card: MatchingCard) {
-        if card.isMatched {
-            containerView.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.2)
-            containerView.layer.borderWidth = 2
-            containerView.layer.borderColor = UIColor.systemGreen.cgColor
-            contentLabel.text = card.content
-            contentLabel.isHidden = false
-            questionMark.isHidden = true
-        } else if card.isFlipped {
-            containerView.backgroundColor = DSColor.accent.withAlphaComponent(0.1)
-            containerView.layer.borderWidth = 2
-            containerView.layer.borderColor = DSColor.accent.cgColor
-            contentLabel.text = card.content
-            contentLabel.isHidden = false
-            questionMark.isHidden = true
+        // Reset transform
+        transform = .identity
+
+        // Dynamic Font Logic
+        if card.type == .word {
+            contentLabel.font = .systemFont(ofSize: 20, weight: .bold)
+            contentLabel.adjustsFontSizeToFitWidth = true
+            contentLabel.minimumScaleFactor = 0.5
         } else {
+            // Definition: Smaller font, flexible
+            contentLabel.font = .systemFont(ofSize: 13, weight: .medium)
+            contentLabel.adjustsFontSizeToFitWidth = true
+            contentLabel.minimumScaleFactor = 0.4
+        }
+
+        if card.isMatched {
+            // Matched State
+            containerView.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.15)
+            selectionBorderInfo.layer.borderColor = UIColor.systemGreen.cgColor
+            selectionBorderInfo.isHidden = false
+
+            contentLabel.text = card.content
+            contentLabel.isHidden = false
+            questionMark.isHidden = true
+
+            // Fade out slightly
+            alpha = 0.6
+
+        } else if card.isFlipped {
+            // Flipped (Selected) State
             containerView.backgroundColor = DSColor.surface
-            containerView.layer.borderWidth = 0
+            selectionBorderInfo.layer.borderColor = DSColor.accent.cgColor
+            selectionBorderInfo.isHidden = false
+
+            contentLabel.text = card.content
+            contentLabel.isHidden = false
+            questionMark.isHidden = true
+            alpha = 1.0
+
+        } else {
+            // Back State
+            containerView.backgroundColor = DSColor.surface
+            selectionBorderInfo.isHidden = true
+
             contentLabel.isHidden = true
             questionMark.isHidden = false
+            alpha = 1.0
         }
     }
 }

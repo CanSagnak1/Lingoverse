@@ -175,7 +175,7 @@ final class GameResultView: UIView {
 
     func configure(score: Int, xpEarned: Int, gameName: String) {
         scoreLabel.text = "\(score)"
-        xpLabel.text = "+\(xpEarned) XP"
+        xpLabel.text = Strings.gameXPEarned(xpEarned)
 
         let percentage = min(Double(score) / 100.0, 1.0) * 100
 

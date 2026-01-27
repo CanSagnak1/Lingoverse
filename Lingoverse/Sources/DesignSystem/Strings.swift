@@ -171,13 +171,42 @@ public enum Strings {
             "This will reset all your learning statistics. This action cannot be undone.",
         "stats.reset": "Reset",
         "stats.motivation.streak":
-            "🔥 Amazing! You've been practicing for %d days straight. Keep up the great work!",
-        "stats.motivation.accuracy": "⭐ Excellent accuracy! You're mastering these words quickly.",
-        "stats.motivation.questions": "📚 You've answered %d questions! Practice makes perfect.",
+            "Amazing! You've been practicing for %d days straight. Keep up the great work!",
+        "stats.motivation.accuracy": "Excellent accuracy! You're mastering these words quickly.",
+        "stats.motivation.questions": "You've answered %d questions! Practice makes perfect.",
         "stats.motivation.flashcards":
-            "📖 Great job reviewing flashcards! Try the quiz to test your knowledge.",
+            "Great job reviewing flashcards! Try the quiz to test your knowledge.",
         "stats.motivation.default":
-            "💡 Start with flashcards to learn new words, then test yourself with quizzes!",
+            "Start with flashcards to learn new words, then test yourself with quizzes!",
+        "stats.totalXP": "Total XP",
+        "stats.section.learning": "Learning",
+        "stats.section.learningSubtitle": "Flashcards & Quizzes",
+        "stats.section.minigames": "Mini Games",
+        "stats.section.minigamesSubtitle": "All game stats",
+        "stats.section.achievements": "Achievements",
+        "stats.section.achievementsSubtitle": "Best performances",
+        "stats.quick.accuracy": "Accuracy",
+        "stats.quick.questions": "Questions",
+        "stats.quick.correct": "Correct",
+        "stats.row.flashcardSessions": "Flashcard Sessions",
+        "stats.row.quizSessions": "Quiz Sessions",
+        "stats.row.dailyStreak": "Daily Streak",
+        "stats.game.bestScore": "Best",
+        "stats.game.points": "%@ points",
+        "stats.game.fewestMoves": "Fewest Moves",
+        "stats.game.longestChain": "Longest Chain",
+        "stats.game.winRate": "Win Rate",
+        "stats.game.bestCombo": "Best Combo",
+        "stats.empty.minigames":
+            "You haven't played any mini games yet.\nStart from Learn > Mini Games!",
+        "stats.empty.achievements": "Play more to unlock achievements!",
+        "achievement.quizMaster": "Quiz Master",
+        "achievement.streakRecord": "Streak Record",
+        "achievement.gameXP": "Game XP",
+        "achievement.favoriteGame": "Favorite Game",
+        "achievement.comboMaster": "Combo Master",
+        "achievement.accuracy": "%.0f%% accuracy",
+        "stats.sessions": "%d sessions",
         // Profile
         "profile.title": "Profile",
         "profile.streak": "streak",
@@ -426,13 +455,41 @@ public enum Strings {
             "Bu, tüm öğrenme istatistiklerinizi sıfırlayacak. Bu işlem geri alınamaz.",
         "stats.reset": "Sıfırla",
         "stats.motivation.streak":
-            "🔥 Muhteşem! %d gündür aralıksız pratik yapıyorsunuz. Harika gidiyorsunuz!",
-        "stats.motivation.accuracy": "⭐ Mükemmel doğruluk! Bu kelimeleri hızla öğreniyorsunuz.",
-        "stats.motivation.questions": "📚 %d soruyu cevapladınız! Pratik mükemmelleştirir.",
+            "Muhteşem! %d gündür aralıksız pratik yapıyorsunuz. Harika gidiyorsunuz!",
+        "stats.motivation.accuracy": "Mükemmel doğruluk! Bu kelimeleri hızla öğreniyorsunuz.",
+        "stats.motivation.questions": "%d soruyu cevapladınız! Pratik mükemmelleştirir.",
         "stats.motivation.flashcards":
-            "📖 Kartları inceleme konusunda harika iş çıkardınız! Bilginizi test etmek için teste katılın.",
+            "Kartları inceleme konusunda harika iş çıkardınız! Bilginizi test etmek için teste katılın.",
         "stats.motivation.default":
-            "💡 Yeni kelimeler öğrenmek için kartlarla başlayın, sonra testlerle kendinizi sınayın!",
+            "Yeni kelimeler öğrenmek için kartlarla başlayın, sonra testlerle kendinizi sınayın!",
+        "stats.totalXP": "Toplam XP",
+        "stats.section.learning": "Öğrenme",
+        "stats.section.learningSubtitle": "Kartlar & Sınavlar",
+        "stats.section.minigames": "Mini Oyunlar",
+        "stats.section.minigamesSubtitle": "Tüm oyun istatistikleri",
+        "stats.section.achievements": "Başarılar",
+        "stats.section.achievementsSubtitle": "En iyi performanslar",
+        "stats.quick.accuracy": "Doğruluk",
+        "stats.quick.questions": "Soru",
+        "stats.quick.correct": "Doğru",
+        "stats.row.flashcardSessions": "Kart Oturumları",
+        "stats.row.quizSessions": "Sınav Oturumları",
+        "stats.row.dailyStreak": "Günlük Seri",
+        "stats.game.bestScore": "En İyi",
+        "stats.game.points": "%@ puan",
+        "stats.game.fewestMoves": "En Az Hamle",
+        "stats.game.longestChain": "En Uzun Zincir",
+        "stats.game.winRate": "Kazanma Oranı",
+        "stats.game.bestCombo": "En İyi Kombo",
+        "stats.empty.minigames": "Henüz mini oyun oynamadınız.\nLearn > Mini Games'den başlayın!",
+        "stats.empty.achievements": "Daha fazla oynayarak başarılar kazanın!",
+        "achievement.quizMaster": "Sınav Ustası",
+        "achievement.streakRecord": "Seri Rekoru",
+        "achievement.gameXP": "Oyun XP'si",
+        "achievement.favoriteGame": "Favori Oyun",
+        "achievement.comboMaster": "Kombo Ustası",
+        "achievement.accuracy": "%.0f%% doğruluk",
+        "stats.sessions": "%d oturum",
         // Profile
         "profile.title": "Profil",
         "profile.streak": "seri",
@@ -520,6 +577,10 @@ public enum Strings {
     private static func localizedString(_ key: String) -> String {
         let strings =
             LocalizationManager.shared.currentLanguage == .turkish ? turkishStrings : englishStrings
+        // Fallback for missing keys in Turkish (should be rare with good process)
+        if strings[key] == nil && LocalizationManager.shared.currentLanguage == .turkish {
+            return englishStrings[key] ?? key
+        }
         return strings[key] ?? key
     }
 
@@ -705,6 +766,53 @@ public enum Strings {
     static var statsMotivationFlashcards: String { localizedString("stats.motivation.flashcards") }
     static var statsMotivationDefault: String { localizedString("stats.motivation.default") }
 
+    static var statsTotalXP: String { localizedString("stats.totalXP") }
+    static var statsSectionLearning: String { localizedString("stats.section.learning") }
+    static var statsSectionLearningSubtitle: String {
+        localizedString("stats.section.learningSubtitle")
+    }
+    static var statsSectionMinigames: String { localizedString("stats.section.minigames") }
+    static var statsSectionMinigamesSubtitle: String {
+        localizedString("stats.section.minigamesSubtitle")
+    }
+    static var statsSectionAchievements: String { localizedString("stats.section.achievements") }
+    static var statsSectionAchievementsSubtitle: String {
+        localizedString("stats.section.achievementsSubtitle")
+    }
+
+    static var statsQuickAccuracy: String { localizedString("stats.quick.accuracy") }
+    static var statsQuickQuestions: String { localizedString("stats.quick.questions") }
+    static var statsQuickCorrect: String { localizedString("stats.quick.correct") }
+
+    static var statsRowFlashcardSessions: String { localizedString("stats.row.flashcardSessions") }
+    static var statsRowQuizSessions: String { localizedString("stats.row.quizSessions") }
+    static var statsRowDailyStreak: String { localizedString("stats.row.dailyStreak") }
+
+    static var statsGameBestScore: String { localizedString("stats.game.bestScore") }
+    static func statsGamePoints(_ value: String) -> String {
+        String(format: localizedString("stats.game.points"), value)
+    }
+    static var statsGameFewestMoves: String { localizedString("stats.game.fewestMoves") }
+    static var statsGameLongestChain: String { localizedString("stats.game.longestChain") }
+    static var statsGameWinRate: String { localizedString("stats.game.winRate") }
+    static var statsGameBestCombo: String { localizedString("stats.game.bestCombo") }
+
+    static var statsEmptyMinigames: String { localizedString("stats.empty.minigames") }
+    static var statsEmptyAchievements: String { localizedString("stats.empty.achievements") }
+
+    static var achievementQuizMaster: String { localizedString("achievement.quizMaster") }
+    static var achievementStreakRecord: String { localizedString("achievement.streakRecord") }
+    static var achievementGameXP: String { localizedString("achievement.gameXP") }
+    static var achievementFavoriteGame: String { localizedString("achievement.favoriteGame") }
+    static var achievementComboMaster: String { localizedString("achievement.comboMaster") }
+    static func achievementAccuracy(_ val: Double) -> String {
+        String(format: localizedString("achievement.accuracy"), val)
+    }
+
+    static func statsSessions(_ count: Int) -> String {
+        String(format: localizedString("stats.sessions"), count)
+    }
+
     // MARK: - Profile
     static var profileTitle: String { localizedString("profile.title") }
     static var profileBadges: String { localizedString("profile.badges") }
@@ -798,6 +906,7 @@ public enum Strings {
         String(format: localizedString("game.score"), score)
     }
     static var gameTimeUp: String { localizedString("game.timeUp") }
+
     static func gameXPEarned(_ xp: Int) -> String {
         String(format: localizedString("game.xpEarned"), xp)
     }

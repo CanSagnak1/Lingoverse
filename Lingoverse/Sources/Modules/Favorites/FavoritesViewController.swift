@@ -19,17 +19,19 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
     private var favoriteItems: [String] = []
 
     private lazy var tableView: UITableView = {
-        let tableView = UITableView(frame: .zero, style: .insetGrouped)
+        let tableView = UITableView(frame: .zero, style: .grouped)  // Grouped for cleaner header
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(FavoriteCell.self, forCellReuseIdentifier: "FavoriteCell")
         tableView.backgroundColor = .systemGroupedBackground
-        tableView.separatorInset = UIEdgeInsets(top: 0, left: 56, bottom: 0, right: 0)
+        tableView.separatorStyle = .none  // No separators for cards
         if #available(iOS 15.0, *) {
             tableView.sectionHeaderTopPadding = 0
         }
-        tableView.tableFooterView = UIView()
+        tableView.showsVerticalScrollIndicator = false
+        // Add padding at bottom
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
         return tableView
     }()
 
@@ -64,6 +66,32 @@ final class FavoritesViewController: UIViewController, FavoritesViewInput {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
+        animateTableEntrance()
+    }
+
+    private func animateTableEntrance() {
+        tableView.reloadData()
+
+        let cells = tableView.visibleCells
+        let tableHeight: CGFloat = tableView.bounds.size.height
+
+        for (index, cell) in cells.enumerated() {
+            cell.transform = CGAffineTransform(translationX: 0, y: tableHeight)
+            cell.alpha = 0
+
+            UIView.animate(
+                withDuration: 0.8,
+                delay: 0.05 * Double(index),
+                usingSpringWithDamping: 0.7,
+                initialSpringVelocity: 0,
+                options: .curveEaseOut,
+                animations: {
+                    cell.transform = .identity
+                    cell.alpha = 1
+                },
+                completion: nil
+            )
+        }
     }
 
     private func setupUI() {
@@ -196,18 +224,37 @@ extension FavoritesViewController: UITableViewDataSource, UITableViewDelegate {
 
 private final class FavoriteCell: UITableViewCell {
 
+    private lazy var cardContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = DSColor.surface
+        view.layer.cornerRadius = 20
+
+        // Premium Shadow
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowRadius = 8
+        view.layer.shadowOpacity = 0.06
+
+        // Subtle Border
+        view.layer.borderWidth = 1
+        view.layer.borderColor = DSColor.textSecondary.withAlphaComponent(0.05).cgColor
+
+        return view
+    }()
+
     private lazy var starContainer: UIView = {
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
         container.backgroundColor = DSColor.favoriteGreen.withAlphaComponent(0.12)
-        container.layer.cornerRadius = 18
+        container.layer.cornerRadius = 18  // Squircle
         return container
     }()
 
     private lazy var starIcon: UIImageView = {
         let iv = UIImageView(
             image: UIImage(systemName: "star.fill")?
-                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)))
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)))
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.tintColor = DSColor.favoriteGreen
         iv.contentMode = .scaleAspectFit
@@ -217,7 +264,7 @@ private final class FavoriteCell: UITableViewCell {
     private lazy var wordLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 17, weight: .medium)
+        label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textColor = DSColor.textPrimary
         label.numberOfLines = 1
         return label
@@ -226,7 +273,7 @@ private final class FavoriteCell: UITableViewCell {
     private lazy var subtitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = DSColor.textSecondary
         label.text = Strings.favoriteTapHint
         return label
@@ -235,9 +282,9 @@ private final class FavoriteCell: UITableViewCell {
     private lazy var chevronIcon: UIImageView = {
         let iv = UIImageView(
             image: UIImage(systemName: "chevron.right")?
-                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)))
+                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)))
         iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.tintColor = DSColor.textSecondary.withAlphaComponent(0.5)
+        iv.tintColor = DSColor.textSecondary.withAlphaComponent(0.4)
         iv.contentMode = .scaleAspectFit
         return iv
     }()
@@ -252,40 +299,51 @@ private final class FavoriteCell: UITableViewCell {
     }
 
     private func setupUI() {
-        selectionStyle = .default
-        accessoryType = .none
-        backgroundColor = .secondarySystemGroupedBackground
+        selectionStyle = .none
+        backgroundColor = .clear  // Transparent cell background for card spacing
 
-        contentView.addSubview(starContainer)
+        contentView.addSubview(cardContainer)
+        cardContainer.addSubview(starContainer)
         starContainer.addSubview(starIcon)
-        contentView.addSubview(wordLabel)
-        contentView.addSubview(subtitleLabel)
-        contentView.addSubview(chevronIcon)
+        cardContainer.addSubview(wordLabel)
+        cardContainer.addSubview(subtitleLabel)
+        cardContainer.addSubview(chevronIcon)
 
         NSLayoutConstraint.activate([
-            starContainer.leadingAnchor.constraint(
+            // Card Container (Floating)
+            cardContainer.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor, constant: 16),
-            starContainer.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            starContainer.widthAnchor.constraint(equalToConstant: 36),
-            starContainer.heightAnchor.constraint(equalToConstant: 36),
+            cardContainer.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -16),
+            cardContainer.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            cardContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+            cardContainer.heightAnchor.constraint(greaterThanOrEqualToConstant: 80),
+
+            // Icon
+            starContainer.leadingAnchor.constraint(
+                equalTo: cardContainer.leadingAnchor, constant: 16),
+            starContainer.centerYAnchor.constraint(equalTo: cardContainer.centerYAnchor),
+            starContainer.widthAnchor.constraint(equalToConstant: 48),
+            starContainer.heightAnchor.constraint(equalToConstant: 48),
 
             starIcon.centerXAnchor.constraint(equalTo: starContainer.centerXAnchor),
             starIcon.centerYAnchor.constraint(equalTo: starContainer.centerYAnchor),
 
-            wordLabel.leadingAnchor.constraint(equalTo: starContainer.trailingAnchor, constant: 12),
-            wordLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            // Text
+            wordLabel.leadingAnchor.constraint(equalTo: starContainer.trailingAnchor, constant: 16),
+            wordLabel.topAnchor.constraint(equalTo: cardContainer.topAnchor, constant: 18),
             wordLabel.trailingAnchor.constraint(
-                lessThanOrEqualTo: chevronIcon.leadingAnchor, constant: -12),
+                lessThanOrEqualTo: chevronIcon.leadingAnchor, constant: -8),
 
             subtitleLabel.leadingAnchor.constraint(equalTo: wordLabel.leadingAnchor),
-            subtitleLabel.topAnchor.constraint(equalTo: wordLabel.bottomAnchor, constant: 2),
-            subtitleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12),
+            subtitleLabel.topAnchor.constraint(equalTo: wordLabel.bottomAnchor, constant: 4),
             subtitleLabel.trailingAnchor.constraint(
-                lessThanOrEqualTo: chevronIcon.leadingAnchor, constant: -12),
+                lessThanOrEqualTo: chevronIcon.leadingAnchor, constant: -8),
 
+            // Chevron
             chevronIcon.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor, constant: -16),
-            chevronIcon.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+                equalTo: cardContainer.trailingAnchor, constant: -20),
+            chevronIcon.centerYAnchor.constraint(equalTo: cardContainer.centerYAnchor),
             chevronIcon.widthAnchor.constraint(equalToConstant: 12),
         ])
     }
@@ -297,10 +355,11 @@ private final class FavoriteCell: UITableViewCell {
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 
-        UIView.animate(withDuration: 0.15) {
-            self.starContainer.transform =
-                highlighted ? CGAffineTransform(scaleX: 0.9, y: 0.9) : .identity
-            self.contentView.alpha = highlighted ? 0.8 : 1.0
+        UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) {
+            self.cardContainer.transform =
+                highlighted ? CGAffineTransform(scaleX: 0.96, y: 0.96) : .identity
+            self.cardContainer.backgroundColor =
+                highlighted ? DSColor.surface.withAlphaComponent(0.9) : DSColor.surface
         }
     }
 }
