@@ -3,7 +3,7 @@
 //  Lingoverse
 //
 //  Created by Celal Can Sağnak on 1.01.2026.
-//  Redesigned by Antigravity on 25.01.2026.
+//  Redesigned by Celal Can Sağnak on 25.01.2026.
 //
 
 import UIKit

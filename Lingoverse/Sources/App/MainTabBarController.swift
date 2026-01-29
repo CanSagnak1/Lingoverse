@@ -24,19 +24,19 @@ final class MainTabBarController: UITabBarController {
         guard let items = tabBar.items, items.count == 5 else { return }
         items[0].title = Strings.tabSearch
         items[1].title = Strings.tabLearn
-        items[2].title = Strings.tabFavorites
-        items[3].title = Strings.profileTitle
-        items[4].title = Strings.tabSettings
+        items[2].title = Strings.tabARScanner
+        items[3].title = Strings.tabFavorites
+        items[4].title = Strings.profileTitle
     }
 
     private func setupTabs() {
         let searchTab = makeSearchTab()
         let learnTab = makeLearnTab()
+        let arScannerTab = makeARScannerTab()
         let favoritesTab = makeFavoritesTab()
         let profileTab = makeProfileTab()
-        let settingsTab = makeSettingsTab()
 
-        viewControllers = [searchTab, learnTab, favoritesTab, profileTab, settingsTab]
+        viewControllers = [searchTab, learnTab, arScannerTab, favoritesTab, profileTab]
     }
 
     private func makeSearchTab() -> UINavigationController {
@@ -84,6 +84,18 @@ final class MainTabBarController: UITabBarController {
         )
         let nav = UINavigationController(rootViewController: vc)
         nav.navigationBar.prefersLargeTitles = true
+        return nav
+    }
+
+    private func makeARScannerTab() -> UINavigationController {
+        let vc = ARScannerRouter.createModule()
+        vc.tabBarItem = UITabBarItem(
+            title: Strings.tabARScanner,
+            image: UIImage(systemName: "camera.viewfinder"),
+            selectedImage: UIImage(systemName: "camera.viewfinder")
+        )
+        let nav = UINavigationController(rootViewController: vc)
+        nav.navigationBar.prefersLargeTitles = false
         return nav
     }
 

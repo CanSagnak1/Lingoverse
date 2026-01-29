@@ -175,6 +175,8 @@ final class SearchViewController: UIViewController, SearchViewInput {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
 
+        setupSettingsButton()
+
         view.addSubview(tableView)
         view.addSubview(spinner)
         view.addSubview(emptyView)
@@ -365,6 +367,22 @@ final class SearchViewController: UIViewController, SearchViewInput {
             self.legacyButtonBottomConstraint.constant = originalConstant
             self.view.layoutIfNeeded()
         }
+    }
+
+    private func setupSettingsButton() {
+        let settingsButton = UIBarButtonItem(
+            image: UIImage(systemName: "gearshape"),
+            style: .plain,
+            target: self,
+            action: #selector(didTapSettings)
+        )
+        settingsButton.tintColor = DSColor.accent
+        navigationItem.rightBarButtonItem = settingsButton
+    }
+
+    @objc private func didTapSettings() {
+        let settingsVC = SettingsRouter.createModule()
+        navigationController?.pushViewController(settingsVC, animated: true)
     }
 }
 

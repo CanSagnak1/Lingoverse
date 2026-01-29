@@ -290,6 +290,19 @@ public enum Strings {
         "game.greatJobMessage": "Keep practicing to improve!",
         "game.keepTrying": "Keep Trying!",
         "game.keepTryingMessage": "Practice makes perfect.",
+
+        // AR Scanner
+        "tab.arScanner": "AR Scanner",
+        "ar.title": "AR Scanner",
+        "ar.scanButton": "Scan",
+        "ar.scanning": "Scanning...",
+        "ar.noObjectDetected": "No object detected.",
+        "ar.cameraPermissionDenied": "Camera access denied.",
+        "ar.instruction": "Scan to recognize objects",
+        "ar.searchingObjects": "Searching for objects...",
+        "ar.objectsDetected": "%d object(s) detected",
+        "ar.detectedObjects": "Detected Objects",
+        "ar.tryAgain": "Try again",
     ]
 
     private static var turkishStrings: [String: String] = [
@@ -572,6 +585,19 @@ public enum Strings {
         "game.greatJobMessage": "Gelişmek için pratik yapmaya devam et!",
         "game.keepTrying": "Denemeye Devam!",
         "game.keepTryingMessage": "Pratik mükemmelleştirir.",
+
+        // AR Scanner
+        "tab.arScanner": "AR Tarayıcı",
+        "ar.title": "AR Tarayıcı",
+        "ar.scanButton": "Tara",
+        "ar.scanning": "Taranıyor...",
+        "ar.noObjectDetected": "Nesne tespit edilemedi.",
+        "ar.cameraPermissionDenied": "Kamera erişimi reddedildi.",
+        "ar.instruction": "Nesneleri tanımak için tarama yapın",
+        "ar.searchingObjects": "Nesneler aranıyor...",
+        "ar.objectsDetected": "%d nesne tespit edildi",
+        "ar.detectedObjects": "Tespit Edilen Nesneler",
+        "ar.tryAgain": "Tekrar deneyin",
     ]
 
     private static func localizedString(_ key: String) -> String {
@@ -917,6 +943,21 @@ public enum Strings {
     static var gameGreatJobMessage: String { localizedString("game.greatJobMessage") }
     static var gameKeepTrying: String { localizedString("game.keepTrying") }
     static var gameKeepTryingMessage: String { localizedString("game.keepTryingMessage") }
+
+    // MARK: - AR Scanner
+    static var tabARScanner: String { localizedString("tab.arScanner") }
+    static var arTitle: String { localizedString("ar.title") }
+    static var arScanButton: String { localizedString("ar.scanButton") }
+    static var arScanning: String { localizedString("ar.scanning") }
+    static var arNoObjectDetected: String { localizedString("ar.noObjectDetected") }
+    static var arCameraPermissionDenied: String { localizedString("ar.cameraPermissionDenied") }
+    static var arInstruction: String { localizedString("ar.instruction") }
+    static var arSearchingObjects: String { localizedString("ar.searchingObjects") }
+    static func arObjectsDetected(_ count: Int) -> String {
+        String(format: localizedString("ar.objectsDetected"), count)
+    }
+    static var arDetectedObjects: String { localizedString("ar.detectedObjects") }
+    static var arTryAgain: String { localizedString("ar.tryAgain") }
 }
 
 public enum Common {
