@@ -2,8 +2,6 @@
 
 # Lingoverse
 
-<img src="https://github.com/CanSagnak1/TGY-HOMEWORK/raw/main/%C3%96devler/Lingoverse/Lingoverse/Sources/DesignSystem/Assets.xcassets/AppIcon.appiconset/180.png" alt="Lingoverse Icon" width="160"/>
-
 **Lingoverse**, yapay zeka destekli AR teknolojisi, oyunlaştırılmış öğrenme modülleri ve hibrit sözlük yapısı ile zenginleştirilmiş, VIPER mimarisi üzerine kurulu modern bir iOS dil öğrenme asistanıdır.
 
 </div>
